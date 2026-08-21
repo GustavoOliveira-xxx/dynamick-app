@@ -184,8 +184,15 @@ Não altera dimensões. Grava em `PersonalizationPreference` e vale imediatament
 1. Toda dimensão começa em **50** e recebe os efeitos acima; resultado limitado a **0–100**.
 2. Cada perfil tem um alvo por dimensão. A pontuação do perfil é
    `100 − média(|dimensão − alvo| × peso)`, com pesos por dimensão declarados no código.
-3. Vence o perfil de maior pontuação; empate resolve pela ordem de prioridade declarada
-   (determinístico — o mesmo conjunto de respostas sempre gera o mesmo perfil).
+3. **Premissa do perfil:** um perfil cuja premissa não é atendida não é *sugerido
+   automaticamente* — mas continua disponível para escolha manual na tela de comparação.
+   Hoje há uma única premissa declarada:
+   *Treinador de desempenho* exige prova em menos de 6 meses **ou** ENEM já realizado.
+   Motivo: a Etapa 13 do prompt mestre proíbe empurrar quem tem dois anos de preparação
+   para uma rotina de simulados e alta dificuldade só porque é autônomo e se sente seguro.
+   Quando a premissa bloqueia uma sugestão, a tela de comparação mostra o motivo legível.
+4. Vence o perfil elegível de maior pontuação; empate resolve pela ordem de prioridade
+   declarada (determinístico — o mesmo conjunto de respostas sempre gera o mesmo perfil).
 
 ### 4.2 Alvos por perfil
 
@@ -203,6 +210,7 @@ Não altera dimensões. Grava em `PersonalizationPreference` e vale imediatament
 | Situação | Confiança | Comportamento |
 | --- | --- | --- |
 | Todas as 8 etapas respondidas e sem contradição | **alta** | Perfil sugerido normalmente |
+| *(marcar "nenhuma dessas" conta como resposta — a etapa não fica em branco)* | | |
 | Só as obrigatórias (modo rápido) | **média** | Perfil sugerido + convite a completar depois |
 | Etapas obrigatórias incompletas ou respostas contraditórias | **baixa** | **Perfil provisório** + diagnóstico leve priorizado |
 | Onboarding pulado por completo | **baixa** | Perfil `Explorador sem rota` provisório, dashboard em modo guiado, cartão de completar perfil |
