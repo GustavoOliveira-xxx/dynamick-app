@@ -1,0 +1,823 @@
+// Dynamic CK — modelo de dados (§6 do prompt mestre).
+// Provider SQLite para desenvolvimento; o schema é compatível com PostgreSQL
+// (trocar provider + DATABASE_URL). SQLite não suporta enum: campos com domínio
+// fechado usam String e a lista de valores válidos está documentada em src/lib/domain.ts,
+// que é a fonte de verdade tipada usada pelo código e pela validação Zod.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------- Conta e perfil
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          String    @default("student") // student | admin
+  isDemo        Boolean   @default(false)
+  emailVerified Boolean   @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastSeenAt    DateTime?
+
+  studyProfile           StudyProfile?
+  personalization        PersonalizationPreference?
+  notificationPreference NotificationPreference?
+  onboardingResponses    OnboardingResponse[]
+  profileSnapshots       ProfileSnapshot[]
+  profileConfirmations   ProfileConfirmation[]
+  sessions               StudySession[]
+  attempts               Attempt[]
+  reviewItems            ReviewItem[]
+  errorNotes             ErrorNote[]
+  plans                  StudyPlan[]
+  simulationRuns         SimulationRun[]
+  essays                 Essay[]
+  bookmarks              Bookmark[]
+  reports                Report[]
+  auditLogs              AuditLog[]
+  topicMastery           TopicMastery[]
+  authSessions           AuthSession[]
+  passwordResets         PasswordResetToken[]
+
+  @@index([deletedAt])
+}
+
+model AuthSession {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  userAgent String?
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model StudyProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identidade do perfil (provisória e revisável — §4.1 / §19)
+  suggestedProfile String? // slug do perfil calculado
+  activeProfile    String? // slug do perfil em uso (escolha do usuário tem prioridade)
+  confidence       String    @default("low") // low | medium | high
+  provisional      Boolean   @default(true)
+  confirmedAt      DateTime?
+
+  // Contexto declarado
+  schoolYear       String?
+  primaryGoal      String?
+  goals            String    @default("[]") // JSON string[]
+  horizon          String?
+  examDate         DateTime?
+  daysPerWeek      Int       @default(3)
+  sessionMinutes   Int       @default(20)
+  preferredTimes   String    @default("[]") // JSON string[]
+  routineStability String?
+  studyPreferences String    @default("[]") // JSON string[]
+  frictions        String    @default("[]") // JSON string[]
+  selfAssessment   String    @default("{}") // JSON Record<areaSlug, "secure"|"insecure"|"unknown">
+
+  // Estado do onboarding
+  onboardingStatus     String  @default("not_started") // not_started | in_progress | completed | skipped
+  onboardingStep       String?
+  completedSteps       String  @default("[]") // JSON string[]
+  skippedSteps         String  @default("[]") // JSON string[]
+  questionnaireVersion String  @default("v1")
+  diagnosticStatus     String  @default("pending") // pending | skipped | done
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dimensions StudyProfileDimension[]
+}
+
+// Dimensões independentes; declaradas e observadas ficam em linhas separadas (§ regra 3)
+model StudyProfileDimension {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StudyProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  key       String // autonomy | consistency | perceivedBase | needsDirection | practicePreference | needsShortSessions
+  value     Int // 0..100
+  source    String // declared | observed
+  evidence  String? // texto legível que justifica o valor observado
+  updatedAt DateTime     @updatedAt
+
+  @@unique([profileId, key, source])
+  @@index([profileId])
+}
+
+model OnboardingResponse {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  step       String
+  questionId String
+  value      String // JSON: string | string[] | number | Record<string,string>
+  skipped    Boolean  @default(false)
+  version    String   @default("v1")
+  answeredAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, questionId, version])
+  @@index([userId, step])
+}
+
+model ProfileSnapshot {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  previousProfile  String?
+  nextProfile      String?
+  dimensionsBefore String    @default("{}") // JSON
+  dimensionsAfter  String    @default("{}") // JSON
+  reason           String // justificativa legível obrigatória (§ regra 4)
+  trigger          String // onboarding | confirmation | observed | manual
+  acknowledgedAt   DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model ProfileConfirmation {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  suggestedProfile     String
+  chosenProfile        String
+  matchedSuggestion    Boolean
+  changedAnswers       String   @default("[]") // JSON string[]
+  note                 String?
+  questionnaireVersion String   @default("v1")
+  decidedAt            DateTime @default(now())
+
+  @@index([userId, decidedAt])
+}
+
+model PersonalizationPreference {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  theme             String  @default("dark") // dark | light
+  textScale         String  @default("100") // 100 | 112 | 125
+  reducedMotion     String  @default("auto") // auto | always
+  highContrast      Boolean @default(false)
+  visualIntensity   String  @default("full") // full | reduced
+  language          String  @default("pt-BR")
+  correctionMode    String  @default("learning") // learning | exam
+  showTimer         Boolean @default(true)
+  hintsBeforeAnswer Boolean @default(false)
+  confidencePrompt  Boolean @default(true)
+
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationPreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabled   Boolean  @default(false)
+  channel   String   @default("in_app") // in_app | email
+  weekdays  String   @default("[]") // JSON number[] 0..6
+  timeOfDay String? // "19:30"
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------- Conteúdo
+
+model KnowledgeArea {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  shortName String
+  summary   String
+  accent    String   @default("green") // token de acento usado no mapa
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subjects    Subject[]
+  topics      Topic[]
+  questions   Question[]
+  simulations Simulation[]
+}
+
+model Subject {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  summary   String
+  areaId    String
+  area      KnowledgeArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  order     Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  topics    Topic[]
+  questions Question[]
+
+  @@index([areaId])
+}
+
+model Topic {
+  id               String  @id @default(cuid())
+  slug             String  @unique
+  name             String
+  summary          String // resumo de leitura rápida
+  order            Int     @default(0)
+  difficulty       String  @default("intro") // intro | intermediate | challenging
+  estimatedMinutes Int     @default(15)
+  isComplete       Boolean @default(false) // tópico com conteúdo + prática (§11.3)
+  status           String  @default("published") // draft | published | archived
+  curationWeight   Int     @default(50) // importância definida pela curadoria (§5.5)
+
+  areaId    String
+  area      KnowledgeArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  skills        Skill[]
+  contentItems  ContentItem[]
+  questions     Question[]
+  mastery       TopicMastery[]
+  prerequisites TopicPrerequisite[] @relation("TopicToPrereq")
+  requiredBy    TopicPrerequisite[] @relation("PrereqToTopic")
+  relatedFrom   TopicRelation[]     @relation("RelationFrom")
+  relatedTo     TopicRelation[]     @relation("RelationTo")
+  reviewItems   ReviewItem[]
+  planBlocks    StudyPlanBlock[]
+  errorNotes    ErrorNote[]
+
+  @@index([areaId])
+  @@index([subjectId])
+}
+
+model TopicPrerequisite {
+  id             String @id @default(cuid())
+  topicId        String
+  topic          Topic  @relation("TopicToPrereq", fields: [topicId], references: [id], onDelete: Cascade)
+  prerequisiteId String
+  prerequisite   Topic  @relation("PrereqToTopic", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, prerequisiteId])
+}
+
+model TopicRelation {
+  id     String @id @default(cuid())
+  fromId String
+  from   Topic  @relation("RelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId   String
+  to     Topic  @relation("RelationTo", fields: [toId], references: [id], onDelete: Cascade)
+  kind   String @default("related") // related | deepens | applies
+
+  @@unique([fromId, toId])
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  questions   Question[]
+  reviewItems ReviewItem[]
+
+  @@index([topicId])
+}
+
+model ContentItem {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  kind        String // quick_summary | explanation | worked_example | common_mistakes | self_explanation | glossary
+  title       String
+  body        String // markdown leve
+  depth       String   @default("standard") // quick | standard | deep
+  order       Int      @default(0)
+  status      String   @default("published") // draft | reviewed | published | archived
+  origin      String   @default("AUTORAL_SEED")
+  license     String   @default("Conteúdo autoral de desenvolvimento — Conscious Knowledge")
+  aiGenerated Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookmarks Bookmark[]
+
+  @@index([topicId, kind])
+}
+
+// ---------------------------------------------------------------- Questões
+
+model Question {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  stem             String // enunciado completo
+  support          String? // texto/tabela/gráfico de apoio
+  format           String    @default("multiple_choice_5")
+  difficulty       String    @default("intermediate") // intro | intermediate | challenging
+  cognitiveFormat  String // concept | applied | interpretation | comparison | integration
+  reasoningType    String    @default("analitico")
+  estimatedSeconds Int       @default(120)
+  status           String    @default("seed") // seed | draft | reviewed | published | archived
+  origin           String    @default("AUTORAL_SEED")
+  license          String    @default("Conteúdo autoral de desenvolvimento — Conscious Knowledge")
+  sourceNote       String?
+  aiGenerated      Boolean   @default(false)
+  isRecovery       Boolean   @default(false) // questão de recuperação derivada da habilidade
+  likelyErrors     String    @default("[]") // JSON string[]
+  version          Int       @default(1)
+  archivedAt       DateTime?
+
+  areaId    String
+  area      KnowledgeArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  topicId   String
+  topic     Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  skillId   String?
+  skill     Skill?        @relation(fields: [skillId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  options      AnswerOption[]
+  explanation  Explanation?
+  versions     QuestionVersion[]
+  sessionItems SessionItem[]
+  attempts     Attempt[]
+  reviewItems  ReviewItem[]
+  bookmarks    Bookmark[]
+  reports      Report[]
+  errorNotes   ErrorNote[]
+
+  @@index([topicId, status])
+  @@index([areaId, status])
+  @@index([skillId])
+}
+
+model QuestionVersion {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  version    Int
+  snapshot   String // JSON da questão no momento
+  changedBy  String?
+  changeNote String?
+  createdAt  DateTime @default(now())
+
+  @@unique([questionId, version])
+}
+
+model AnswerOption {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  label      String // A | B | C | D | E
+  text       String
+  isCorrect  Boolean  @default(false)
+  rationale  String // comentário sobre o distrator ou sobre a resposta correta
+  errorHint  String? // tipo de erro que costuma levar a esta alternativa
+  order      Int      @default(0)
+
+  attempts      Attempt[] @relation("AttemptAnswer")
+  firstAttempts Attempt[] @relation("AttemptFirstAnswer")
+
+  @@unique([questionId, label])
+  @@index([questionId])
+}
+
+model Explanation {
+  id               String   @id @default(cuid())
+  questionId       String   @unique
+  question         Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  summary          String // explicação principal
+  detailed         String? // aprofundamento opcional
+  strategy         String? // como abordar questões parecidas
+  conceptRecap     String?
+  reflectionPrompt String   @default("O que dificultou esta questão?")
+  aiGenerated      Boolean  @default(false)
+  reviewedBy       String?
+  updatedAt        DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------- Sessões e tentativas
+
+model SessionTemplate {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  title              String
+  goal               String
+  instructions       String
+  minutes            Int
+  mode               String   @default("learning") // learning | exam
+  kind               String   @default("practice") // learn | practice | review | simulate | diagnostic
+  itemRule           String   @default("{}") // JSON: regra de seleção de itens
+  completionRule     String   @default("all_items")
+  nextRecommendation String?
+  order              Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  sessions StudySession[]
+}
+
+model StudySession {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId String?
+  template   SessionTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  title            String
+  kind             String  @default("practice") // learn | practice | review | simulate | diagnostic
+  mode             String  @default("learning") // learning | exam
+  status           String  @default("in_progress") // in_progress | paused | completed | abandoned
+  reason           String? // justificativa legível da recomendação (§ regra 9)
+  plannedMinutes   Int     @default(20)
+  plannedItems     Int     @default(5)
+  timeLimitSeconds Int?
+  currentIndex     Int     @default(0)
+  idempotencyKey   String? @unique // impede sessão duplicada ao atualizar o navegador
+
+  simulationId String?
+  simulation   Simulation? @relation(fields: [simulationId], references: [id], onDelete: SetNull)
+
+  startedAt    DateTime  @default(now())
+  lastActiveAt DateTime  @default(now())
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  items    SessionItem[]
+  attempts Attempt[]
+  run      SimulationRun?
+
+  @@index([userId, status])
+  @@index([userId, startedAt])
+}
+
+model SessionItem {
+  id              String       @id @default(cuid())
+  sessionId       String
+  session         StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  order           Int
+  flagged         Boolean      @default(false) // marcar para revisar depois
+  note            String? // anotar uma dúvida
+  status          String       @default("pending") // pending | answered | skipped
+  selectionReason String?
+
+  attempt Attempt?
+
+  @@unique([sessionId, order])
+  @@unique([sessionId, questionId])
+  @@index([sessionId])
+}
+
+model Attempt {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId     String?
+  session       StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  sessionItemId String?       @unique
+  sessionItem   SessionItem?  @relation(fields: [sessionItemId], references: [id], onDelete: SetNull)
+  questionId    String
+  question      Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // Primeira resposta e resposta final ficam separadas (§ etapa 7)
+  firstAnswerId String?
+  firstAnswer   AnswerOption? @relation("AttemptFirstAnswer", fields: [firstAnswerId], references: [id], onDelete: SetNull)
+  answerId      String?
+  answer        AnswerOption? @relation("AttemptAnswer", fields: [answerId], references: [id], onDelete: SetNull)
+
+  changedAnswer Boolean   @default(false)
+  isCorrect     Boolean   @default(false)
+  confidence    String? // sure | unsure | guess
+  timeSpentMs   Int       @default(0)
+  answeredAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  errorClassification ErrorClassification?
+
+  @@index([userId, questionId])
+  @@index([userId, createdAt])
+  @@index([sessionId])
+}
+
+model ErrorClassification {
+  id        String   @id @default(cuid())
+  attemptId String   @unique
+  attempt   Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  reason    String // unknown_content | interpretation | calculation | attention | time | between_options | other
+  source    String   @default("declared") // declared | inferred
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([reason])
+}
+
+model ErrorNote {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String?
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  topicId    String?
+  topic      Topic?    @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  reason     String?
+  note       String?
+  concept    String?
+  status     String    @default("open") // open | scheduled | resolved
+  source     String    @default("manual") // manual | suggested
+  nextAction String    @default("similar_question") // similar_question | review_concept | self_explain | redo_later
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId, status])
+}
+
+// ---------------------------------------------------------------- Revisão e plano
+
+model ReviewItem {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId    String?
+  topic      Topic?    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  skillId    String?
+  skill      Skill?    @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  questionId String?
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+
+  kind           String    @default("concept") // concept | question
+  dueAt          DateTime
+  interval       Int       @default(1) // dias
+  ease           Int       @default(250) // ×100
+  repetitions    Int       @default(0)
+  lastRecall     String? // forgot | partial | mastered
+  lastReviewedAt DateTime?
+  status         String    @default("pending") // pending | done | dismissed
+  reason         String? // por que está na fila (legível)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId, status, dueAt])
+}
+
+model TopicMastery {
+  id      String @id @default(cuid())
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  state             String    @default("not_started") // not_started | explored | practicing | needs_review | consolidated
+  score             Int       @default(0) // 0..100 estimativa de domínio
+  distinctQuestions Int       @default(0)
+  distinctSessions  Int       @default(0)
+  correctCount      Int       @default(0)
+  attemptCount      Int       @default(0)
+  lastPracticedAt   DateTime?
+  lastCorrectAt     DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([userId, topicId])
+  @@index([userId, state])
+}
+
+model StudyPlan {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart     DateTime
+  status        String   @default("active") // active | archived
+  minutesTarget Int      @default(120)
+  note          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  blocks StudyPlanBlock[]
+
+  @@unique([userId, weekStart])
+  @@index([userId, status])
+}
+
+model StudyPlanBlock {
+  id        String    @id @default(cuid())
+  planId    String
+  plan      StudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  topicId   String?
+  topic     Topic?    @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  dayOfWeek Int // 0..6
+  kind      String // learn | practice | review | simulate
+  title     String
+  minutes   Int
+  status    String    @default("planned") // planned | done | moved | missed
+  reason    String?
+  order     Int       @default(0)
+
+  @@index([planId, dayOfWeek])
+}
+
+// ---------------------------------------------------------------- Simulados
+
+model Simulation {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  title          String
+  description    String
+  kind           String         @default("area") // full | area | short | custom | diagnostic
+  areaId         String?
+  area           KnowledgeArea? @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  questionCount  Int            @default(10)
+  minutes        Int            @default(30)
+  blueprint      String         @default("{}") // JSON: matriz de distribuição por área/tópico/dificuldade
+  timedByDefault Boolean        @default(true)
+  status         String         @default("published") // draft | published | archived
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  runs     SimulationRun[]
+  sessions StudySession[]
+}
+
+model SimulationRun {
+  id           String       @id @default(cuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  simulationId String
+  simulation   Simulation   @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  sessionId    String       @unique
+  session      StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  timed        Boolean   @default(true)
+  deadlineAt   DateTime?
+  submittedAt  DateTime?
+  score        Int       @default(0)
+  totalItems   Int       @default(0)
+  analysis     String    @default("{}") // JSON: por área, tópico, habilidade e tempo
+  fallbackNote String? // aviso quando faltaram questões para a matriz
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// ---------------------------------------------------------------- Redação
+
+model EssayPrompt {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  theme             String
+  focus             String // recorte temático
+  motivatingTexts   String // JSON [{title, body, source}]
+  productionCommand String
+  planningQuestions String   @default("[]") // JSON string[]
+  repertoire        String   @default("[]") // JSON string[]
+  argumentChecklist String   @default("[]") // JSON string[]
+  reviewChecklist   String   @default("[]") // JSON string[]
+  status            String   @default("published")
+  origin            String   @default("AUTORAL_SEED")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  essays Essay[]
+}
+
+model Essay {
+  id             String      @id @default(cuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  promptId       String
+  prompt         EssayPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  title          String?
+  thesis         String?
+  outline        String?
+  body           String      @default("")
+  status         String      @default("draft") // draft | submitted
+  checklistState String      @default("{}") // JSON
+  wordCount      Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  versions EssayVersion[]
+
+  @@index([userId, updatedAt])
+}
+
+model EssayVersion {
+  id        String   @id @default(cuid())
+  essayId   String
+  essay     Essay    @relation(fields: [essayId], references: [id], onDelete: Cascade)
+  body      String
+  wordCount Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([essayId, createdAt])
+}
+
+// ---------------------------------------------------------------- Métodos de estudo
+
+model StudyMethod {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  summary        String
+  howItWorks     String
+  whenToUse      String
+  minutes        Int      @default(20)
+  steps          String   @default("[]") // JSON string[]
+  example        String
+  limitations    String // contraindicações práticas — nenhum método é universal
+  suitableTopics String   @default("[]") // JSON string[] de slugs
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------- Salvos, denúncias, auditoria
+
+model Bookmark {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId    String?
+  question      Question?    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  contentItemId String?
+  contentItem   ContentItem? @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  note          String?
+  createdAt     DateTime     @default(now())
+
+  @@unique([userId, questionId])
+  @@unique([userId, contentItemId])
+  @@index([userId])
+}
+
+model Report {
+  id         String    @id @default(cuid())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  questionId String?
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  kind       String // wrong_answer_key | ambiguous | accessibility | broken_image | inappropriate | other
+  message    String
+  status     String    @default("open") // open | reviewing | resolved | rejected
+  resolution String?
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([status, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action    String // question.publish | question.archive | report.resolve | content.update | ...
+  entity    String
+  entityId  String
+  before    String? // JSON
+  after     String? // JSON
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}

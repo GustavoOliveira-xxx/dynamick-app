@@ -1,0 +1,138 @@
+/*
+ * Dynamic CK — tokens visuais centralizados (§3.9 e §18.1 do prompt mestre).
+ * Nenhum valor visual arbitrário deve existir fora deste arquivo.
+ * Referências iniciais derivadas das cores das logos DynamiCK / Conscious Knowledge.
+ */
+
+:root {
+  /* ---- Fundo: noturno, profundo, quase preto. Verde NUNCA é fundo dominante. ---- */
+  --ck-bg-void: #020504;
+  --ck-bg-deep: #06100d;
+  --ck-bg-panel: #0a1715;
+  --ck-bg-raised: #0f201d;
+
+  /* ---- Acentos derivados das logos ---- */
+  --ck-green-primary: #2ee88a; /* CTA, foco, progresso */
+  --ck-green-glow: #5cffb0;    /* brilho e estados ativos (uso moderado) */
+  --ck-green-deep: #0f6b46;
+  --ck-teal: #35d6c0;          /* acento tecnológico secundário */
+  --ck-cyan: #63e6ff;          /* conexões e elementos de conhecimento */
+  --ck-lime: #b8f36a;          /* destaques raros e marcos */
+
+  /* ---- Texto ---- */
+  --ck-text-primary: #e8f5ef;  /* branco suave, nunca branco estourado */
+  --ck-text-secondary: #a9c4ba;
+  --ck-text-muted: #7d968d;
+
+  /* ---- Bordas ---- */
+  --ck-border: rgb(46 232 138 / 14%);
+  --ck-border-strong: rgb(46 232 138 / 32%);
+
+  /* ---- Cores semânticas controladas ---- */
+  --ck-danger: #ff6b7a;
+  --ck-warning: #ffc861;
+  --ck-success: #2ee88a;
+  --ck-info: #63e6ff;
+
+  /* ---- Superfícies compostas ---- */
+  --ck-surface-glass: rgb(10 23 21 / 72%);
+  --ck-surface-scrim: rgb(2 5 4 / 78%);
+
+  /* ---- Tipografia ---- */
+  --ck-font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --ck-font-display: var(--ck-font-sans);
+  --ck-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --ck-text-scale: 1;
+
+  /* ---- Raios ---- */
+  --ck-radius-sm: 6px;
+  --ck-radius-md: 10px;
+  --ck-radius-lg: 16px;
+  --ck-radius-xl: 22px;
+  --ck-radius-2xl: 30px;
+  --ck-radius-pill: 999px;
+
+  /* ---- Profundidade ---- */
+  --ck-shadow-depth: 0 24px 60px -30px rgb(0 0 0 / 90%);
+  --ck-shadow-raised: 0 10px 34px -18px rgb(0 0 0 / 85%);
+  --ck-shadow-glow: 0 0 0 1px rgb(46 232 138 / 34%), 0 12px 40px -16px rgb(46 232 138 / 34%);
+  --ck-shadow-glow-soft: 0 0 26px -10px rgb(46 232 138 / 40%);
+
+  /* ---- Espaçamento ---- */
+  --ck-space-gutter: 1.25rem;
+  --ck-shell-max: 1240px;
+
+  /* ---- Movimento (§3.4): curto e com curvas naturais ---- */
+  --ck-dur-instant: 90ms;
+  --ck-dur-fast: 160ms;
+  --ck-dur-base: 260ms;
+  --ck-dur-slow: 420ms;
+  --ck-ease-entry: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --ck-ease-exit: cubic-bezier(0.5, 0, 0.75, 0);
+  --ck-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* ---- Camadas ---- */
+  --ck-z-backdrop: 0;
+  --ck-z-content: 10;
+  --ck-z-sticky: 20;
+  --ck-z-overlay: 30;
+  --ck-z-modal: 40;
+  --ck-z-toast: 50;
+
+  /* ---- Intensidade visual por contexto (§18.3) ---- */
+  --ck-visual-opacity: 1;
+}
+
+/* Tema claro opcional (etapa H do onboarding). Mantém a mesma hierarquia de papéis. */
+:root[data-theme='light'] {
+  --ck-bg-void: #f2f7f4;
+  --ck-bg-deep: #e8f0ec;
+  --ck-bg-panel: #ffffff;
+  --ck-bg-raised: #f7fbf9;
+  --ck-green-primary: #0f7d4d;
+  --ck-green-glow: #12a463;
+  --ck-green-deep: #0b5233;
+  --ck-teal: #0d7a6c;
+  --ck-cyan: #0b6d8a;
+  --ck-lime: #4c7a16;
+  --ck-text-primary: #0a1a14;
+  --ck-text-secondary: #375146;
+  --ck-text-muted: #5d7369;
+  --ck-border: rgb(15 125 77 / 18%);
+  --ck-border-strong: rgb(15 125 77 / 38%);
+  --ck-danger: #b4232f;
+  --ck-warning: #8a5a00;
+  --ck-success: #0f7d4d;
+  --ck-info: #0b6d8a;
+  --ck-surface-glass: rgb(255 255 255 / 86%);
+  --ck-surface-scrim: rgb(242 247 244 / 82%);
+  --ck-shadow-depth: 0 24px 60px -34px rgb(10 26 20 / 30%);
+  --ck-shadow-raised: 0 10px 30px -20px rgb(10 26 20 / 28%);
+  --ck-shadow-glow: 0 0 0 1px rgb(15 125 77 / 30%), 0 10px 30px -18px rgb(15 125 77 / 30%);
+  --ck-shadow-glow-soft: 0 0 22px -12px rgb(15 125 77 / 34%);
+}
+
+/* Alto contraste (etapa H) */
+:root[data-contrast='high'] {
+  --ck-text-primary: #ffffff;
+  --ck-text-secondary: #d6ece2;
+  --ck-text-muted: #b6d3c6;
+  --ck-border: rgb(46 232 138 / 46%);
+  --ck-border-strong: rgb(46 232 138 / 72%);
+  --ck-bg-panel: #08120f;
+}
+:root[data-theme='light'][data-contrast='high'] {
+  --ck-text-primary: #000000;
+  --ck-text-secondary: #17301f;
+  --ck-text-muted: #2c463a;
+}
+
+/* Modo visual reduzido (§3.5): desliga fundo pesado sem quebrar o layout */
+:root[data-visual='reduced'] {
+  --ck-visual-opacity: 0;
+}
+
+/* Escala de texto (etapa H) */
+:root[data-text-scale='112'] { --ck-text-scale: 1.12; }
+:root[data-text-scale='125'] { --ck-text-scale: 1.25; }
