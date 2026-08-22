@@ -1,0 +1,19 @@
+{
+  "name": "dynamic-ck",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma de estudos para o ENEM 2027, da Conscious Knowledge.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/index.mjs",
+    "check": "node tests/check-imports.mjs",
+    "seed": "node db/gerar-seed.mjs",
+    "dev": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

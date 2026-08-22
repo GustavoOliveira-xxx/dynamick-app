@@ -16,6 +16,7 @@ import {
   linkButton,
   message,
   progress,
+  setButtonLoading,
   textarea,
   toast,
 } from '../ui/components.js';
@@ -36,7 +37,18 @@ import {
   updatePreferences,
 } from '../core/student.js';
 import { summarizeSession } from '../core/sessions.js';
-import { navigate } from '../core/router.js';
+import {
+  apagarNoServidor,
+  desvincular,
+  enviar,
+  formatarCodigo,
+  receber,
+  syncDisponivel,
+  vincularExistente,
+  vincularNovo,
+  vinculoAtual,
+} from '../core/sync.js';
+import { navigate, refresh } from '../core/router.js';
 
 /* ---------------------------------------------------------------- Hub */
 
@@ -272,7 +284,7 @@ export function renderStudyProfile(root) {
                       onClick: () => {
                         changeProfile(escolhido, justificativa);
                         toast('Perfil atualizado. Suas recomendações já refletem a mudança.', 'success');
-                        navigate('/perfil/estudo');
+                        refresh();
                       },
                     }),
                   ),
@@ -488,7 +500,7 @@ function disponibilidadeCard(s) {
       onClick: () => {
         updateAvailability({ daysPerWeek: dias, sessionMinutes: minutos, examDate: data });
         toast('Disponibilidade salva. Seu plano da semana foi recalculado.', 'success');
-        navigate('/perfil/configuracoes');
+        refresh();
       },
     }),
   );
@@ -536,7 +548,7 @@ function lembretesCard(prefs, set) {
       ],
       onChange: (value) => {
         set({ remindersEnabled: value === 'sim' });
-        navigate('/perfil/configuracoes');
+        refresh();
       },
     }),
     prefs.remindersEnabled
@@ -817,6 +829,8 @@ export function renderDataPage(root) {
         el('p', { class: 'xsmall muted', style: { marginTop: '0.5rem' } }, 'Criado em ', formatDate(state.createdAt), ' · última alteração em ', formatDate(state.updatedAt), '.'),
       ),
 
+      sincronizacaoCard(),
+
       card(
         {},
         el('h2', {}, 'Exportar'),
@@ -929,7 +943,22 @@ export function renderDataPage(root) {
                   'Seu perfil, seu histórico e suas redações serão removidos deste navegador. Se quiser guardar, cancele e exporte antes.',
                 confirmWord: 'APAGAR',
                 confirmLabel: 'Apagar definitivamente',
-                onConfirm: () => {
+                onConfirm: async () => {
+                  // Se houver sincronização, o servidor vai junto: a página de
+                  // privacidade promete isso, e a promessa precisa valer.
+                  if (syncDisponivel && vinculoAtual()) {
+                    try {
+                      await apagarNoServidor();
+                    } catch {
+                      // Apagar o local é o que o estudante pediu e não pode ficar
+                      // refém da rede. O que restou no servidor é dito adiante.
+                      toast(
+                        'Apagamos tudo neste aparelho, mas não conseguimos falar com o servidor. O que está lá continua, e some sozinho depois de um tempo sem uso.',
+                        'warning',
+                        9000,
+                      );
+                    }
+                  }
                   clearAll();
                   window.location.hash = '#/onboarding';
                   window.location.reload();
@@ -941,5 +970,257 @@ export function renderDataPage(root) {
 
       el('div', { class: 'row' }, linkButton({ href: '#/perfil', label: 'Voltar', variant: 'ghost' })),
     ),
+  );
+}
+
+/* ---------------------------------------------------------------- Sincronização */
+
+/**
+ * Cartão de sincronização entre aparelhos.
+ *
+ * Regras que a interface precisa deixar claras, porque o modelo é incomum:
+ *   - o código É a chave: perdeu, perdeu;
+ *   - o servidor não consegue ler o conteúdo;
+ *   - sincronizar é sempre ação explícita, nunca automática em segundo plano.
+ */
+function sincronizacaoCard() {
+  if (!syncDisponivel) {
+    return card(
+      {},
+      el('h2', {}, 'Sincronizar entre aparelhos'),
+      el(
+        'p',
+        { class: 'small secondary' },
+        'Esta instalação não tem sincronização ligada: o progresso vive só neste navegador. ',
+        'Para levar seu estudo a outro aparelho, use exportar e importar acima.',
+      ),
+    );
+  }
+
+  const corpo = el('div', { class: 'stack stack--sm' });
+  const aviso = el('div');
+  const vinculo = vinculoAtual();
+
+  /** Roda a operação mostrando estado no botão e erro legível em vez de silêncio. */
+  async function executar(botao, rotulo, operacao) {
+    setButtonLoading(botao, true, rotulo);
+    render(aviso);
+    try {
+      await operacao();
+    } catch (erro) {
+      if (erro?.message === 'conflito') {
+        render(aviso, conflitoAviso());
+      } else {
+        render(
+          aviso,
+          message('danger', 'Não deu certo', el('p', {}, erro?.message ?? 'Erro inesperado ao sincronizar.')),
+        );
+      }
+    } finally {
+      setButtonLoading(botao, false);
+    }
+  }
+
+  /** O outro aparelho gravou depois: nunca sobrescrevemos sem perguntar. */
+  function conflitoAviso() {
+    return message(
+      'warning',
+      'Outro aparelho enviou algo mais novo',
+      el('p', {}, 'Para não apagar o que foi gravado lá, escolha o que fazer:'),
+      el(
+        'div',
+        { class: 'row', style: { marginTop: '0.75rem' } },
+        button({
+          label: 'Trazer o que está no servidor',
+          size: 'sm',
+          onClick: (evento) =>
+            executar(evento.currentTarget, 'Trazendo…', async () => {
+              await receber();
+              toast('Progresso do servidor aplicado neste aparelho.', 'success');
+              refresh();
+            }),
+        }),
+        button({
+          label: 'Enviar o meu mesmo assim',
+          variant: 'danger',
+          size: 'sm',
+          onClick: (evento) =>
+            confirmDestructive({
+              title: 'Sobrescrever o que está no servidor?',
+              description:
+                'O progresso gravado pelo outro aparelho será substituído pelo deste. Não dá para desfazer.',
+              confirmWord: 'SOBRESCREVER',
+              confirmLabel: 'Sobrescrever',
+              onConfirm: () =>
+                executar(evento.currentTarget, 'Enviando…', async () => {
+                  await enviar({ forcar: true });
+                  toast('Enviado. O servidor agora tem o progresso deste aparelho.', 'success');
+                  refresh();
+                }),
+            }),
+        }),
+      ),
+    );
+  }
+
+  if (!vinculo) {
+    const entrada = el('input', {
+      class: 'input',
+      id: 'codigo-sync',
+      placeholder: 'ABCD-EFGH-JKLM-NPQR-STUV',
+      autocomplete: 'off',
+      spellcheck: 'false',
+      maxlength: 30,
+    });
+
+    corpo.append(
+      el(
+        'p',
+        { class: 'small secondary' },
+        'Gere um código neste aparelho e digite-o no outro. Seu progresso sobe cifrado: ',
+        el('strong', {}, 'o código é a chave'),
+        ', e sem ele nem nós conseguimos ler o conteúdo.',
+      ),
+      el(
+        'div',
+        { class: 'row' },
+        button({
+          label: 'Gerar um código para este aparelho',
+          onClick: (evento) =>
+            executar(evento.currentTarget, 'Gerando…', async () => {
+              const codigo = await vincularNovo();
+              render(aviso, codigoNovoAviso(codigo));
+              refresh();
+              toast('Código criado e progresso enviado.', 'success');
+            }),
+        }),
+      ),
+      el('hr', { class: 'hairline' }),
+      el('p', { class: 'small' }, 'Já tem um código de outro aparelho?'),
+      el(
+        'div',
+        { class: 'field' },
+        el('label', { class: 'field__label', for: 'codigo-sync' }, 'Código de sincronização'),
+        entrada,
+        el(
+          'p',
+          { class: 'field__hint' },
+          'Pode digitar com ou sem hífen. Isto substitui o progresso deste navegador pelo do código.',
+        ),
+      ),
+      el(
+        'div',
+        { class: 'row' },
+        button({
+          label: 'Trazer o progresso deste código',
+          variant: 'secondary',
+          onClick: (evento) =>
+            executar(evento.currentTarget, 'Buscando…', async () => {
+              await vincularExistente(entrada.value);
+              toast('Progresso restaurado neste aparelho.', 'success');
+              navigate('/inicio');
+            }),
+        }),
+      ),
+    );
+  } else {
+    const codigo = formatarCodigo(vinculo.codigo);
+    const oculto = el('code', {}, '•'.repeat(4) + '-••••-••••-••••-' + codigo.slice(-4));
+    const caixaCodigo = el('p', { class: 'small', style: { marginTop: '0.5rem' } }, oculto);
+    let visivel = false;
+
+    corpo.append(
+      el('p', { class: 'small secondary' }, 'Este aparelho está sincronizado.'),
+      caixaCodigo,
+      el(
+        'div',
+        { class: 'row' },
+        button({
+          label: 'Mostrar o código',
+          variant: 'ghost',
+          size: 'sm',
+          onClick: (evento) => {
+            visivel = !visivel;
+            render(caixaCodigo, el('code', {}, visivel ? codigo : '••••-••••-••••-••••-' + codigo.slice(-4)));
+            evento.currentTarget.textContent = visivel ? 'Ocultar o código' : 'Mostrar o código';
+          },
+        }),
+        button({
+          label: 'Copiar',
+          variant: 'ghost',
+          size: 'sm',
+          onClick: async () => {
+            try {
+              await navigator.clipboard.writeText(codigo);
+              toast('Código copiado. Guarde em lugar seguro.', 'success');
+            } catch {
+              toast('Seu navegador bloqueou a cópia. Mostre o código e copie à mão.', 'warning');
+            }
+          },
+        }),
+      ),
+      el(
+        'p',
+        { class: 'xsmall muted' },
+        vinculo.enviadoEm
+          ? `Último envio em ${formatDate(vinculo.enviadoEm)}.`
+          : vinculo.recebidoEm
+            ? `Recebido em ${formatDate(vinculo.recebidoEm)}.`
+            : 'Ainda sem envio registrado.',
+      ),
+      el(
+        'div',
+        { class: 'row', style: { marginTop: '0.75rem' } },
+        button({
+          label: 'Enviar meu progresso agora',
+          onClick: (evento) =>
+            executar(evento.currentTarget, 'Enviando…', async () => {
+              await enviar();
+              toast('Progresso enviado.', 'success');
+              refresh();
+            }),
+        }),
+        button({
+          label: 'Trazer do servidor',
+          variant: 'secondary',
+          onClick: (evento) =>
+            executar(evento.currentTarget, 'Trazendo…', async () => {
+              const resultado = await receber();
+              if (!resultado) {
+                render(aviso, message('info', 'Nada gravado ainda', el('p', {}, 'Envie primeiro deste aparelho.')));
+                return;
+              }
+              toast('Progresso do servidor aplicado.', 'success');
+              navigate('/inicio');
+            }),
+        }),
+        button({
+          label: 'Desligar neste aparelho',
+          variant: 'ghost',
+          onClick: () => {
+            desvincular();
+            toast('Sincronização desligada. Seus dados continuam aqui, e o que está no servidor não foi apagado.', 'info');
+            refresh();
+          },
+        }),
+      ),
+      el(
+        'p',
+        { class: 'xsmall warning-text', style: { marginTop: '0.75rem' } },
+        'Guarde o código. Ele é a única forma de abrir esses dados — não temos como recuperá-lo para você.',
+      ),
+    );
+  }
+
+  return card({}, el('h2', {}, 'Sincronizar entre aparelhos'), corpo, aviso);
+}
+
+/** Mostrado uma vez, logo depois de criar: é a única hora garantida de anotar. */
+function codigoNovoAviso(codigo) {
+  return message(
+    'success',
+    'Anote este código agora',
+    el('p', {}, 'Ele é a chave dos seus dados no servidor. Guardamos apenas uma versão embaralhada dele, então não conseguimos mostrá-lo de novo se você limpar este navegador.'),
+    el('p', { style: { marginTop: '0.5rem', fontSize: '1.1rem' } }, el('code', {}, codigo)),
   );
 }

@@ -9,6 +9,7 @@ const files = [
   './simulation.test.mjs',
   './content.test.mjs',
   './answer-key.test.mjs',
+  './sync.test.mjs',
 ];
 
 const failures = await run(files.map((file) => new URL(file, import.meta.url).href));
