@@ -159,28 +159,25 @@ de erros. `tests/answer-key.test.mjs` trava o resultado.
 
 ## Logos
 
-`assets/brand/` é a camada substituível de marca. **Nenhuma tela desenha a logo por conta
-própria**: todas passam por `js/ui/brand.js`.
-
-Dois arquivos, com os caminhos já apontados no código:
+As duas marcas estão no repositório e ligadas (`USE_OFFICIAL_ASSETS = true`):
 
 ```
-assets/brand/logo-dynamic.png   ← marca do produto (DynamiCK)
-assets/brand/logo-ck.png        ← marca da empresa (Conscious Knowledge)
+assets/brand/logo-dynamic.png / .webp   ← produto (DynamiCK)
+assets/brand/logo-ck.png / .webp        ← empresa (Conscious Knowledge)
+assets/brand/originais/                 ← os arquivos como vieram, intocados
 ```
 
-**Os arquivos ainda não estão no repositório.** Enquanto não chegam, o app desenha uma
-marca provisória em SVG, marcada no HTML com `data-brand-fallback="true"`. Ela é um espaço
-reservado, não uma proposta de identidade — a especificação proíbe recriar, redesenhar ou
-interpretar as logos, então nada ali tenta imitá-las.
+Os originais têm 1536×1024 e cerca de 2 MB cada. A aplicação carrega versões reduzidas
+geradas por `assets/brand/gerar-web.py`: recorte da névoa externa invisível, redução de
+escala com proporção preservada e WebP a q90 além do PNG — 261 KB viram 70 KB, sem banda
+no brilho. A arte em si não foi alterada.
 
-Para ligar as oficiais: coloque os dois arquivos e troque uma linha em `js/ui/brand.js`:
+Nenhuma tela desenha a logo por conta própria: tudo passa por `js/ui/brand.js`, que monta
+um `<picture>` com WebP e PNG e deriva a altura da proporção real do arquivo, para que a
+marca nunca seja esticada.
 
-```js
-export const USE_OFFICIAL_ASSETS = false;  // → true
-```
-
-Detalhes e regras de uso: [`assets/brand/README.md`](assets/brand/README.md).
+Detalhes, regras de uso e a limitação conhecida do formato quadrado em cabeçalhos:
+[`assets/brand/README.md`](assets/brand/README.md).
 
 ## Acessibilidade e desempenho
 

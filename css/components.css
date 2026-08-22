@@ -513,3 +513,10 @@ legend { padding: 0; }
   border-radius: var(--ck-r-lg) 0 0 var(--ck-r-lg);
   background: var(--card-accent, var(--ck-green));
 }
+
+/* Marca oficial: <picture> com WebP e PNG.
+   A largura vem do atributo width de cada variante; a altura acompanha a
+   proporção real do arquivo, para que a marca nunca seja esticada. */
+.brand-picture { display: inline-flex; line-height: 0; max-width: 100%; }
+.brand-picture .brand-img { max-width: 100%; height: auto; }
+.brand-img--institutional { opacity: 0.9; }
