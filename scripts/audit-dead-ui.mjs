@@ -126,11 +126,32 @@ for (const file of files) {
   }
 }
 
+const staticRoutes = new Set(routes.filter((route) => !route.includes('[')));
+
 for (const href of referenced) {
   // Ignora caminhos com interpolação de template
   if (href.includes('${')) continue;
-  const matched = routeMatchers.some((matcher) => matcher.regex.test(href));
-  if (!matched) problems.push(`rota referenciada mas inexistente: ${href}`);
+
+  if (staticRoutes.has(href)) continue;
+
+  const dynamicMatch = routeMatchers.find((matcher) => matcher.regex.test(href));
+  if (!dynamicMatch) {
+    problems.push(`rota referenciada mas inexistente: ${href}`);
+    continue;
+  }
+
+  /*
+   * O caminho só casa com uma rota DINÂMICA. Em Next.js um segmento estático vence o
+   * dinâmico, então isto pode ser um 404 real: foi assim que /onboarding/resumo passou
+   * despercebido (o handler [etapa] casava o padrão e devolvia notFound em runtime).
+   * Um literal sem rota estática correspondente é tratado como problema.
+   */
+  const looksLiteral = /^[a-z0-9/-]+$/i.test(href) && !href.includes('[');
+  if (looksLiteral) {
+    warnings.push(
+      `"${href}" depende do handler dinâmico "${dynamicMatch.route}" aceitar esse valor — coberto pelos testes E2E`,
+    );
+  }
 }
 
 // ---- 3. Componentes nunca importados ----

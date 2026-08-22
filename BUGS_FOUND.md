@@ -88,6 +88,37 @@ suposições: cada item abaixo foi observado de fato.
   o que também evita baixar outro Chromium.
 - **Status:** corrigido.
 
+### #9 — `/onboarding/resumo` era um 404: o estudante caía numa página inexistente ao confirmar o perfil
+
+- **Reprodução:** concluir o onboarding e confirmar o perfil.
+- **Impacto:** **alto.** `confirmProfileAction` redirecionava para `/onboarding/resumo`, que
+  nunca foi criado. O perfil era gravado corretamente, mas o estudante terminava o
+  onboarding olhando para uma página de erro — e sem ver o resumo exigido pela §19.1.
+- **Causa:** a pasta existia sem `page.tsx`. Em Next.js, o segmento dinâmico irmão
+  `/onboarding/[etapa]` casava a URL, e `getStep('resumo')` devolvia `undefined` →
+  `notFound()`.
+- **Por que passou pela primeira auditoria:** o script comparava cada `href`/`redirect`
+  literal com os padrões de rota, e `/onboarding/[etapa]` casava `/onboarding/resumo`.
+  A rota "existia" no papel e falhava só em execução.
+- **Correção:** criada a página de resumo com os sete itens da §19.1 (perfil escolhido,
+  duração, proporção aprender/praticar/revisar, questões por sessão, direção do
+  dashboard, primeira atividade e link para editar). A auditoria passou a **avisar**
+  quando um caminho literal só casa com um padrão dinâmico, em vez de aceitar em
+  silêncio — e a suíte E2E passou a visitar a rota de verdade.
+- **Teste:** `e2e/fluxos-criticos.mjs` → "resumo pós-confirmação existe e traz a
+  configuração inicial".
+- **Status:** corrigido.
+
+### #10 — Diagnóstico inicial e busca global estavam referenciados mas não existiam
+
+- **Reprodução:** `npm run audit:ui` após a correção do #9.
+- **Impacto:** `/diagnostico` era citado no fluxo e retornava 404; a busca global da
+  §5.10 não existia.
+- **Correção:** implementados o diagnóstico opcional (§ etapa 2), com duração visível e
+  opção de pular, e a busca global separada por tipo de resultado.
+- **Teste:** duas verificações novas em `e2e/fluxos-criticos.mjs`.
+- **Status:** corrigido.
+
 ---
 
 ## Encontrados na suíte automatizada e classificados como problema do teste, não do produto
@@ -121,7 +152,7 @@ Itens que a §20 lista como bugs frequentes e que foram testados no navegador:
 | Alteração de outro usuário via manipulação de ID | toda ação confere posse antes de escrever | revisão de código em `session/actions.ts` e `notebook-actions.ts` |
 | Senha ou segredo em resposta pública | exportação de dados testada contra `passwordHash` | e2e: "exportação não inclui senha" |
 | XSS em conteúdo editorial | renderizador de markdown próprio, que nunca interpreta HTML bruto | `src/components/study/Markdown.tsx` |
-| Rota inexistente / link morto | auditoria compara todo `href` interno com as rotas reais do app router | `npm run audit:ui` |
+| Rota inexistente / link morto | auditoria compara todo `href` interno com as rotas reais e avisa quando só um padrão dinâmico casa (foi como o #9 escapou) | `npm run audit:ui` + E2E |
 | Rolagem horizontal em tela pequena | tabelas rolam no próprio contêiner | e2e: 360px sem overflow |
 | Sessão não invalidada após logout | `AuthSession.revokedAt` no servidor, não só remoção de cookie | revisão de código |
 | Seeds duplicando registros | todos os upserts por identificador estável | três execuções seguidas com contagens idênticas |

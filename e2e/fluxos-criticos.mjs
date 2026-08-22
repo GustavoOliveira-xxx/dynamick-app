@@ -306,10 +306,37 @@ async function login(page, email) {
   await ctx.close();
 }
 
-// ---------- 12. Anônimo não acessa rotas privadas ----------
+// ---------- 12. Resumo pós-confirmação, diagnóstico e busca ----------
 {
   const { ctx, page } = await newPage();
-  for (const route of ['/inicio','/conteudos','/revisar','/perfil','/praticar','/simulados','/redacao','/admin']) {
+  await login(page, 'aluno.organizado@dynamick.local');
+
+  await page.goto(BASE + '/onboarding/resumo');
+  const resumo = await page.locator('body').innerText();
+  check(
+    'resumo pós-confirmação existe e traz a configuração inicial',
+    has(resumo, 'Perfil escolhido') && has(resumo, 'Questões por sessão'),
+    page.url(),
+  );
+
+  await page.goto(BASE + '/diagnostico');
+  const diag = await page.locator('body').innerText();
+  check(
+    'diagnóstico é opcional e mostra duração',
+    has(diag, 'Opcional') && has(diag, 'Pular por enquanto'),
+  );
+
+  await page.goto(BASE + '/buscar?q=porcentagem');
+  const busca = await page.locator('body').innerText();
+  check('busca global separa resultados por tipo', has(busca, 'Tópicos') && has(busca, 'resultado'));
+
+  await ctx.close();
+}
+
+// ---------- 13. Anônimo não acessa rotas privadas ----------
+{
+  const { ctx, page } = await newPage();
+  for (const route of ['/inicio','/conteudos','/revisar','/perfil','/praticar','/simulados','/redacao','/admin','/buscar','/diagnostico','/onboarding/resumo']) {
     await page.goto(BASE + route);
     if (!page.url().includes('/entrar')) { check(`anônimo bloqueado em ${route}`, false, page.url()); }
   }
