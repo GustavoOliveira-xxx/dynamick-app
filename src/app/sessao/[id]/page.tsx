@@ -71,6 +71,7 @@ export default async function SessionPage({ params, searchParams }: Params) {
         currentIndex: session.currentIndex,
         timeLimitSeconds: session.timeLimitSeconds,
         startedAt: session.startedAt.toISOString(),
+        isSimulation: Boolean(session.simulationId),
       }}
       showTimer={personalization?.showTimer ?? true}
       askConfidence={personalization?.confidencePrompt ?? true}

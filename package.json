@@ -17,7 +17,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "setup": "prisma generate && prisma db push && npm run db:seed",
-    "verify": "npm run typecheck && npm run test && npm run build"
+    "verify": "npm run typecheck && npm run test && npm run audit:ui && npm run build",
+    "e2e:fluxos": "node e2e/fluxos-criticos.mjs",
+    "audit:ui": "node scripts/audit-dead-ui.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

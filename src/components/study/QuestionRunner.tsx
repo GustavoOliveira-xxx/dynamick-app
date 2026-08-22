@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/Progress';
 import { InlineMessage } from '@/components/ui/States';
 import { formatSeconds } from '@/lib/util/format';
 import { CONFIDENCE_ANSWER_LABELS, CONFIDENCE_ANSWERS, DIFFICULTY_LABELS, type Difficulty } from '@/lib/domain';
+import { submitSimulationAction } from '@/lib/simulation/actions';
 import {
   answerQuestionAction,
   completeSessionAction,
@@ -79,6 +80,7 @@ export function QuestionRunner({
     currentIndex: number;
     timeLimitSeconds: number | null;
     startedAt: string;
+    isSimulation: boolean;
   };
   items: RunnerItem[];
   showTimer: boolean;
@@ -118,6 +120,9 @@ export function QuestionRunner({
 
   // Tempo total da sessão, para o modo simulado.
   const [totalElapsed, setTotalElapsed] = useState(0);
+  const [timeExpired, setTimeExpired] = useState(false);
+  const submitRef = useRef<HTMLFormElement | null>(null);
+
   useEffect(() => {
     const started = new Date(session.startedAt).getTime();
     const timer = window.setInterval(() => {
@@ -125,6 +130,19 @@ export function QuestionRunner({
     }, 1000);
     return () => window.clearInterval(timer);
   }, [session.startedAt]);
+
+  /**
+   * Fim do tempo: envia UMA vez.
+   * O guard `timeExpired` impede o envio duplicado que a §20.3 aponta como bug
+   * clássico ("envio duplicado ao terminar o tempo"), e o servidor também recusa
+   * um segundo envio da mesma execução.
+   */
+  useEffect(() => {
+    if (!session.timeLimitSeconds || timeExpired) return;
+    if (totalElapsed < session.timeLimitSeconds) return;
+    setTimeExpired(true);
+    submitRef.current?.requestSubmit();
+  }, [totalElapsed, session.timeLimitSeconds, timeExpired]);
 
   const answeredCount = useMemo(
     () => items.filter((entry) => entry.attempt?.answerId).length,
@@ -391,17 +409,28 @@ export function QuestionRunner({
         </form>
       )}
 
-      {/* Encerrar */}
-      {(isLast || answeredCount === items.length) && (
-        <form action={completeSessionAction} className="pt-2">
-          <input type="hidden" name="sessionId" value={session.id} />
-          <Button type="submit" size="lg" fullWidth>
-            {answeredCount === items.length
-              ? 'Concluir sessão e ver o resumo'
-              : `Encerrar mesmo com ${items.length - answeredCount} questão(ões) em branco`}
-          </Button>
-        </form>
+      {timeExpired && (
+        <InlineMessage tone="warning" title="O tempo acabou">
+          Suas respostas foram enviadas automaticamente. Nada se perdeu.
+        </InlineMessage>
       )}
+
+      {/* Encerrar. Em simulado, o envio calcula a análise completa. */}
+      <form
+        ref={submitRef}
+        action={session.isSimulation ? submitSimulationAction : completeSessionAction}
+        className="pt-2"
+        hidden={!(isLast || answeredCount === items.length || timeExpired)}
+      >
+        <input type="hidden" name="sessionId" value={session.id} />
+        <Button type="submit" size="lg" fullWidth disabled={timeExpired}>
+          {answeredCount === items.length
+            ? session.isSimulation
+              ? 'Enviar simulado e ver a análise'
+              : 'Concluir sessão e ver o resumo'
+            : `Encerrar mesmo com ${items.length - answeredCount} questão(ões) em branco`}
+        </Button>
+      </form>
     </div>
   );
 }
