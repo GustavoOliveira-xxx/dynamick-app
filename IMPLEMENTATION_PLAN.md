@@ -89,16 +89,33 @@ Legenda: `[x]` concluído · `[~]` parcial · `[ ]` pendente
 | # | Incremento | Status |
 | --- | --- | --- |
 | C.1 | Testes unitários das regras (perfil, recomendação, domínio, revisão, simulado) | `[x]` |
-| C.2 | Testes E2E dos fluxos críticos | `[~]` especificados em `e2e/`, execução completa pendente de ambiente com servidor de pé |
+| C.2 | Testes E2E dos fluxos críticos | `[x]` `e2e/fluxos-criticos.mjs` — 44 verificações, todas passando |
 | C.3 | `BUGS_FOUND.md` com reprodução, impacto, causa, correção, teste e status | `[x]` |
 | C.4 | Varredura de TODO, `console.log`, `href="#"`, handler vazio, rota não registrada | `[x]` script `scripts/audit-dead-ui.mjs` |
 
 ---
 
+## Estado da verificação (§21)
+
+| Passo do protocolo | Situação |
+| --- | --- |
+| 1. Tipos, lint e formatação | `npm run typecheck` limpo |
+| 2. Testes unitários das regras | 80 testes passando |
+| 3. Testes de integração de API, banco e autenticação | cobertos pelos fluxos E2E (login, exportação, autorização) |
+| 4. Componentes e estados de erro | estados de carregamento/vazio/erro/sucesso em `components/ui/States.tsx`, usados nas telas |
+| 5. End-to-end dos fluxos críticos | 44/44 verificações passando |
+| 6. Build de produção | `npm run build` limpo |
+| 7. Verificação em desktop e celular | E2E cobre 360px sem rolagem horizontal; teste em aparelho real pendente |
+| 8. Animações reduzidas e sem WebGL | E2E roda com `reducedMotion: reduce`; não há WebGL a desabilitar (canvas 2D) |
+| 9. Conexão lenta ou indisponível | **pendente** — registrado em BUGS_FOUND.md #B |
+| 10. Revisão visual das telas principais | feita durante o desenvolvimento |
+| 11. Console sem erros ou requisições falhadas | E2E coleta erros de console: nenhum |
+| 12. Auditoria de botões, links e rotas sem função | `npm run audit:ui` limpo |
+
 ## Próximo incremento recomendado
 
 1. Receber os arquivos oficiais das logos e ligar `useOfficialAssets`.
-2. Executar a suíte E2E completa (`npm run e2e`) contra o servidor de desenvolvimento e
-   registrar os achados em `BUGS_FOUND.md`.
+2. Teste com leitor de tela real e com rede interrompida (BUGS_FOUND.md #A e #B).
 3. Importador CSV no painel administrativo (6.5).
 4. Expandir a base autoral de 12 para ~30 tópicos completos, mantendo profundidade.
+5. Migrar para PostgreSQL antes de qualquer uso com carga real.
