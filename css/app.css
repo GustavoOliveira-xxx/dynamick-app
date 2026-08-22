@@ -1,0 +1,228 @@
+/* Estrutura da aplicação autenticada */
+
+.app {
+  position: relative;
+  z-index: var(--ck-z-content);
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.app-header { border-bottom: 1px solid var(--ck-line); }
+.app-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.85rem;
+}
+.app-header a { text-decoration: none; }
+.app-header__actions { gap: 0.75rem; }
+
+.app-body {
+  display: flex;
+  flex: 1;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.app-main {
+  min-width: 0;
+  flex: 1;
+  padding-block: 1.5rem;
+  /* Espaço para a barra inferior no celular */
+  padding-bottom: 7rem;
+}
+.app-main:focus { outline: none; }
+@media (min-width: 768px) {
+  .app-main { padding-bottom: 4rem; }
+}
+
+/* ---------------------------------------------------------------- Navegação */
+
+.app-nav {
+  position: sticky;
+  top: 0;
+  display: none;
+  width: 14rem;
+  flex: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-block: 1.5rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--ck-line);
+}
+@media (min-width: 768px) { .app-nav { display: flex; } }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 46px;
+  padding-inline: 0.75rem;
+  border-left: 2px solid transparent;
+  border-radius: var(--ck-r-md);
+  color: var(--ck-text-2);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background-color var(--ck-dur-fast) var(--ck-ease), color var(--ck-dur-fast) var(--ck-ease);
+}
+.nav-item:hover { background: var(--ck-bg-raised); color: var(--ck-text); }
+.nav-item[aria-current="page"] {
+  border-left-color: var(--ck-green);
+  background: var(--ck-bg-raised);
+  color: var(--ck-green);
+}
+
+.app-nav-mobile {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--ck-z-sticky);
+  display: flex;
+  border-top: 1px solid var(--ck-line);
+  background: var(--ck-glass);
+  backdrop-filter: blur(14px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media (min-width: 768px) { .app-nav-mobile { display: none; } }
+
+.nav-item-mobile {
+  display: flex;
+  min-height: 58px;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  color: var(--ck-text-3);
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+.nav-item-mobile[aria-current="page"] { color: var(--ck-green); }
+.nav-item-mobile .nav-icon { font-size: 1.05rem; }
+
+/* ---------------------------------------------------------------- Cabeçalhos de tela */
+
+.view-header { display: grid; gap: 0.4rem; margin-bottom: 1.5rem; }
+.view-header__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.breadcrumb { font-size: 0.74rem; color: var(--ck-text-3); }
+.breadcrumb a { color: inherit; }
+
+/* ---------------------------------------------------------------- Sessão de questões */
+
+.session-shell { max-width: 46rem; margin-inline: auto; }
+
+.question__stem {
+  margin-top: 1rem;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+.question__support {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+  background: var(--ck-bg-raised);
+  font-size: 0.9rem;
+  color: var(--ck-text-2);
+}
+.question__options { margin-top: 1.5rem; display: grid; gap: 0.6rem; }
+.option__verdict { display: block; margin-top: 0.3rem; font-size: 0.75rem; font-weight: 600; }
+.option__verdict--correct { color: var(--ck-success); }
+.option__verdict--wrong { color: var(--ck-danger); }
+
+.session-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.timer { font-family: var(--ck-mono); font-size: 0.75rem; color: var(--ck-text-3); }
+
+.session-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ck-line);
+}
+.session-controls__end { margin-left: auto; }
+
+/* ---------------------------------------------------------------- Correção */
+
+.correction { border-color: var(--ck-line-strong); }
+.correction--wrong { border-color: rgb(255 107 122 / 34%); }
+.correction__distractors { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+.correction__distractor {
+  padding: 0.75rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+  font-size: 0.88rem;
+}
+.correction__distractor--correct { border-color: var(--ck-success); }
+.correction__block {
+  padding: 0.85rem;
+  border-left: 2px solid var(--ck-teal);
+  border-radius: var(--ck-r-md);
+  background: var(--ck-bg-raised);
+  font-size: 0.9rem;
+}
+.correction__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--ck-line);
+}
+
+details > summary { cursor: pointer; }
+details > summary::marker { color: var(--ck-green); }
+
+/* ---------------------------------------------------------------- Mapa de conteúdos */
+
+.area-head { display: flex; align-items: center; gap: 0.75rem; }
+.area-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.topic-grid { display: grid; gap: 0.75rem; margin-top: 0.6rem; }
+@media (min-width: 640px) { .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------------------------------------------------------------- Listas */
+
+.list-reset { list-style: none; }
+.item-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+}
+
+.stat-grid { display: grid; gap: 0.75rem; }
+@media (min-width: 640px) { .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 960px) { .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+.filters .field { min-width: 10rem; }
+
+.def-list { display: grid; gap: 1.25rem; }
+@media (min-width: 640px) { .def-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.def-list dt { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ck-text-3); }
+.def-list dd { margin-top: 0.25rem; font-size: 1.05rem; font-weight: 500; }

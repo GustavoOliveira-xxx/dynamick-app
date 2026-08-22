@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dynamic CK</title>
+    <meta name="description" content="Sua jornada de estudos para o ENEM 2027." />
+    <meta name="theme-color" content="#020504" />
+    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+    <div id="fundo" aria-hidden="true"></div>
+
+    <div class="app" id="app-shell">
+      <header class="app-header">
+        <div class="shell app-header__inner">
+          <a href="#/inicio" id="marca" aria-label="Dynamic CK, ir para o início"></a>
+          <div class="row app-header__actions" id="cabecalho-acoes"></div>
+        </div>
+      </header>
+
+      <div class="shell app-body">
+        <nav class="app-nav" id="navegacao" aria-label="Navegação principal"></nav>
+        <main id="conteudo-principal" class="app-main" tabindex="-1"></main>
+      </div>
+
+      <nav class="app-nav-mobile" id="navegacao-mobile" aria-label="Navegação principal"></nav>
+    </div>
+
+    <noscript>
+      <div class="shell" style="padding: 2rem 0">
+        <div class="message message--warning">
+          <p class="message__title">Esta parte precisa de JavaScript</p>
+          <p>
+            A área de estudo é interativa e roda inteiramente no seu navegador. Ative o JavaScript
+            para continuar. O conteúdo institucional continua disponível em
+            <a href="index.html">página inicial</a>, <a href="sobre.html">sobre</a> e
+            <a href="privacidade.html">privacidade</a>.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

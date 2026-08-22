@@ -1,114 +1,205 @@
 # Dynamic CK
 
-Plataforma de estudos e preparação para o ENEM 2027.
-Produto **Dynamic CK**, da empresa **Conscious Knowledge**.
+Plataforma de estudos para o ENEM 2027, da **Conscious Knowledge**.
+HTML + CSS + JavaScript puro: **sem framework, sem build, sem dependências de runtime.**
 
-> Não é um banco de questões. É um sistema de aprendizagem que guia o estudante por um
-> ciclo contínuo: entender o que estudar → aprender o conceito → praticar → receber uma
-> correção útil → identificar o motivo do erro → revisar → praticar uma situação
-> diferente → acompanhar a evolução.
+---
 
-## Começar
+## Como rodar
+
+Os módulos usam `import`/`export` nativos, então **abrir `index.html` com duplo clique não
+funciona** — o navegador bloqueia módulos em `file://`. É preciso um servidor estático
+qualquer:
 
 ```bash
-npm install
-cp .env.example .env      # ajuste SESSION_SECRET
-npm run setup             # gera o client, cria o banco e roda o seed
-npm run dev               # http://localhost:3000
+python3 -m http.server 8000
+# ou
+npx serve .
 ```
 
-### Contas de demonstração
+Depois abra `http://localhost:8000`.
 
-Senha de todas: `demo1234` (configurável em `SEED_DEMO_PASSWORD`).
-
-| E-mail | Cenário |
+| Endereço | O que é |
 | --- | --- |
-| `aluno.perdido@dynamick.local` | Perdido, com pouco tempo |
-| `aluno.organizado@dynamick.local` | Rotina própria, histórico em 3 tópicos |
-| `aluno.interpretacao@dynamick.local` | Boa base, erra por interpretação |
-| `aluno.rotina-variavel@dynamick.local` | Abandona sessões longas |
-| `aluno.confiante@dynamick.local` | Declara segurança, desempenho baixo |
-| `aluno.inseguro@dynamick.local` | Declara insegurança, desempenho bom |
-| `aluno.pulou-onboarding@dynamick.local` | Pulou o onboarding |
-| `curadoria@dynamick.local` | **Administrador** — painel de curadoria |
+| `index.html` | Página inicial pública |
+| `experimentar.html` | Três questões com correção, sem conta e sem salvar nada |
+| `app.html` | A plataforma (rotas em `#/`) |
+| `sobre.html`, `privacidade.html`, `acessibilidade.html` | Páginas institucionais |
 
-## Comandos
+Publicar é copiar a pasta para qualquer hospedagem estática — GitHub Pages, Netlify,
+S3, um `nginx`. Não há passo de build.
 
-| Comando | O que faz |
-| --- | --- |
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm run build` / `npm start` | Build e execução de produção |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm test` | Testes unitários das regras de negócio (Vitest) |
-| `npm run audit:ui` | Auditoria de links mortos, botões sem ação, `console.log`, rotas inexistentes |
-| `npm run e2e:fluxos` | Fluxos críticos no navegador (exige servidor de pé — ver `e2e/README.md`) |
-| `npm run db:seed` | Seed idempotente |
-| `npm run db:reset` | Recria o banco do zero e roda o seed |
-| `npm run verify` | typecheck + testes + auditoria + build |
+---
 
-## Documentação do projeto
+## Banco de dados: não há, e isso é uma escolha com consequências
 
-| Arquivo | Conteúdo |
-| --- | --- |
-| `PROJECT_AUDIT.md` | Estado encontrado, stack escolhida e justificada, variáveis de ambiente, limitações, riscos e dúvidas bloqueadoras |
-| `ONBOARDING_SPEC.md` | Especificação do onboarding: telas, perguntas, opções, regras de classificação, perfis, mensagens e acessibilidade |
-| `IMPLEMENTATION_PLAN.md` | Plano incremental com critérios de aceite e status por item |
-| `BUGS_FOUND.md` | Bugs encontrados, causa, correção, teste e status |
+Todo o estado do estudante vive no `localStorage` do navegador, sob a chave
+`dynamick:v1`. **Toda** a leitura e escrita passa por um único arquivo:
+[`js/core/store.js`](js/core/store.js).
+
+**O que isso dá de graça**
+
+- Funciona sem cadastro, sem login e sem servidor.
+- Funciona offline depois do primeiro carregamento.
+- Nenhum dado de estudante sai do aparelho — a página de privacidade pode ser honesta.
+- Hospedagem estática, custo zero.
+
+**O que isso custa**
+
+- O progresso **não** acompanha o estudante em outro aparelho ou navegador.
+- Limpar dados de navegação apaga tudo. Em aba anônima, some ao fechar.
+- Não há curadoria compartilhada: o conteúdo é o que está nos arquivos `js/data/`.
+- Não há como uma equipe pedagógica acompanhar turmas, nem como um professor ver nada.
+- Denúncias de conteúdo ficam salvas no navegador de quem denunciou e não chegam a ninguém.
+
+**Quando um banco passa a ser necessário**
+
+Se qualquer um destes entrar no escopo, o `localStorage` deixa de servir:
+
+1. Conta e login, com progresso sincronizado entre aparelhos.
+2. Conteúdo editado por uma equipe sem precisar de novo deploy.
+3. Turmas, professores, responsáveis — qualquer visão de terceiro.
+4. Denúncias de conteúdo chegando de fato à equipe.
+5. Métricas agregadas para decidir o que escrever a seguir.
+
+**O que muda no código quando esse dia chegar**
+
+Só `js/core/store.js`. Ele expõe `load`, `getState`, `update`, `subscribe`, `exportData`,
+`importData`, `clearAll` e `watchOtherTabs` — nenhuma tela conhece `localStorage`.
+Reimplementar essas funções contra uma API é o trabalho todo; as telas não mudam.
+
+Se for para acontecer, a recomendação é **Postgres** (Supabase ou Neon resolvem o
+servidor junto), com o formato de `exportData()` como base do esquema — ele já é
+exatamente o estado do estudante, e já existe importação para migrar quem começou offline.
+
+---
 
 ## Estrutura
 
 ```
-prisma/
-  schema.prisma          modelo de dados (§6 do prompt mestre)
-  seed.ts                seed idempotente
-  seed/                  conteúdo autoral: áreas, tópicos, questões, redação, métodos
-src/
-  app/                   rotas (App Router)
-    (auth)/              cadastro, login, recuperação
-    (app)/               área autenticada: início, conteúdos, praticar, revisar, perfil, admin
-    onboarding/          questionário em etapas + confirmação de perfil
-    sessao/[id]/         resolução de questões e resultado
-    experimentar/        demonstração sem conta
-  components/
-    brand/               CAMADA DE MARCA SUBSTITUÍVEL — ver §18
-    visual/              fundo dinâmico, cena 3D em canvas, preferências visuais
-    ui/                  botão, cartão, progresso, estados (carregando/vazio/erro/sucesso)
-    study/               questão, correção, revisão, caderno, markdown
-  lib/
-    profile/             motor de perfil determinístico e explicável
-    recommendation/      motor de recomendação por regras
-    review/              domínio de tópico e revisão espaçada
-    session/             criação de sessão, tentativas, resumo
-    simulation/          gerador de simulados com matriz e fallback
-    admin/               ações editoriais com auditoria
+index.html app.html experimentar.html sobre.html privacidade.html acessibilidade.html
+
+css/
+  tokens.css       Todos os valores de design: cores, espaço, tipografia, temas
+  base.css         Reset, tipografia, acessibilidade, movimento reduzido
+  components.css   Botões, cartões, campos, alternativas, avisos, modal
+  landing.css      Páginas públicas
+  app.css          Shell da aplicação e telas de sessão
+
+js/
+  core/            dom, format, markdown, router, store, student, sessions
+  engine/          domain, profiles, profile, recommendation, mastery, spaced, simulation
+  data/            Conteúdo autoral: áreas, tópicos, questões, métodos, simulados, redação
+  ui/              brand, background, components
+  views/           Uma tela por arquivo
+  app.js           Rotas e bootstrap
+  demo.js          A amostra de experimentar.html
+
+assets/brand/      Camada substituível de marca (ver abaixo)
+tests/             Suíte própria, sem dependências
 ```
+
+### Onde ficam as decisões
+
+| Quero mudar… | Mexo em |
+| --- | --- |
+| cor, espaçamento, tipografia | `css/tokens.css` |
+| como o próximo tópico é escolhido | `js/engine/recommendation.js` |
+| quando um tópico vira "consolidado" | `js/engine/mastery.js` |
+| os intervalos de revisão | `js/engine/spaced.js` |
+| a montagem dos simulados | `js/engine/simulation.js` |
+| as perguntas do onboarding | `js/data/questionnaire.js` |
+| os seis perfis de estudo | `js/engine/profiles.js` |
+| o conteúdo e as questões | `js/data/topics-*.js` |
+| onde os dados são gravados | `js/core/store.js` |
+
+---
+
+## Testes
+
+```bash
+node tests/index.mjs        # 129 testes: perfil, recomendação, domínio, revisão, simulado, conteúdo, gabarito
+node tests/check-imports.mjs
+```
+
+`check-imports.mjs` existe por um motivo específico: em módulos ES, importar um nome que
+não é exportado é erro de *link* — a página inteira fica em branco, sem mensagem útil no
+console. O verificador acha isso antes do navegador.
+
+Não há framework de teste. `tests/run.mjs` é um `describe`/`it`/`expect` de cem linhas.
+Rodar a suíte não exige `npm install`.
+
+---
+
+## Conteúdo
+
+Todo o material em `js/data/` é **autoral**, escrito para este projeto. Nenhuma questão foi
+copiada de prova oficial, livro ou plataforma de terceiros. Cada questão declara `origin` e
+`license`.
+
+Números atuais: 4 áreas, 11 disciplinas, 12 tópicos completos, 84 questões (24 delas de
+recuperação), 72 blocos de conteúdo, 8 métodos de estudo, 12 sessões prontas, 5 simulados e
+8 temas de redação.
+
+O acervo **não cobre o programa completo do ENEM**, e a plataforma diz isso onde a falta
+aparece. A tela `#/catalogo` mostra os números e aponta cada lacuna.
+
+### O gabarito é rebalanceado na montagem
+
+O material foi redigido com a resposta correta quase sempre na primeira alternativa (69 de
+84). Quem marcasse sempre "A" acertaria 82% sem ler nada, e domínio, motivo de erro e
+recomendação passariam a medir ruído.
+
+A correção está em `js/data/content.js`, na montagem do catálogo: uma rotação
+determinística por questão, com ponto de partida próprio por tópico. É determinística de
+propósito — um gabarito que mudasse de lugar entre sessões quebraria a revisão e o caderno
+de erros. `tests/answer-key.test.mjs` trava o resultado.
+
+---
 
 ## Logos
 
-As logos oficiais **ainda não estão no repositório**. A aplicação usa um fallback
-provisório, marcado com `data-brand-fallback="true"` no HTML.
+`assets/brand/` é a camada substituível de marca. **Nenhuma tela desenha a logo por conta
+própria**: todas passam por `js/ui/brand.js`.
 
-Para ligar as oficiais: coloque os arquivos em `public/assets/brand/` (veja o
-`README.md` de lá) e troque `useOfficialAssets` para `true` em
-`src/components/brand/assets.ts`. Nenhuma tela precisa ser editada.
+**Os arquivos oficiais ainda não estão no repositório.** Enquanto não chegam, o app desenha
+uma marca provisória em SVG, marcada no HTML com `data-brand-fallback="true"`. Ela é um
+espaço reservado, não uma proposta de identidade — a especificação proíbe recriar,
+redesenhar ou interpretar as logos, então nada aqui tenta imitá-las.
 
-## Decisões que valem saber
+Para ligar as oficiais: coloque os arquivos com os nomes listados em
+[`assets/brand/README.md`](assets/brand/README.md) e troque uma linha em `js/ui/brand.js`:
 
-- **3D em canvas 2D, não WebGL.** A §18.3 exige que o app continue utilizável se o WebGL
-  falhar. A cena da rede de conhecimento usa projeção em perspectiva calculada à mão, o
-  que faz do caminho principal e do fallback o mesmo código. Justificativa completa no
-  `PROJECT_AUDIT.md`.
-- **Recomendação por regras, não por modelo.** Cada ponto de prioridade tem nome, peso
-  declarado e uma frase legível que o estudante lê no início.
-- **Conteúdo 100% autoral.** Nenhuma questão foi copiada de prova oficial, livro ou
-  plataforma de terceiros. Origem e licença são campos obrigatórios.
-- **Sem IA nesta versão.** A §7 do prompt só autoriza IA depois do ciclo objetivo
-  validado. Não há correção automática de redação nem geração de conteúdo.
-- **SQLite em desenvolvimento.** O schema é compatível com PostgreSQL; trocar exige
-  apenas o `provider` e a `DATABASE_URL`.
+```js
+export const USE_OFFICIAL_ASSETS = false;  // → true
+```
 
-## O que a plataforma não faz, por decisão
+---
 
-Não promete aprovação. Não estima nota oficial. Não usa ranking público. Não esconde por
-que uma atividade foi recomendada. Não trata o perfil do estudante como diagnóstico
-clínico ou rótulo permanente. Não bloqueia conteúdo por perfil.
+## Acessibilidade e desempenho
+
+- Navegação completa por teclado, foco visível, link para pular ao conteúdo.
+- Controles nativos (`button`, `input`, `fieldset`) — nada de `div` clicável.
+- Cor nunca é o único sinal: certo/errado, estado e alerta sempre trazem texto.
+- Três temas (escuro, claro, alto contraste) e três tamanhos de texto.
+- `prefers-reduced-motion` respeitado por padrão, com controle manual em Configurações.
+- O fundo tridimensional é Canvas 2D, `aria-hidden`, pausa fora da tela e com a aba
+  oculta, reduz densidade em telas pequenas e desenha um único quadro sob movimento
+  reduzido. O modo "elementos visuais reduzidos" desliga tudo sem perder informação.
+
+---
+
+## O que a plataforma não faz
+
+Por decisão de produto, não por falta de implementação:
+
+- Não promete aprovação nem estima nota do ENEM.
+- Não tem ranking público nem comparação entre estudantes.
+- Não trava conteúdo: todo tópico é acessível em qualquer ordem.
+- Não emite diagnóstico clínico — o perfil descreve hábitos declarados, e é revisável.
+- Não declara domínio a partir de uma única questão.
+- Não esconde por que recomendou algo: toda sugestão traz a justificativa por escrito.
+
+---
+
+Conteúdo autoral de desenvolvimento — Conscious Knowledge.

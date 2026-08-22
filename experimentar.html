@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Experimentar sem conta — Dynamic CK</title>
+    <meta
+      name="description"
+      content="Três questões com correção completa, sem cadastro e sem salvar nada. Veja como o Dynamic CK corrige antes de montar seu perfil."
+    />
+    <meta name="theme-color" content="#020504" />
+    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+    <div id="fundo" aria-hidden="true"></div>
+
+    <div class="page">
+      <header class="shell site-header">
+        <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
+        <nav class="row" aria-label="Acesso">
+          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+        </nav>
+      </header>
+
+      <main id="conteudo-principal" class="shell doc" tabindex="-1">
+        <h1>Experimentar sem conta</h1>
+        <p class="hero__lead">
+          Três questões, uma de cada área, com a correção completa que a plataforma dá. Sem
+          cadastro, sem e-mail e <strong>sem salvar nada</strong> — nem no seu navegador.
+        </p>
+
+        <div class="message message--info">
+          <p class="message__title">O que esta amostra não é</p>
+          <p>
+            Três questões não medem seu nível, e nós não vamos fingir que medem. O que você vai ver
+            aqui é o <em>formato</em>: como a correção explica, como as alternativas erradas são
+            analisadas e o que a plataforma pergunta depois de um erro.
+          </p>
+        </div>
+
+        <div id="demo" class="session-shell" style="margin-top: 2rem"></div>
+
+        <noscript>
+          <div class="message message--warning">
+            <p class="message__title">Esta demonstração precisa de JavaScript</p>
+            <p>
+              As questões rodam inteiramente no seu navegador. Ative o JavaScript, ou leia
+              <a href="sobre.html">como a plataforma funciona</a>.
+            </p>
+          </div>
+        </noscript>
+      </main>
+
+      <footer class="site-footer">
+        <div class="shell site-footer__inner">
+          <div>
+            <span id="marca-institucional"></span>
+            <p class="xsmall muted site-footer__note">
+              Dynamic CK é uma plataforma de estudos da Conscious Knowledge. Conteúdo autoral de
+              desenvolvimento. Nenhuma pontuação aqui prevê sua nota oficial no ENEM.
+            </p>
+          </div>
+          <nav class="row xsmall" aria-label="Links institucionais">
+            <a href="index.html">Início</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="privacidade.html">Privacidade e dados</a>
+            <a href="acessibilidade.html">Acessibilidade</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="js/demo.js"></script>
+  </body>
+</html>

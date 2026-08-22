@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Acessibilidade — Dynamic CK</title>
+    <meta name="description" content="O que já é acessível no Dynamic CK, o que você pode ajustar e as limitações conhecidas." />
+    <meta name="theme-color" content="#020504" />
+    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+    <div id="fundo" aria-hidden="true"></div>
+
+    <div class="page">
+      <header class="shell site-header">
+        <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
+        <nav class="row" aria-label="Acesso">
+          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+        </nav>
+      </header>
+
+      <main id="conteudo-principal" class="shell doc" tabindex="-1">
+        <h1>Acessibilidade</h1>
+        <p class="hero__lead">
+          Acessibilidade aqui não é um modo separado e mais pobre. É a mesma plataforma, com as
+          mesmas informações, ajustável ao que funciona para você.
+        </p>
+
+        <h2>O que já está implementado</h2>
+        <ul>
+          <li><strong>Navegação completa por teclado</strong>, com foco sempre visível e link para pular direto ao conteúdo.</li>
+          <li><strong>Controles reais</strong> — <code>button</code>, <code>input</code>, <code>fieldset</code> — em vez de <code>div</code> clicável, para que leitores de tela anunciem tudo corretamente.</li>
+          <li><strong>A cor nunca é o único sinal.</strong> Certo e errado, estados de domínio e alertas sempre trazem texto ou ícone junto.</li>
+          <li><strong>Contraste</strong> mínimo de 4,5:1 em texto corrente nos três temas.</li>
+          <li><strong>Mudanças de tela são anunciadas</strong>: o foco vai para o conteúdo novo e o título da aba acompanha a página.</li>
+          <li><strong>Textos de erro explicam o que fazer</strong>, em vez de só dizer que algo deu errado.</li>
+        </ul>
+
+        <h2>O que você pode ajustar</h2>
+        <p>Em <a href="app.html#/perfil/configuracoes">Perfil › Configurações</a>:</p>
+        <ul>
+          <li><strong>Tema</strong> — escuro, claro ou alto contraste.</li>
+          <li><strong>Tamanho do texto</strong> — padrão, maior ou bem maior, sem quebrar o layout.</li>
+          <li><strong>Elementos visuais</strong> — o modo reduzido desliga o fundo tridimensional. Nenhuma informação se perde: o fundo é decorativo e marcado como tal.</li>
+          <li><strong>Movimento</strong> — seguir o sistema, reduzir sempre ou permitir sempre.</li>
+          <li><strong>Cronômetro</strong> — pode ser escondido; o tempo continua sendo medido para a sua análise.</li>
+        </ul>
+
+        <h2>Movimento reduzido</h2>
+        <p>
+          A plataforma respeita <code>prefers-reduced-motion</code> do seu sistema por padrão. Com a
+          preferência ativa, animações contínuas param, transições viram trocas imediatas e o fundo
+          desenha um quadro estático em vez de animar.
+        </p>
+
+        <h2>Limitações que conhecemos</h2>
+        <ul>
+          <li>O material atual não tem áudio nem versão em Libras.</li>
+          <li>Não há leitura em voz alta embutida — o leitor de tela do sistema funciona, mas não substituímos essa função.</li>
+          <li>As tabelas dentro de explicações rolam na horizontal em telas estreitas.</li>
+          <li>Ainda não fizemos teste formal com usuários de leitor de tela; a conformidade foi verificada por revisão manual e semântica.</li>
+        </ul>
+
+        <h2>Encontrou uma barreira?</h2>
+        <p>
+          Dentro de qualquer questão existe o botão <em>Relatar um problema</em>, com a opção
+          "Problema de acessibilidade". Como não há servidor, o relato fica salvo no seu navegador e
+          aparece em <a href="app.html#/perfil/dados">Perfil › Meus dados</a>, de onde pode ser
+          exportado e enviado.
+        </p>
+      </main>
+
+      <footer class="site-footer">
+        <div class="shell site-footer__inner">
+          <div>
+            <span id="marca-institucional"></span>
+            <p class="xsmall muted site-footer__note">
+              Dynamic CK é uma plataforma de estudos da Conscious Knowledge. Conteúdo autoral de
+              desenvolvimento. Nenhuma pontuação aqui prevê sua nota oficial no ENEM.
+            </p>
+          </div>
+          <nav class="row xsmall" aria-label="Links institucionais">
+            <a href="index.html">Início</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="privacidade.html">Privacidade e dados</a>
+            <a href="acessibilidade.html">Acessibilidade</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module">
+      import { dynamickLogo, consciousKnowledgeLogo } from './js/ui/brand.js';
+      import { mountBackground } from './js/ui/background.js';
+
+      document.getElementById('marca').append(dynamickLogo({ variant: 'compact' }));
+      document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
+      mountBackground(document.getElementById('fundo'), { intensity: 'low' });
+    </script>
+  </body>
+</html>

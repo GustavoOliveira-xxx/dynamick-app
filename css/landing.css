@@ -1,0 +1,182 @@
+/* Estilos exclusivos da landing e das páginas institucionais */
+
+.page {
+  position: relative;
+  z-index: var(--ck-z-content);
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.5rem;
+}
+.site-header a { text-decoration: none; }
+
+/* ---------------------------------------------------------------- Hero */
+
+.hero {
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+  padding-block: 3rem 4rem;
+}
+@media (min-width: 960px) {
+  .hero {
+    grid-template-columns: 1.05fr 0.95fr;
+    padding-block: 4rem 5rem;
+  }
+}
+
+.hero__title {
+  margin-top: 1.25rem;
+  font-size: clamp(2.1rem, 1.4rem + 3vw, 3.4rem);
+  line-height: 1.08;
+}
+.hero__accent { color: var(--ck-green); }
+
+.hero__lead {
+  max-width: 46ch;
+  margin-top: 1.25rem;
+  font-size: 1.1rem;
+  color: var(--ck-text-2);
+}
+
+.hero__actions { margin-top: 2rem; }
+.hero__note { margin-top: 1rem; }
+
+.hero__demo { overflow: hidden; padding: 0; }
+.hero__demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--ck-line);
+}
+.hero__demo-body { display: grid; gap: 0.5rem; padding: 1.25rem; }
+.hero__demo-topic { font-size: 1.15rem; font-weight: 600; }
+
+.hero__steps {
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+  font-size: 0.9rem;
+}
+.hero__steps li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.hero__steps .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: var(--ck-green);
+}
+
+.hero__after {
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+  background: var(--ck-bg-raised);
+}
+
+/* ---------------------------------------------------------------- Seções */
+
+.section { padding-block: 2.5rem; }
+.section__grid { margin-top: 1.5rem; }
+
+.benefit__icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--ck-line-strong);
+  border-radius: var(--ck-r-md);
+  color: var(--ck-green);
+  font-size: 1.15rem;
+}
+
+.cycle {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  list-style: none;
+  counter-reset: cycle;
+}
+@media (min-width: 640px) { .cycle { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 960px) { .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.cycle li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+  background: color-mix(in srgb, var(--ck-bg-panel) 70%, transparent);
+  font-size: 0.9rem;
+}
+.cycle__n {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--ck-bg-raised);
+  color: var(--ck-green);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.plain-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-left: 1.1rem;
+  font-size: 0.92rem;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+/* ---------------------------------------------------------------- Rodapé */
+
+.site-footer {
+  margin-top: auto;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--ck-line);
+}
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.site-footer__note { max-width: 46ch; margin-top: 0.6rem; }
+.site-footer nav { gap: 1.25rem; }
+.site-footer a { color: var(--ck-text-2); text-decoration: none; }
+.site-footer a:hover { color: var(--ck-text); text-decoration: underline; }
+
+/* ---------------------------------------------------------------- Páginas de texto */
+
+.doc { padding-block: 1rem 3rem; }
+.doc h1 { margin-bottom: 1.25rem; }
+.doc .card + .card { margin-top: 1rem; }
+.doc section + section { margin-top: 1.75rem; }
