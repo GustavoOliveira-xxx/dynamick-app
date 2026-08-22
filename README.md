@@ -17,6 +17,10 @@ python3 -m http.server 8000
 npx serve .
 ```
 
+Isso cobre tudo menos a sincronização, que precisa das funções em `api/`. Para exercitar
+essa parte localmente, use `vercel dev` — ou deixe `SYNC.habilitado = false` em
+`js/config.js` enquanto trabalha só no cliente.
+
 Depois abra `http://localhost:8000`.
 
 | Endereço | O que é |
@@ -31,47 +35,32 @@ S3, um `nginx`. Não há passo de build.
 
 ---
 
-## Banco de dados
+## Banco de dados e sincronização
 
-Existe um projeto Neon provisionado (`dynamic-ck`), com o esquema completo aplicado:
-28 tabelas e 2 visões, em [`db/`](db/). **A aplicação ainda não usa nada disso.**
+O estudo vive no `localStorage` do navegador. Isso continua sendo a fonte da verdade:
+o site funciona offline, sem cadastro e sem servidor.
 
-Todo o estado do estudante continua no `localStorage` do navegador, sob a chave
-`dynamick:v1`, e **toda** leitura e escrita passa por um único arquivo:
-[`js/core/store.js`](js/core/store.js).
+Além disso existe **sincronização opcional entre aparelhos**, por código, sem conta.
+O estudante gera um código de 20 caracteres, o estado sobe **cifrado no navegador** e
+digitar o mesmo código em outro aparelho traz o progresso.
 
-**O que o localStorage dá de graça**
+- A chave é derivada do código (PBKDF2 → AES-GCM 256). O servidor recebe bytes opacos.
+- O código nunca é enviado; vai apenas o SHA-256 dele, para localizar o registro.
+- **Nem o operador do banco lê o conteúdo.** Não é promessa de conduta, é como foi feito.
+- Perder o código é perder o acesso. Não há recuperação — não pode haver.
+- Nada sobe em segundo plano: enviar e trazer são ações explícitas.
 
-- Funciona sem cadastro, sem login e sem servidor.
-- Funciona offline depois do primeiro carregamento.
-- Nenhum dado de estudante sai do aparelho — a página de privacidade pode ser honesta.
-- Hospedagem estática, custo zero.
+Conflito entre aparelhos é detectado por número de revisão e **nunca resolvido em
+silêncio**: se o servidor está adiante, a interface mostra as opções.
 
-**O que ele custa**
+Ligar ou desligar é uma linha em [`js/config.js`](js/config.js). Desligado, não existe uma
+única chamada de rede — é o modo certo para hospedagem estática como o GitHub Pages, que
+não tem como rodar `/api`.
 
-- O progresso **não** acompanha o estudante em outro aparelho ou navegador.
-- Limpar dados de navegação apaga tudo. Em aba anônima, some ao fechar.
-- Não há curadoria compartilhada: o conteúdo é o que está nos arquivos `js/data/`.
-- Não há como uma equipe pedagógica acompanhar turmas, nem como um professor ver nada.
-- Denúncias de conteúdo ficam no navegador de quem denunciou e não chegam a ninguém.
+O banco também guarda o acervo (áreas, tópicos, questões), para quando existir curadoria
+por uma equipe. A aplicação **não** lê de lá: ela usa `js/data/`, que funciona offline.
 
-**Quando o banco passa a valer a pena**
-
-Se qualquer um destes entrar no escopo: conta e login com sincronização entre aparelhos;
-conteúdo editado por uma equipe sem novo deploy; turmas e professores; denúncias chegando
-de fato à equipe; métricas agregadas para decidir o que escrever a seguir.
-
-**O que muda no código nesse dia**
-
-Só `js/core/store.js`. Ele expõe `load`, `getState`, `update`, `subscribe`, `exportData`,
-`importData`, `clearAll` e `watchOtherTabs` — nenhuma tela conhece `localStorage`.
-Reimplementar essas funções contra uma API é o trabalho todo; as telas não mudam.
-
-Antes disso, três coisas precisam existir e não existem: autenticação, uma API entre o
-navegador e o banco (a string de conexão nunca pode ir para o cliente) e a reescrita de
-`privacidade.html`, que hoje afirma que nada sai do aparelho.
-
-Detalhes do esquema, estado da carga e como carregar o resto: [`db/README.md`](db/README.md).
+Esquema e carga: [`db/README.md`](db/README.md). Publicação: [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Estrutura
 
@@ -96,6 +85,8 @@ js/
 
 assets/brand/      Camada substituível de marca (ver abaixo)
 db/                Esquema Postgres e seed do acervo, gerados de js/data/
+api/               Funções serverless (Vercel): sincronização e limpeza
+docs/              Guia de publicação e capturas de tela
 tests/             Suíte própria, sem dependências
 ```
 
@@ -112,13 +103,15 @@ tests/             Suíte própria, sem dependências
 | os seis perfis de estudo | `js/engine/profiles.js` |
 | o conteúdo e as questões | `js/data/topics-*.js` |
 | onde os dados são gravados | `js/core/store.js` |
+| ligar/desligar a sincronização | `js/config.js` |
+| a cifragem e o código de sync | `js/core/sync.js` |
 
 ---
 
 ## Testes
 
 ```bash
-node tests/index.mjs        # 129 testes: perfil, recomendação, domínio, revisão, simulado, conteúdo, gabarito
+node tests/index.mjs        # 143 testes: perfil, recomendação, domínio, revisão, simulado, conteúdo, gabarito, sincronização
 node tests/check-imports.mjs
 ```
 

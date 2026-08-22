@@ -82,11 +82,25 @@ async function resolve() {
 
 export function navigate(path, { replace = false } = {}) {
   const target = path.startsWith('#') ? path : `#${path}`;
+
+  // Ir para a rota em que já se está não muda o hash, e sem mudança o navegador
+  // não dispara `hashchange` — a tela ficaria congelada mostrando dados velhos.
+  // Quem chama navigate() para a rota atual quer justamente redesenhar.
+  if (window.location.hash === target) {
+    resolve();
+    return;
+  }
+
   if (replace) {
     window.location.replace(`${window.location.pathname}${window.location.search}${target}`);
   } else {
     window.location.hash = target;
   }
+}
+
+/** Redesenha a tela atual. Use depois de mudar algo que a tela já mostrava. */
+export function refresh() {
+  resolve();
 }
 
 export function start() {

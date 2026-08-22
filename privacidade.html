@@ -43,8 +43,9 @@
       <main id="conteudo-principal" class="shell doc" tabindex="-1">
         <h1>Privacidade e dados</h1>
         <p class="hero__lead">
-          Versão curta: <strong>tudo o que você faz aqui fica no seu navegador.</strong> Não existe
-          servidor recebendo suas respostas, não existe cadastro e não existe rastreamento.
+          Versão curta: <strong>seu estudo fica no seu navegador.</strong> Não existe cadastro,
+          não existe rastreamento, e nada sai do aparelho — a menos que você mesmo ligue a
+          sincronização. E mesmo aí, sobe cifrado.
         </p>
 
         <h2>O que é guardado</h2>
@@ -60,17 +61,56 @@
         <p>
           No <code>localStorage</code> deste navegador, sob a chave <code>dynamick:v1</code>. É a
           mesma área onde um site guarda o tema escolhido ou o conteúdo de um formulário não
-          enviado. Nada sai do aparelho.
+          enviado.
         </p>
 
         <h2>O que isso significa na prática</h2>
         <ul>
           <li><strong>Funciona sem conta e sem internet</strong> depois do primeiro carregamento.</li>
-          <li><strong>Seu progresso não acompanha você em outro aparelho ou navegador.</strong> Cada navegador tem o seu.</li>
           <li><strong>Limpar os dados de navegação apaga tudo.</strong> Exporte antes se quiser guardar.</li>
           <li><strong>Em janela anônima, o progresso some ao fechar.</strong> A plataforma avisa quando detecta isso.</li>
           <li><strong>Quem usa este aparelho vê seus dados.</strong> Não há senha protegendo a área de estudo.</li>
         </ul>
+
+        <h2>Sincronização entre aparelhos</h2>
+        <p>
+          É <strong>opcional e desligada por padrão</strong>. Se você ligar, em
+          <a href="app.html#/perfil/dados">Perfil › Meus dados</a>, a plataforma gera um código de
+          20 caracteres. Esse código é a chave dos seus dados.
+        </p>
+        <ul>
+          <li>
+            <strong>O conteúdo é cifrado no seu navegador antes de subir</strong>, com uma chave
+            derivada do código (AES-GCM, chave de 256 bits). O servidor recebe bytes opacos.
+          </li>
+          <li>
+            <strong>O código nunca é enviado.</strong> O que vai junto é um resumo criptográfico
+            dele (SHA-256), que serve só para localizar o registro certo e não permite recuperar
+            o código.
+          </li>
+          <li>
+            <strong>Nem nós conseguimos ler o que você estudou.</strong> Isso não é uma promessa de
+            boa conduta: é uma consequência de como foi construído. Sem o seu código, o que está
+            guardado é indecifrável.
+          </li>
+          <li>
+            <strong>Perdeu o código, perdeu o acesso.</strong> Não temos como recuperar, justamente
+            porque não temos como ler. Anote em lugar seguro.
+          </li>
+          <li>
+            <strong>Sincronizar é sempre uma ação sua.</strong> Nada é enviado em segundo plano;
+            você clica em enviar ou em trazer.
+          </li>
+          <li>
+            <strong>Quem tiver o código tem os dados.</strong> Trate-o como uma senha.
+          </li>
+        </ul>
+        <p>
+          O servidor guarda, por código: o texto cifrado, um número de revisão, e as datas de
+          criação, última alteração e última leitura. As datas existem para detectar conflito entre
+          aparelhos e para expirar registros abandonados. Não há endereço de IP, identificador de
+          navegador ou qualquer coisa que ligue um registro a uma pessoa.
+        </p>
 
         <h2>O que não é coletado</h2>
         <ul>
@@ -84,14 +124,12 @@
         <p>
           Em <a href="app.html#/perfil/dados">Perfil › Meus dados</a> você baixa tudo em um arquivo
           JSON legível, importa um backup em outro navegador, ou apaga tudo de uma vez. A exclusão
-          é imediata e definitiva — não existe cópia em outro lugar para recuperar.
+          local é imediata e definitiva.
         </p>
-
-        <h2>Se um dia isso mudar</h2>
         <p>
-          Uma versão futura com conta e sincronização entre aparelhos precisaria de servidor e banco
-          de dados. Isso mudaria esta página inteira, e a mudança seria anunciada antes de acontecer
-          — não silenciosamente em uma atualização.
+          Desligar a sincronização remove o código deste aparelho, mas <strong>não</strong> apaga o
+          que está no servidor. Para apagar de lá também, use "Apagar meus dados" com a
+          sincronização ainda ligada.
         </p>
       </main>
 

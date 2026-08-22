@@ -25,7 +25,7 @@ import {
   upcomingReviewCount,
 } from '../core/student.js';
 
-import { navigate } from '../core/router.js';
+import { refresh } from '../core/router.js';
 import { startSession } from './dashboard.js';
 
 const RECALL_TONE = { forgot: 'danger', partial: 'warning', mastered: 'green' };
@@ -180,7 +180,7 @@ function reviewItemRow(item) {
         // com o desempenho real na sessão. Aqui só registramos o autorrelato.
         registerRecall(item.id, value, value === 'mastered');
         toast('Anotado. A próxima data de revisão levou isso em conta.', 'info');
-        navigate('/revisar');
+        refresh();
       },
     }),
   );
@@ -311,9 +311,11 @@ function noteCard(note) {
         variant: 'ghost',
         size: 'sm',
         onClick: () => {
+          const reabrindo = note.status === 'resolved';
           toggleErrorNoteResolved(note.id);
-          navigate(note.status === 'resolved' ? '/revisar/caderno' : '/revisar/caderno');
-          toast(note.status === 'resolved' ? 'Erro reaberto.' : 'Erro marcado como resolvido.', 'success');
+          toast(reabrindo ? 'Erro reaberto.' : 'Erro marcado como resolvido.', 'success');
+          // A nota saiu da lista filtrada: a tela precisa refletir isso.
+          refresh();
         },
       }),
     ),

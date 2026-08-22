@@ -1,0 +1,7 @@
+# Fora do deploy: nada aqui é servido ao navegador.
+tests/
+db/
+docs/
+assets/brand/originais/
+*.md
+!README.md
