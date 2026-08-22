@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sobre — Dynamic CK</title>
+    <meta name="description" content="O que o Dynamic CK faz, o que ele não faz e de onde vem o conteúdo." />
+    <meta name="theme-color" content="#020504" />
+    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/landing.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+    <div id="fundo" aria-hidden="true"></div>
+
+    <div class="page">
+      <header class="shell site-header">
+        <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
+        <nav class="row" aria-label="Acesso">
+          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+        </nav>
+      </header>
+
+      <main id="conteudo-principal" class="shell doc" tabindex="-1">
+        <h1>Sobre o Dynamic CK</h1>
+        <p class="hero__lead">
+          Dynamic CK é a plataforma de estudos da Conscious Knowledge para o ENEM 2027. Ela existe
+          para responder uma pergunta que a maioria dos materiais deixa em aberto: <strong>o que eu
+          estudo agora, e por quê?</strong>
+        </p>
+
+        <h2>O ciclo que a plataforma cobre</h2>
+        <p>
+          Estudar não é só resolver questão. O ciclo completo tem oito passos, e a plataforma
+          acompanha todos eles em vez de parar no exercício:
+        </p>
+        <ol>
+          <li>Entender o que estudar — e por que aquilo, e não outra coisa.</li>
+          <li>Aprender o conteúdo, com profundidade escolhida por você.</li>
+          <li>Praticar em questões que variam de contexto, não só de número.</li>
+          <li>Receber uma correção que ensina, não apenas um "certo" ou "errado".</li>
+          <li>Identificar o motivo do erro — distração, conceito, interpretação, tempo.</li>
+          <li>Revisar antes de esquecer, em intervalos crescentes.</li>
+          <li>Praticar o mesmo conteúdo em um contexto diferente.</li>
+          <li>Acompanhar a evolução ao longo do tempo.</li>
+        </ol>
+
+        <h2>O que a plataforma faz</h2>
+        <ul>
+          <li>Sugere uma atividade principal por vez, sempre com a justificativa escrita.</li>
+          <li>Descreve como você estuda hoje em um perfil provisório e revisável.</li>
+          <li>Corrige explicando cada alternativa, inclusive as erradas.</li>
+          <li>Pergunta o motivo do erro e transforma a resposta em próximo passo.</li>
+          <li>Agenda revisões com pelo menos uma questão inédita a cada volta.</li>
+          <li>Mostra o estado de cada conteúdo entre cinco níveis, do não iniciado ao consolidado.</li>
+        </ul>
+
+        <h2>O que ela não faz</h2>
+        <ul>
+          <li><strong>Não promete aprovação.</strong> Nenhuma plataforma pode.</li>
+          <li><strong>Não estima sua nota do ENEM.</strong> Os números aqui descrevem seu desempenho neste material, e só.</li>
+          <li><strong>Não tem ranking público.</strong> Comparar seu ritmo com o de estranhos não ensina nada.</li>
+          <li><strong>Não trava conteúdo.</strong> Todo tópico fica acessível pelo mapa e pela busca, em qualquer ordem.</li>
+          <li><strong>Não emite diagnóstico clínico.</strong> O perfil descreve hábitos de estudo declarados por você, nunca condições de saúde.</li>
+          <li><strong>Não esconde por que recomendou algo.</strong> Toda sugestão tem um motivo legível.</li>
+        </ul>
+
+        <h2>Sobre o conteúdo</h2>
+        <p>
+          Todo o material é autoral, escrito para este projeto. Nenhuma questão foi copiada de prova
+          oficial, livro didático ou plataforma de terceiros. É um acervo de desenvolvimento: ele
+          não cobre o programa completo do ENEM, e a plataforma diz isso onde a falta aparece.
+        </p>
+        <p>
+          A tela <a href="app.html#/catalogo">Saúde do conteúdo</a> mostra, em números, o que existe
+          hoje e o que ainda falta — inclusive tópicos com poucas questões.
+        </p>
+
+        <h2>Sobre a Conscious Knowledge</h2>
+        <p>
+          Conscious Knowledge é a empresa; Dynamic CK é o produto. A ideia que liga as duas coisas é
+          a de que aprender exige saber o que se está fazendo e por quê. Uma plataforma que decide
+          por você sem explicar produz dependência, não autonomia.
+        </p>
+
+        <p class="hero__actions">
+          <a class="btn btn--primary" href="app.html#/onboarding">Montar meu perfil de estudo</a>
+          <a class="btn btn--secondary" href="experimentar.html">Experimentar sem conta</a>
+        </p>
+      </main>
+
+      <footer class="site-footer">
+        <div class="shell site-footer__inner">
+          <div>
+            <span id="marca-institucional"></span>
+            <p class="xsmall muted site-footer__note">
+              Dynamic CK é uma plataforma de estudos da Conscious Knowledge. Conteúdo autoral de
+              desenvolvimento. Nenhuma pontuação aqui prevê sua nota oficial no ENEM.
+            </p>
+          </div>
+          <nav class="row xsmall" aria-label="Links institucionais">
+            <a href="index.html">Início</a>
+            <a href="sobre.html">Sobre</a>
+            <a href="privacidade.html">Privacidade e dados</a>
+            <a href="acessibilidade.html">Acessibilidade</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module">
+      import { dynamickLogo, consciousKnowledgeLogo } from './js/ui/brand.js';
+      import { mountBackground } from './js/ui/background.js';
+
+      document.getElementById('marca').append(dynamickLogo({ variant: 'compact' }));
+      document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
+      mountBackground(document.getElementById('fundo'), { intensity: 'low' });
+    </script>
+  </body>
+</html>
