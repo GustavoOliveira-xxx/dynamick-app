@@ -31,48 +31,47 @@ S3, um `nginx`. Não há passo de build.
 
 ---
 
-## Banco de dados: não há, e isso é uma escolha com consequências
+## Banco de dados
 
-Todo o estado do estudante vive no `localStorage` do navegador, sob a chave
-`dynamick:v1`. **Toda** a leitura e escrita passa por um único arquivo:
+Existe um projeto Neon provisionado (`dynamic-ck`), com o esquema completo aplicado:
+28 tabelas e 2 visões, em [`db/`](db/). **A aplicação ainda não usa nada disso.**
+
+Todo o estado do estudante continua no `localStorage` do navegador, sob a chave
+`dynamick:v1`, e **toda** leitura e escrita passa por um único arquivo:
 [`js/core/store.js`](js/core/store.js).
 
-**O que isso dá de graça**
+**O que o localStorage dá de graça**
 
 - Funciona sem cadastro, sem login e sem servidor.
 - Funciona offline depois do primeiro carregamento.
 - Nenhum dado de estudante sai do aparelho — a página de privacidade pode ser honesta.
 - Hospedagem estática, custo zero.
 
-**O que isso custa**
+**O que ele custa**
 
 - O progresso **não** acompanha o estudante em outro aparelho ou navegador.
 - Limpar dados de navegação apaga tudo. Em aba anônima, some ao fechar.
 - Não há curadoria compartilhada: o conteúdo é o que está nos arquivos `js/data/`.
 - Não há como uma equipe pedagógica acompanhar turmas, nem como um professor ver nada.
-- Denúncias de conteúdo ficam salvas no navegador de quem denunciou e não chegam a ninguém.
+- Denúncias de conteúdo ficam no navegador de quem denunciou e não chegam a ninguém.
 
-**Quando um banco passa a ser necessário**
+**Quando o banco passa a valer a pena**
 
-Se qualquer um destes entrar no escopo, o `localStorage` deixa de servir:
+Se qualquer um destes entrar no escopo: conta e login com sincronização entre aparelhos;
+conteúdo editado por uma equipe sem novo deploy; turmas e professores; denúncias chegando
+de fato à equipe; métricas agregadas para decidir o que escrever a seguir.
 
-1. Conta e login, com progresso sincronizado entre aparelhos.
-2. Conteúdo editado por uma equipe sem precisar de novo deploy.
-3. Turmas, professores, responsáveis — qualquer visão de terceiro.
-4. Denúncias de conteúdo chegando de fato à equipe.
-5. Métricas agregadas para decidir o que escrever a seguir.
-
-**O que muda no código quando esse dia chegar**
+**O que muda no código nesse dia**
 
 Só `js/core/store.js`. Ele expõe `load`, `getState`, `update`, `subscribe`, `exportData`,
 `importData`, `clearAll` e `watchOtherTabs` — nenhuma tela conhece `localStorage`.
 Reimplementar essas funções contra uma API é o trabalho todo; as telas não mudam.
 
-Se for para acontecer, a recomendação é **Postgres** (Supabase ou Neon resolvem o
-servidor junto), com o formato de `exportData()` como base do esquema — ele já é
-exatamente o estado do estudante, e já existe importação para migrar quem começou offline.
+Antes disso, três coisas precisam existir e não existem: autenticação, uma API entre o
+navegador e o banco (a string de conexão nunca pode ir para o cliente) e a reescrita de
+`privacidade.html`, que hoje afirma que nada sai do aparelho.
 
----
+Detalhes do esquema, estado da carga e como carregar o resto: [`db/README.md`](db/README.md).
 
 ## Estrutura
 
@@ -96,6 +95,7 @@ js/
   demo.js          A amostra de experimentar.html
 
 assets/brand/      Camada substituível de marca (ver abaixo)
+db/                Esquema Postgres e seed do acervo, gerados de js/data/
 tests/             Suíte própria, sem dependências
 ```
 
@@ -162,19 +162,25 @@ de erros. `tests/answer-key.test.mjs` trava o resultado.
 `assets/brand/` é a camada substituível de marca. **Nenhuma tela desenha a logo por conta
 própria**: todas passam por `js/ui/brand.js`.
 
-**Os arquivos oficiais ainda não estão no repositório.** Enquanto não chegam, o app desenha
-uma marca provisória em SVG, marcada no HTML com `data-brand-fallback="true"`. Ela é um
-espaço reservado, não uma proposta de identidade — a especificação proíbe recriar,
-redesenhar ou interpretar as logos, então nada aqui tenta imitá-las.
+Dois arquivos, com os caminhos já apontados no código:
 
-Para ligar as oficiais: coloque os arquivos com os nomes listados em
-[`assets/brand/README.md`](assets/brand/README.md) e troque uma linha em `js/ui/brand.js`:
+```
+assets/brand/logo-dynamic.png   ← marca do produto (DynamiCK)
+assets/brand/logo-ck.png        ← marca da empresa (Conscious Knowledge)
+```
+
+**Os arquivos ainda não estão no repositório.** Enquanto não chegam, o app desenha uma
+marca provisória em SVG, marcada no HTML com `data-brand-fallback="true"`. Ela é um espaço
+reservado, não uma proposta de identidade — a especificação proíbe recriar, redesenhar ou
+interpretar as logos, então nada ali tenta imitá-las.
+
+Para ligar as oficiais: coloque os dois arquivos e troque uma linha em `js/ui/brand.js`:
 
 ```js
 export const USE_OFFICIAL_ASSETS = false;  // → true
 ```
 
----
+Detalhes e regras de uso: [`assets/brand/README.md`](assets/brand/README.md).
 
 ## Acessibilidade e desempenho
 

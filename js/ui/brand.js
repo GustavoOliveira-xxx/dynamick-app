@@ -22,19 +22,24 @@ export const BRAND = {
     'Uma jornada de estudos que se adapta ao que você acerta, ao que você erra e ao tempo que você tem.',
 };
 
+/**
+ * Dois arquivos, um por marca. Variantes adicionais (símbolo isolado, mono,
+ * versão para fundo claro) são opcionais: quando não existem, todas as variantes
+ * caem no arquivo principal, que é o comportamento correto para uma logo só.
+ */
 const ASSETS = {
   dynamick: {
-    full: 'assets/brand/dynamick/logo-full.png',
-    compact: 'assets/brand/dynamick/logo-compact.png',
-    symbol: 'assets/brand/dynamick/symbol.png',
-    mono: 'assets/brand/dynamick/logo-mono.png',
-    onLight: 'assets/brand/dynamick/logo-on-light.png',
+    full: 'assets/brand/logo-dynamic.png',
+    compact: 'assets/brand/logo-dynamic.png',
+    symbol: 'assets/brand/logo-dynamic.png',
+    mono: 'assets/brand/logo-dynamic.png',
+    onLight: 'assets/brand/logo-dynamic.png',
   },
   consciousKnowledge: {
-    full: 'assets/brand/conscious-knowledge/logo-full.png',
-    compact: 'assets/brand/conscious-knowledge/logo-compact.png',
-    symbol: 'assets/brand/conscious-knowledge/symbol.png',
-    mono: 'assets/brand/conscious-knowledge/logo-mono.png',
+    full: 'assets/brand/logo-ck.png',
+    compact: 'assets/brand/logo-ck.png',
+    symbol: 'assets/brand/logo-ck.png',
+    mono: 'assets/brand/logo-ck.png',
   },
 };
 
