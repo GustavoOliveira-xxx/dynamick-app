@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ERROR_REASON_LABELS, ERROR_REASONS, NEXT_ACTION_LABELS } from '@/lib/domain';
 import { classifyErrorAction, saveToErrorNotebookAction } from '@/lib/session/actions';
+import { Markdown } from './Markdown';
 import { ReportQuestion } from './ReportQuestion';
 
 type Option = { id: string; label: string; text: string; isCorrect: boolean; rationale: string };
@@ -82,30 +83,39 @@ export function Correction({
       )}
 
       {explanation && (
-        <div className="ck-reading mt-4 space-y-3">
-          <p className="text-[0.98rem]">{explanation.summary}</p>
+        <div className="mt-4 space-y-3">
+          {/* O conteúdo editorial usa markdown leve; renderizar como texto puro exibiria os asteriscos. */}
+          <div className="text-[0.98rem]">
+            <Markdown source={explanation.summary} />
+          </div>
 
           {explanation.detailed && (
             <details className="rounded-md border border-line bg-[color:var(--ck-bg-raised)] p-3">
               <summary className="cursor-pointer text-sm font-medium">Quero entender melhor</summary>
-              <p className="mt-2 text-sm text-ink-secondary">{explanation.detailed}</p>
+              <div className="mt-2 text-sm text-ink-secondary">
+                <Markdown source={explanation.detailed} />
+              </div>
             </details>
           )}
 
           {explanation.strategy && (
-            <p className="text-sm text-ink-secondary">
-              <span className="font-medium text-ink-primary">Estratégia: </span>
-              {explanation.strategy}
-            </p>
+            <div className="rounded-md border border-line p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Estratégia
+              </p>
+              <div className="mt-1 text-sm text-ink-secondary">
+                <Markdown source={explanation.strategy} />
+              </div>
+            </div>
           )}
 
           {explanation.conceptRecap && (
-            <p
+            <div
               className="rounded-md border-l-2 p-3 text-sm"
               style={{ borderColor: 'var(--ck-teal)', background: 'var(--ck-bg-raised)' }}
             >
-              {explanation.conceptRecap}
-            </p>
+              <Markdown source={explanation.conceptRecap} />
+            </div>
           )}
         </div>
       )}
@@ -137,7 +147,9 @@ export function Correction({
                     <span className="text-ink-muted"> · sua resposta</span>
                   )}
                 </p>
-                <p className="mt-1 text-ink-secondary">{option.rationale}</p>
+                <div className="mt-1 text-ink-secondary">
+                  <Markdown source={option.rationale} />
+                </div>
               </li>
             ))}
           </ul>

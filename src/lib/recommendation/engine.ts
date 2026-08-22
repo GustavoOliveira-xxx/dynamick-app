@@ -61,7 +61,13 @@ export const FACTOR_WEIGHTS = {
   repeatedErrors: 7,
   lowConfidence: 5,
   timeSinceReview: 6,
-  curation: 0.35,
+  /*
+   * A curadoria é uma LINHA DE BASE, não o fator dominante.
+   * Com peso alto (0,35 → até 35 pontos) ela superava três erros recentes (27) em
+   * qualquer tópico bem avaliado, e o estudante recebia sempre a mesma justificativa
+   * genérica. Aqui ela desempata entre tópicos parecidos, sem apagar o comportamento.
+   */
+  curation: 0.12,
   examProximity: 12,
   studentPriority: 8,
   dueReviews: 10,
@@ -177,9 +183,29 @@ export function scoreTopic(signals: TopicSignals, context: RecommendationContext
   };
 }
 
+/**
+ * Fatores que explicam algo sobre o ESTUDANTE.
+ * A justificativa prefere sempre um destes: dizer "este tópico é importante" é
+ * verdadeiro, mas não é o que faz a recomendação parecer feita para a pessoa.
+ */
+const EXPLANATORY_FACTORS = [
+  'dueReviews',
+  'repeatedErrors',
+  'recentErrors',
+  'lowConfidence',
+  'timeSinceReview',
+  'studentPriority',
+  'neverPracticed',
+  'examProximity',
+] as const;
+
 /** Justificativa legível — sempre existe, nunca expõe pontuação técnica. */
 export function buildReason(signals: TopicSignals, factors: ScoredTopic['factors']): string {
-  const top = [...factors].sort((a, b) => b.points - a.points)[0];
+  const ranked = [...factors].sort((a, b) => b.points - a.points);
+  const explanatory = ranked.filter((factor) =>
+    (EXPLANATORY_FACTORS as readonly string[]).includes(factor.key),
+  );
+  const top = explanatory[0] ?? ranked[0];
 
   if (!top) {
     return `${signals.topicName} é um bom ponto de partida em ${signals.subjectName}.`;
@@ -202,6 +228,10 @@ export function buildReason(signals: TopicSignals, factors: ScoredTopic['factors
       return `Com a prova se aproximando, consolidar ${signals.topicName} tem mais efeito do que começar um tópico novo.`;
     case 'studentPriority':
       return `Você indicou ${signals.areaName} como uma área de atenção. ${signals.topicName} é um bom lugar para começar.`;
+    case 'curation':
+      return signals.attemptCount > 0
+        ? `${signals.topicName} é um dos temas mais recorrentes de ${signals.subjectName} e você já começou a praticá-lo.`
+        : `${signals.topicName} é um dos temas mais recorrentes de ${signals.subjectName} — um bom lugar para começar.`;
     default:
       return `${signals.topicName} é o próximo passo recomendado em ${signals.subjectName}.`;
   }

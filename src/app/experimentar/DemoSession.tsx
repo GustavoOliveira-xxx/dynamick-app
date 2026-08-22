@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button, LinkButton } from '@/components/ui/Button';
 import { Progress } from '@/components/ui/Progress';
+import { Markdown } from '@/components/study/Markdown';
 
 type DemoQuestion = {
   id: string;
@@ -168,7 +169,9 @@ export function DemoSession({ questions }: { questions: DemoQuestion[] }) {
                   ? 'Resposta correta.'
                   : `Você marcou ${chosen?.label}. A correta é ${correct?.label}.`}
               </p>
-              <p className="ck-reading mt-2 text-sm text-ink-secondary">{question.explanation}</p>
+              <div className="mt-2 text-sm text-ink-secondary">
+                <Markdown source={question.explanation} />
+              </div>
             </div>
 
             <Button

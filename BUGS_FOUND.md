@@ -119,6 +119,41 @@ suposições: cada item abaixo foi observado de fato.
 - **Teste:** duas verificações novas em `e2e/fluxos-criticos.mjs`.
 - **Status:** corrigido.
 
+### #11 — Recomendação entregava sempre a mesma frase genérica
+
+- **Reprodução:** entrar como qualquer usuário de demonstração com histórico e olhar o
+  motivo no início. Todos recebiam "X é o próximo passo recomendado em Y".
+- **Impacto:** **alto para o produto.** A justificativa legível é o diferencial descrito
+  na §2 — "o diferencial é a qualidade da relação entre conteúdo, habilidade, desempenho,
+  erro e próxima recomendação". Uma frase genérica cumpre a §7 regra 9 na letra e falha
+  no propósito: o estudante não via nada de si na recomendação.
+- **Causa:** duas somadas. (1) O peso da curadoria era 0,35, então um tópico bem avaliado
+  somava até 35 pontos — mais do que três erros recentes (27). (2) `buildReason` escolhia
+  o fator de maior pontuação e não tinha caso para `curation`, caindo no `default`.
+- **Correção:** a curadoria virou **linha de base** (peso 0,12, desempate entre tópicos
+  parecidos) e a justificativa passou a preferir sempre um fator **explicativo sobre o
+  estudante** — revisão vencida, erro repetido, erro recente, baixa confiança, tempo sem
+  praticar, prioridade declarada, nunca praticado, proximidade da prova. A curadoria
+  ganhou frase própria para o caso em que não há sinal comportamental nenhum.
+- **Verificação:** os quatro perfis de demonstração passaram a receber justificativas
+  distintas e ancoradas no próprio histórico.
+- **Teste:** 4 testes novos em `src/lib/recommendation/engine.test.ts`, incluindo a
+  regressão "erros recentes vencem a importância da curadoria na justificativa".
+- **Status:** corrigido.
+
+### #12 — Explicações mostravam markdown cru na tela
+
+- **Reprodução:** errar a questão `q-interp-4` e ler a correção: aparecia
+  `A diferença entre as leituras é de **grau**`.
+- **Impacto:** o conteúdo editorial usa markdown leve, mas a correção renderizava texto
+  puro. Os asteriscos apareciam para o estudante em toda explicação com ênfase.
+- **Causa:** `Correction.tsx` imprimia `explanation.summary` diretamente; o renderizador
+  de markdown existia mas só era usado na página do tópico.
+- **Correção:** explicação, aprofundamento, estratégia, retomada de conceito e o
+  comentário de cada alternativa passaram pelo renderizador. A demonstração sem conta
+  também foi corrigida.
+- **Status:** corrigido — encontrado na revisão visual das telas (§21, passo 10).
+
 ---
 
 ## Encontrados na suíte automatizada e classificados como problema do teste, não do produto
