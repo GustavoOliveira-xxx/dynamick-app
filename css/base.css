@@ -136,15 +136,17 @@ button, [role="button"], a, input, select, textarea, label {
  * rotação contínua e parallax saem, e os estados continuam compreensíveis.
  */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  /* Quem escolheu "permitir sempre" nas configurações fica de fora: a escolha
+     explícita na plataforma vence a preferência geral do sistema. */
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .ck-enter { animation: none; opacity: 1; transform: none; }
+  :root:not([data-motion="full"]) .ck-enter { animation: none; opacity: 1; transform: none; }
 }
 
 /* Mesmo efeito quando o usuário escolhe reduzir movimento no perfil */

@@ -11,7 +11,7 @@
 
 import { el } from '../core/dom.js';
 
-export const USE_OFFICIAL_ASSETS = false;
+export const USE_OFFICIAL_ASSETS = true;
 
 export const BRAND = {
   product: 'Dynamic CK',
@@ -23,24 +23,60 @@ export const BRAND = {
 };
 
 /**
- * Dois arquivos, um por marca. Variantes adicionais (símbolo isolado, mono,
- * versão para fundo claro) são opcionais: quando não existem, todas as variantes
- * caem no arquivo principal, que é o comportamento correto para uma logo só.
+ * Um par de arquivos por marca: WebP para quem suporta (a maioria) e PNG como
+ * garantia. Os dois saem do mesmo original, por assets/brand/gerar-web.py.
+ *
+ * `ratio` é a proporção real da arte. Ele existe para que o navegador reserve o
+ * espaço certo antes da imagem chegar (sem salto de layout) e, principalmente,
+ * para que a logo nunca seja esticada: distorcer a marca é proibido.
  */
 const ASSETS = {
   dynamick: {
-    full: 'assets/brand/logo-dynamic.png',
-    compact: 'assets/brand/logo-dynamic.png',
-    symbol: 'assets/brand/logo-dynamic.png',
-    mono: 'assets/brand/logo-dynamic.png',
-    onLight: 'assets/brand/logo-dynamic.png',
+    webp: 'assets/brand/logo-dynamic.webp',
+    png: 'assets/brand/logo-dynamic.png',
+    ratio: 400 / 363,
   },
   consciousKnowledge: {
-    full: 'assets/brand/logo-ck.png',
-    compact: 'assets/brand/logo-ck.png',
-    symbol: 'assets/brand/logo-ck.png',
-    mono: 'assets/brand/logo-ck.png',
+    webp: 'assets/brand/logo-ck.webp',
+    png: 'assets/brand/logo-ck.png',
+    ratio: 340 / 350,
   },
+};
+
+/**
+ * Monta <picture> com WebP e PNG.
+ * A altura vem da proporção real do arquivo, nunca de um número fixo.
+ */
+function brandPicture({ asset, alt, width, eager, className = 'brand-img' }) {
+  const height = Math.round(width / asset.ratio);
+
+  const picture = el('picture', { class: 'brand-picture' });
+  picture.append(el('source', { srcset: asset.webp, type: 'image/webp' }));
+  picture.append(
+    el('img', {
+      class: className,
+      src: asset.png,
+      alt,
+      width,
+      height,
+      decoding: 'async',
+      loading: eager ? 'eager' : 'lazy',
+      ...(eager ? { fetchpriority: 'high' } : {}),
+    }),
+  );
+  return picture;
+}
+
+/**
+ * Largura de exibição da marca oficial, por variante. A altura sai da proporção.
+ * A ilustração tem muito detalhe: abaixo de ~56px o emblema vira mancha, então o
+ * cabeçalho compacto usa um valor maior do que o da marca provisória em SVG.
+ */
+const OFFICIAL_WIDTHS = {
+  full: 148,
+  compact: 76,
+  symbol: 56,
+  mono: 76,
 };
 
 const SIZES = {
@@ -133,14 +169,11 @@ export function dynamickLogo(options = {}) {
   const label = signature ? `${BRAND.product} ${BRAND.signature}` : BRAND.product;
 
   if (USE_OFFICIAL_ASSETS) {
-    const src = ASSETS.dynamick[variant] ?? ASSETS.dynamick.full;
-    return el('img', {
-      class: 'brand-img',
-      src,
+    return brandPicture({
+      asset: ASSETS.dynamick,
       alt: label,
-      width: variant === 'symbol' ? 40 : 200,
-      height: variant === 'symbol' ? 40 : 56,
-      loading: 'eager',
+      width: OFFICIAL_WIDTHS[variant] ?? OFFICIAL_WIDTHS.full,
+      eager: true,
     });
   }
 
@@ -175,14 +208,12 @@ export function consciousKnowledgeLogo(options = {}) {
   const { variant = 'compact' } = options;
 
   if (USE_OFFICIAL_ASSETS) {
-    const src = ASSETS.consciousKnowledge[variant] ?? ASSETS.consciousKnowledge.compact;
-    return el('img', {
-      class: 'brand-img',
-      src,
+    return brandPicture({
+      asset: ASSETS.consciousKnowledge,
       alt: BRAND.company,
-      width: variant === 'symbol' ? 32 : 170,
-      height: variant === 'symbol' ? 32 : 44,
-      loading: 'lazy',
+      width: variant === 'symbol' ? 40 : 96,
+      eager: false,
+      className: 'brand-img brand-img--institutional',
     });
   }
 

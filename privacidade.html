@@ -2,11 +2,24 @@
 <html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="utf-8" />
+    <script>
+      // Antes da primeira pintura: sem isto a página pisca no tema errado.
+      try {
+        var p = JSON.parse(localStorage.getItem("dynamick:v1") || "{}").preferences || {};
+        var r = document.documentElement;
+        r.dataset.theme = p.theme || "dark";
+        r.dataset.textScale = p.textScale || "100";
+        if (p.highContrast) r.dataset.contrast = "high";
+        if (p.reducedMotion === "reduced" || p.reducedMotion === "full") r.dataset.motion = p.reducedMotion;
+        if (p.visualIntensity === "reduced") r.dataset.visual = "reduced";
+      } catch (e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Privacidade e dados — Dynamic CK</title>
     <meta name="description" content="Onde seus dados ficam no Dynamic CK: no seu navegador, sem servidor e sem rastreamento." />
     <meta name="theme-color" content="#020504" />
-    <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />

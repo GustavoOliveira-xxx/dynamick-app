@@ -7,6 +7,7 @@
  */
 
 import { getState, update } from './store.js';
+import { applyPreferencesTo } from './preferences-dom.js';
 import { newId, startOfWeek, daysBetween, clamp } from './format.js';
 import { classifyProfile } from '../engine/profile.js';
 import { getProfile } from '../engine/profiles.js';
@@ -197,19 +198,8 @@ export function updatePreferences(partial) {
 
 /** Aplica as preferências ao documento. Chamado no boot e a cada mudança. */
 export function applyPreferences() {
-  const prefs = preferences();
-  const root = document.documentElement;
-  root.dataset.theme = prefs.theme;
-  root.dataset.textScale = prefs.textScale;
-  if (prefs.highContrast) root.dataset.contrast = 'high';
-  else delete root.dataset.contrast;
-  if (prefs.reducedMotion === 'always') root.dataset.motion = 'reduced';
-  else delete root.dataset.motion;
-  if (prefs.visualIntensity === 'reduced') root.dataset.visual = 'reduced';
-  else delete root.dataset.visual;
+  applyPreferencesTo(preferences());
 }
-
-/* ---------------------------------------------------------------- Domínio */
 
 export function masteryFor(topicSlug) {
   return (
