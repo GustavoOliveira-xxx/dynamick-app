@@ -183,6 +183,18 @@ export default async function PracticePage() {
 
       <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
         <div>
+          <h2 className="text-lg font-semibold">Formas de estudar</h2>
+          <p className="mt-1 text-sm text-ink-secondary">
+            Oito métodos curtos, com quando usar e onde cada um deixa a desejar.
+          </p>
+        </div>
+        <LinkButton href="/metodos" variant="secondary">
+          Ver a biblioteca
+        </LinkButton>
+      </Card>
+
+      <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
+        <div>
           <h2 className="text-lg font-semibold">Tenho pouco tempo</h2>
           <p className="mt-1 text-sm text-ink-secondary">
             Uma explicação curta e duas questões, em 10 minutos.

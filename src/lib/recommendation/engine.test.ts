@@ -168,3 +168,46 @@ describe('recommendTopics — variedade e limites', () => {
     expect(first).toEqual(second);
   });
 });
+
+describe('buildReason — a justificativa fala do estudante, não do catálogo', () => {
+  it('erros recentes vencem a importância da curadoria na justificativa', () => {
+    // Regressão: com curadoria alta, a frase genérica escondia o motivo real.
+    const result = scoreTopic(topic({ curationWeight: 100, recentErrors: 3 }), baseContext);
+    expect(result.reason).toContain('errou');
+    expect(result.reason).not.toContain('próximo passo recomendado');
+  });
+
+  it('revisão vencida é o motivo mais forte quando existe', () => {
+    const result = scoreTopic(
+      topic({ curationWeight: 100, recentErrors: 2, dueReviews: 3 }),
+      baseContext,
+    );
+    expect(result.reason).toContain('revisão');
+  });
+
+  it('tópico ainda não praticado é dito como tal, não como frase genérica', () => {
+    const result = scoreTopic(
+      topic({ curationWeight: 90, attemptCount: 0, masteryState: 'not_started', daysSinceLastPractice: null }),
+      baseContext,
+    );
+    expect(result.reason).toContain('ainda não foi praticado');
+  });
+
+  it('sem sinal comportamental, a curadoria tem frase própria — nunca a genérica', () => {
+    const result = scoreTopic(
+      topic({
+        curationWeight: 80,
+        recentErrors: 0,
+        repeatedErrors: 0,
+        lowConfidenceAttempts: 0,
+        dueReviews: 0,
+        daysSinceLastPractice: 1,
+        attemptCount: 4,
+        masteryState: 'practicing',
+      }),
+      baseContext,
+    );
+    expect(result.reason).toContain('recorrentes');
+    expect(result.reason).not.toBe('');
+  });
+});
