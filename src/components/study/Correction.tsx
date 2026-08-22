@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ERROR_REASON_LABELS, ERROR_REASONS, NEXT_ACTION_LABELS } from '@/lib/domain';
 import { classifyErrorAction, saveToErrorNotebookAction } from '@/lib/session/actions';
+import { ReportQuestion } from './ReportQuestion';
 
 type Option = { id: string; label: string; text: string; isCorrect: boolean; rationale: string };
 
@@ -213,6 +214,11 @@ export function Correction({
             {NEXT_ACTION_LABELS.self_explain}
           </Button>
         </form>
+      </div>
+
+      {/* Denúncia de problema na questão (§13) */}
+      <div className="mt-4">
+        <ReportQuestion questionId={questionId} />
       </div>
     </section>
   );

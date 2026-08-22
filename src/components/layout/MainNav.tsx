@@ -48,6 +48,16 @@ export function MainNav({ isAdmin }: { isAdmin: boolean }) {
           </Link>
         ))}
 
+        <div className="ck-hairline my-3" />
+        <Link
+          href="/buscar"
+          aria-current={isActive('/buscar') ? 'page' : undefined}
+          className="flex min-h-[46px] items-center gap-3 rounded-md px-3 text-[0.95rem] text-ink-secondary transition-colors duration-fast hover:bg-[color:var(--ck-bg-raised)]"
+        >
+          <span aria-hidden="true">⌕</span>
+          Buscar
+        </Link>
+
         {isAdmin && (
           <>
             <div className="ck-hairline my-3" />

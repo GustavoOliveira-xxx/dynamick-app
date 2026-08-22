@@ -27,6 +27,7 @@ Legenda: `[x]` concluído · `[~]` parcial · `[ ]` pendente
 | 1.2 | Onboarding em etapas com salvamento parcial e retomada | Sair no meio e voltar retoma na mesma etapa sem perder respostas | `[x]` |
 | 1.3 | Tela de confirmação de perfil (§19) com comparação e "não me identifiquei" | Escolha do usuário grava `ProfileConfirmation` e tem prioridade sobre a automática | `[x]` |
 | 1.4 | Árvore de conteúdo (áreas, matérias, tópicos, habilidades) + mapa + página de tópico | Mapa mostra os 5 estados da §5.2; tópico mostra resumo, explicação, exemplos, erros comuns | `[x]` |
+| 1.7 | Diagnóstico inicial opcional (§ etapa 2) e busca global (§5.10) | Diagnóstico pode ser pulado sem bloquear nada; busca separa resultados por tipo | `[x]` |
 | 1.5 | Seed idempotente da base inicial (§11.2) | Rodar o seed 2× não duplica nada; quantidades mínimas atingidas | `[x]` |
 | 1.6 | Navegação principal (Início, Conteúdos, Praticar, Revisar, Perfil) | Funciona em desktop (lateral) e celular (inferior) | `[x]` |
 
@@ -89,7 +90,7 @@ Legenda: `[x]` concluído · `[~]` parcial · `[ ]` pendente
 | # | Incremento | Status |
 | --- | --- | --- |
 | C.1 | Testes unitários das regras (perfil, recomendação, domínio, revisão, simulado) | `[x]` |
-| C.2 | Testes E2E dos fluxos críticos | `[x]` `e2e/fluxos-criticos.mjs` — 44 verificações, todas passando |
+| C.2 | Testes E2E dos fluxos críticos | `[x]` `e2e/fluxos-criticos.mjs` — 47 verificações, todas passando |
 | C.3 | `BUGS_FOUND.md` com reprodução, impacto, causa, correção, teste e status | `[x]` |
 | C.4 | Varredura de TODO, `console.log`, `href="#"`, handler vazio, rota não registrada | `[x]` script `scripts/audit-dead-ui.mjs` |
 
@@ -103,7 +104,7 @@ Legenda: `[x]` concluído · `[~]` parcial · `[ ]` pendente
 | 2. Testes unitários das regras | 80 testes passando |
 | 3. Testes de integração de API, banco e autenticação | cobertos pelos fluxos E2E (login, exportação, autorização) |
 | 4. Componentes e estados de erro | estados de carregamento/vazio/erro/sucesso em `components/ui/States.tsx`, usados nas telas |
-| 5. End-to-end dos fluxos críticos | 44/44 verificações passando |
+| 5. End-to-end dos fluxos críticos | 47/47 verificações passando |
 | 6. Build de produção | `npm run build` limpo |
 | 7. Verificação em desktop e celular | E2E cobre 360px sem rolagem horizontal; teste em aparelho real pendente |
 | 8. Animações reduzidas e sem WebGL | E2E roda com `reducedMotion: reduce`; não há WebGL a desabilitar (canvas 2D) |
