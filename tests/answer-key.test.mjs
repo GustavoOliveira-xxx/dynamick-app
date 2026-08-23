@@ -110,7 +110,7 @@ describe('integridade após o rebalanceamento', () => {
 
 describe('nenhum texto cita alternativa por letra', () => {
   it('explicações e justificativas não dependem da posição', () => {
-    const padrao = /\b(alternativa|letra|opção)\s+[A-E]\b/i;
+    const padrao = /\b((alternativa|letra|opção)\s+[A-E]|resposta(?: correta)? é [A-E])\b/i;
     const problemas = [];
 
     for (const question of QUESTIONS) {
