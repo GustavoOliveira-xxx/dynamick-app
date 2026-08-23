@@ -12,8 +12,72 @@
  *  - não há curadoria compartilhada entre usuários.
  */
 
-const KEY = 'dynamick:v1';
+const BASE_KEY = 'dynamick:v1';
 const BACKUP_KEY = 'dynamick:v1:backup';
+
+/*
+ * Espaço da conta ativa.
+ *
+ * Sem conta, o estado mora em 'dynamick:v1' — é o formato antigo e continua
+ * válido para quem já usava a plataforma. Com conta, cada uma tem o seu
+ * 'dynamick:v1:<id>', o que permite dois estudantes no mesmo navegador sem que
+ * um veja (ou apague) o progresso do outro.
+ */
+let namespace = null;
+
+function storageKey() {
+  return namespace ? `${BASE_KEY}:${namespace}` : BASE_KEY;
+}
+
+/** Passa a ler e gravar no espaço desta conta. Descarta o estado em memória. */
+export function setNamespace(id) {
+  const next = id || null;
+  if (next === namespace) return;
+  namespace = next;
+  state = null;
+}
+
+export function clearNamespace() {
+  setNamespace(null);
+}
+
+export function currentNamespace() {
+  return namespace;
+}
+
+/** Existe progresso salvo fora de qualquer conta? */
+export function hasLegacyState() {
+  if (!storageAvailable) return false;
+  try {
+    return Boolean(window.localStorage.getItem(BASE_KEY));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Move o estado de um espaço para outro, sem duplicar.
+ * Usado quando a primeira conta é criada (o progresso solto passa a ser dela)
+ * e quando um convidado vira conta.
+ */
+export function adoptLegacyState(targetId, sourceId = null) {
+  if (!storageAvailable || !targetId) return false;
+  const from = sourceId ? `${BASE_KEY}:${sourceId}` : BASE_KEY;
+  const to = `${BASE_KEY}:${targetId}`;
+
+  try {
+    const raw = window.localStorage.getItem(from);
+    if (!raw) return false;
+    // Nunca sobrescreve um espaço que já tem progresso.
+    if (window.localStorage.getItem(to)) return false;
+    window.localStorage.setItem(to, raw);
+    window.localStorage.removeItem(from);
+    if (namespace === targetId) state = null;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** Estrutura inicial. Toda chave nova precisa de valor padrão aqui. */
 function emptyState() {
@@ -123,7 +187,7 @@ export function load() {
   }
 
   try {
-    const raw = window.localStorage.getItem(KEY);
+    const raw = window.localStorage.getItem(storageKey());
     state = raw ? migrate(JSON.parse(raw)) : emptyState();
   } catch (error) {
     /*
@@ -132,8 +196,8 @@ export function load() {
      */
     console.warn('Estado local ilegível; iniciando do zero. Backup em', BACKUP_KEY, error);
     try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) window.localStorage.setItem(BACKUP_KEY, raw);
+      const raw = window.localStorage.getItem(storageKey());
+      if (raw) window.localStorage.setItem(`${BACKUP_KEY}:${namespace ?? 'sem-conta'}`, raw);
     } catch {
       /* backup é melhor-esforço */
     }
@@ -149,7 +213,7 @@ function persist() {
   if (!storageAvailable) return;
   try {
     state.updatedAt = new Date().toISOString();
-    window.localStorage.setItem(KEY, JSON.stringify(state));
+    window.localStorage.setItem(storageKey(), JSON.stringify(state));
   } catch (error) {
     // Cota estourada é o caso realista aqui. Avisamos em vez de falhar calado.
     console.error('Não foi possível salvar o progresso localmente.', error);
@@ -217,8 +281,8 @@ export function clearAll() {
   state = emptyState();
   if (storageAvailable) {
     try {
-      window.localStorage.removeItem(KEY);
-      window.localStorage.removeItem(BACKUP_KEY);
+      window.localStorage.removeItem(storageKey());
+      window.localStorage.removeItem(`${BACKUP_KEY}:${namespace ?? 'sem-conta'}`);
     } catch {
       /* ignorado: o estado em memória já foi limpo */
     }
@@ -235,7 +299,7 @@ export function watchOtherTabs(onExternalChange) {
   if (!storageAvailable) return () => {};
 
   function handler(event) {
-    if (event.key !== KEY || !event.newValue) return;
+    if (event.key !== storageKey() || !event.newValue) return;
     try {
       state = migrate(JSON.parse(event.newValue));
       for (const listener of listeners) listener(state);

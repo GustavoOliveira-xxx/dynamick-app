@@ -155,7 +155,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 
 /* ---------------------------------------------------------------- Formulário */
 
-.field { display: grid; gap: 0.4rem; }
+.field { display: grid; gap: 0.4rem; align-content: start; }
 .field__label { font-size: 0.9rem; font-weight: 500; }
 .field__hint { font-size: 0.78rem; color: var(--ck-text-3); }
 .field__error { font-size: 0.78rem; color: var(--ck-danger); }
@@ -587,126 +587,172 @@ legend { padding: 0; }
 
 /* ---------------------------------------------------------------- Cubo de conhecimento 3D */
 
-.knowledge-cube {
-  --cube-size: 9rem;
-  --cube-half: calc(var(--cube-size) / 2);
+/* ---------------------------------------------------------------- Cubo mágico interativo */
+
+/*
+ * O cubo é um 3x3 de verdade: 26 peças posicionadas em 3D, giro livre por
+ * arraste e giro de camadas. As cores são as originais do cubo — branco,
+ * amarelo, vermelho, laranja, azul e verde — porque é isso que faz um cubo
+ * mágico ser reconhecido como tal. O que vem do Dynamic CK é o entorno:
+ * o corpo quase preto das peças, o brilho verde na borda e as órbitas.
+ */
+.ck-cube {
+  --cubie: 34px;
+  --gap: 2px;
   position: relative;
   display: grid;
-  width: calc(var(--cube-size) * 1.9);
-  aspect-ratio: 1;
   place-items: center;
-  perspective: calc(var(--cube-size) * 6);
-  pointer-events: none;
-  filter: drop-shadow(0 28px 34px rgb(0 0 0 / 48%));
+  width: 100%;
+  min-height: calc(var(--cubie) * 6.2);
+  perspective: 1400px;
+  touch-action: none;
+  user-select: none;
 }
-.knowledge-cube--loader { --cube-size: 3.8rem; }
-.knowledge-cube--compact { --cube-size: 4.6rem; }
-.knowledge-cube__stage,
-.knowledge-cube__body,
-.knowledge-cube__face {
-  position: absolute;
+.ck-cube--sm { --cubie: 26px; }
+.ck-cube--lg { --cubie: 42px; }
+
+.ck-cube__viewport {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--cubie) * 5.4);
+  height: calc(var(--cubie) * 5.4);
+  cursor: grab;
   transform-style: preserve-3d;
 }
-.knowledge-cube__stage {
-  width: var(--cube-size);
-  height: var(--cube-size);
-  animation: cube-float 4.8s var(--ck-ease) infinite;
+.ck-cube__viewport:active { cursor: grabbing; }
+.ck-cube__viewport:focus-visible {
+  border-radius: var(--ck-r-lg);
+  outline: 2px solid var(--ck-green);
+  outline-offset: 6px;
 }
-.knowledge-cube__body {
-  inset: 0;
-  transform: rotateX(-22deg) rotateY(32deg) rotateZ(-2deg);
-  animation: cube-turn 13s linear infinite;
+
+/* Aura de fundo — a única parte que segue a paleta do produto. */
+.ck-cube__aura {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(46 232 138 / 20%), transparent 62%),
+    radial-gradient(circle at 30% 70%, rgb(99 230 255 / 14%), transparent 58%);
+  filter: blur(22px);
+  opacity: var(--ck-visual-opacity, 1);
+  pointer-events: none;
 }
-.knowledge-cube__face {
+
+.ck-cube__orbit {
+  position: absolute;
+  width: 118%;
+  height: 46%;
+  border: 1px solid rgb(99 230 255 / 18%);
+  border-radius: 50%;
+  opacity: var(--ck-visual-opacity, 1);
+  pointer-events: none;
+}
+.ck-cube__orbit--a { transform: rotate(-16deg); }
+.ck-cube__orbit--b { transform: rotate(62deg); opacity: 0.5; }
+
+.ck-cube__body,
+.ck-cube__layer,
+.ck-cube__cubie,
+.ck-cube__sticker {
+  transform-style: preserve-3d;
+}
+
+.ck-cube__body {
+  position: absolute;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+/* Camada em rotação: um invólucro temporário para as 9 peças que giram. */
+.ck-cube__layer {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transition: transform var(--ck-dur-slow) var(--ck-ease);
+}
+.ck-cube__layer--instant { transition: none; }
+
+.ck-cube__cubie {
+  position: absolute;
+  width: var(--cubie);
+  height: var(--cubie);
+  margin: calc(var(--cubie) / -2) 0 0 calc(var(--cubie) / -2);
+}
+
+.ck-cube__sticker {
+  position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: calc(var(--cube-size) * 0.035);
-  padding: calc(var(--cube-size) * 0.045);
-  border: 1px solid rgb(99 230 255 / 20%);
-  border-radius: calc(var(--cube-size) * 0.08);
-  background: rgb(2 8 7 / 88%);
-  box-shadow: inset 0 0 20px rgb(46 232 138 / 8%);
+  border: 1px solid rgb(0 0 0 / 55%);
+  border-radius: calc(var(--cubie) * 0.18);
+  background: var(--face, #12100f);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 14%),
+    inset 0 calc(var(--cubie) * -0.12) calc(var(--cubie) * 0.2) rgb(0 0 0 / 32%);
   backface-visibility: hidden;
 }
-.knowledge-cube__face--front { --face: var(--ck-green); transform: translateZ(var(--cube-half)); }
-.knowledge-cube__face--back { --face: var(--ck-cyan); transform: rotateY(180deg) translateZ(var(--cube-half)); }
-.knowledge-cube__face--right { --face: var(--ck-teal); transform: rotateY(90deg) translateZ(var(--cube-half)); }
-.knowledge-cube__face--left { --face: var(--ck-lime); transform: rotateY(-90deg) translateZ(var(--cube-half)); }
-.knowledge-cube__face--top { --face: var(--ck-cyan); transform: rotateX(90deg) translateZ(var(--cube-half)); }
-.knowledge-cube__face--bottom { --face: var(--ck-green); transform: rotateX(-90deg) translateZ(var(--cube-half)); }
-.knowledge-cube__tile {
-  border: 1px solid color-mix(in srgb, var(--face) 52%, transparent);
-  border-radius: calc(var(--cube-size) * 0.035);
-  background:
-    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 18%), transparent 38%),
-    color-mix(in srgb, var(--face) 24%, var(--ck-bg-deep));
-  box-shadow:
-    inset 0 0 calc(var(--cube-size) * 0.11) color-mix(in srgb, var(--face) 20%, transparent),
-    0 0 calc(var(--cube-size) * 0.06) color-mix(in srgb, var(--face) 14%, transparent);
-  animation: cube-tile-signal 4.4s var(--ck-ease) infinite;
-  animation-delay: calc(var(--tile-index) * -240ms);
+
+/* Faces "internas" (para dentro do cubo) ficam pretas, como no cubo real. */
+.ck-cube__sticker--blank {
+  background: #0b0f0e;
+  box-shadow: none;
 }
-.knowledge-cube__tile:nth-child(3n + 2) { filter: brightness(1.2); }
-.knowledge-cube__tile:nth-child(4n) { background-color: color-mix(in srgb, var(--ck-cyan) 22%, var(--ck-bg-deep)); }
-.knowledge-cube__tile:nth-child(5) {
-  background: radial-gradient(circle, var(--ck-lime), var(--ck-green-deep) 70%);
-  box-shadow: 0 0 calc(var(--cube-size) * 0.28) rgb(184 243 106 / 38%);
-}
-.knowledge-cube__core {
+
+/* Cores originais do cubo mágico. */
+.ck-cube__sticker--U { --face: #f4f6f4; }
+.ck-cube__sticker--D { --face: #f7d64a; }
+.ck-cube__sticker--F { --face: #24b455; }
+.ck-cube__sticker--B { --face: #2f6ed6; }
+.ck-cube__sticker--R { --face: #d8342a; }
+.ck-cube__sticker--L { --face: #f08326; }
+
+/* O toque do produto: um brilho verde discreto na peça central de cada face. */
+.ck-cube__sticker--core::after {
+  content: "";
   position: absolute;
-  inset: 34%;
+  inset: 22%;
   border-radius: 50%;
-  background: var(--ck-green-glow);
-  box-shadow: 0 0 calc(var(--cube-size) * 0.7) rgb(92 255 176 / 72%);
-  transform: translateZ(calc(var(--cube-size) * 0.06));
+  background: radial-gradient(circle, rgb(255 255 255 / 55%), transparent 70%);
+  opacity: 0.5;
 }
-.knowledge-cube__orbit {
-  position: absolute;
-  width: 86%;
-  height: 34%;
-  border: 1px solid rgb(99 230 255 / 24%);
-  border-radius: 50%;
-  box-shadow: 0 0 18px rgb(53 214 192 / 8%);
+
+.ck-cube__hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-top: 0.85rem;
 }
-.knowledge-cube__orbit::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ck-lime);
-  box-shadow: 0 0 14px var(--ck-lime);
-  offset-path: ellipse(50% 50% at 50% 50%);
-  animation: cube-orbit-signal 3.6s linear infinite;
+
+.ck-cube__status {
+  min-height: 1.2em;
+  margin-top: 0.5rem;
+  color: var(--ck-text-3);
+  font-size: 0.76rem;
+  text-align: center;
 }
-.knowledge-cube__orbit--a { transform: rotate(-14deg); }
-.knowledge-cube__orbit--b { transform: rotate(58deg); opacity: 0.68; }
-.knowledge-cube__orbit--b::after { animation-delay: -1.2s; }
-.knowledge-cube__orbit--c { transform: rotate(118deg); opacity: 0.48; }
-.knowledge-cube__orbit--c::after { animation-delay: -2.4s; }
-@keyframes cube-turn {
-  from { transform: rotateX(-22deg) rotateY(32deg) rotateZ(-2deg); }
-  45% { transform: rotateX(-14deg) rotateY(192deg) rotateZ(3deg); }
-  to { transform: rotateX(-22deg) rotateY(392deg) rotateZ(-2deg); }
+
+.ck-cube__hint {
+  max-width: 30rem;
+  margin: 0.25rem auto 0;
+  color: var(--ck-text-3);
+  font-size: 0.72rem;
+  text-align: center;
 }
-@keyframes cube-float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-8px) scale(1.025); }
-}
-@keyframes cube-tile-signal {
-  0%, 72%, 100% { opacity: 0.76; }
-  84% { opacity: 1; filter: brightness(1.48); }
-}
-@keyframes cube-orbit-signal {
-  from { offset-distance: 0%; }
-  to { offset-distance: 100%; }
-}
+
+/* Sem preserve-3d o cubo viraria uma pilha de quadrados sobrepostos. */
 @supports not (transform-style: preserve-3d) {
-  .knowledge-cube__face:not(.knowledge-cube__face--front) { display: none; }
-  .knowledge-cube__face--front { transform: rotate(8deg); }
+  .ck-cube__viewport { display: none; }
+  .ck-cube__fallback { display: block; }
+}
+.ck-cube__fallback {
+  display: none;
+  max-width: 22rem;
+  color: var(--ck-text-2);
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 /* ---------------------------------------------------------------- Transição entre telas */
@@ -773,7 +819,11 @@ legend { padding: 0; }
   filter: drop-shadow(0 0 6px var(--ck-green));
   animation: transition-signal 780ms var(--ck-ease) infinite;
 }
-.route-transition--reduced .knowledge-cube { animation: none; }
+.route-transition .ck-boot__stage { width: 132px; height: 132px; }
+.route-transition .ck-boot__logo { width: 80px; height: 80px; }
+.route-transition .ck-boot__word { margin-top: 0.35rem; font-size: 0.95rem; }
+.route-transition--reduced .ck-boot__halo,
+.route-transition--reduced .ck-boot__sweep { display: none; }
 .route-transition--reduced .route-transition__track { display: none; }
 @keyframes transition-field { to { transform: rotate(360deg); } }
 @keyframes transition-signal {
