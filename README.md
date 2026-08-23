@@ -78,7 +78,7 @@ js/
   core/            dom, format, markdown, router, store, student, sessions
   engine/          domain, profiles, profile, recommendation, mastery, spaced, simulation
   data/            Conteúdo autoral: áreas, tópicos, questões, métodos, simulados, redação
-  ui/              brand, background, components
+  ui/              brand, background, components, cubo 3D, transições
   views/           Uma tela por arquivo
   app.js           Rotas e bootstrap
   demo.js          A amostra de experimentar.html
@@ -111,7 +111,7 @@ tests/             Suíte própria, sem dependências
 ## Testes
 
 ```bash
-node tests/index.mjs        # 143 testes: perfil, recomendação, domínio, revisão, simulado, conteúdo, gabarito, sincronização
+node tests/index.mjs        # perfil, recomendação, domínio, revisão, simulado, conteúdo, gabarito, sincronização
 node tests/check-imports.mjs
 ```
 
@@ -130,18 +130,19 @@ Todo o material em `js/data/` é **autoral**, escrito para este projeto. Nenhuma
 copiada de prova oficial, livro ou plataforma de terceiros. Cada questão declara `origin` e
 `license`.
 
-Números atuais: 4 áreas, 11 disciplinas, 12 tópicos completos, 84 questões (24 delas de
-recuperação), 72 blocos de conteúdo, 8 métodos de estudo, 12 sessões prontas, 5 simulados e
-8 temas de redação.
+Números atuais: 4 áreas, 11 disciplinas, 12 tópicos completos, 144 questões (120 principais
+e 24 de recuperação), 72 blocos de conteúdo, 8 métodos de estudo, 12 sessões prontas,
+5 simulados e 8 temas de redação. Cada tópico completo oferece 10 questões principais —
+cinco delas na expansão editorial de agosto de 2026 — e duas de recuperação.
 
 O acervo **não cobre o programa completo do ENEM**, e a plataforma diz isso onde a falta
 aparece. A tela `#/catalogo` mostra os números e aponta cada lacuna.
 
 ### O gabarito é rebalanceado na montagem
 
-O material foi redigido com a resposta correta quase sempre na primeira alternativa (69 de
-84). Quem marcasse sempre "A" acertaria 82% sem ler nada, e domínio, motivo de erro e
-recomendação passariam a medir ruído.
+O material-base foi redigido com a resposta correta quase sempre na primeira alternativa.
+Sem o rebalanceamento, marcar sempre a mesma letra distorceria domínio, motivo de erro e
+recomendação.
 
 A correção está em `js/data/content.js`, na montagem do catálogo: uma rotação
 determinística por questão, com ponto de partida próprio por tópico. É determinística de
@@ -179,9 +180,11 @@ Detalhes, regras de uso e a limitação conhecida do formato quadrado em cabeça
 - Cor nunca é o único sinal: certo/errado, estado e alerta sempre trazem texto.
 - Três temas (escuro, claro, alto contraste) e três tamanhos de texto.
 - `prefers-reduced-motion` respeitado por padrão, com controle manual em Configurações.
-- O fundo tridimensional é Canvas 2D, `aria-hidden`, pausa fora da tela e com a aba
-  oculta, reduz densidade em telas pequenas e desenha um único quadro sob movimento
-  reduzido. O modo "elementos visuais reduzidos" desliga tudo sem perder informação.
+- O ambiente combina Canvas 2D com aurora e grade em CSS, todos `aria-hidden`; pausa fora
+  da tela e com a aba oculta, reduz densidade em telas pequenas e desenha um único quadro
+  sob movimento reduzido. O cubo de conhecimento e o loader usam CSS 3D, têm alternativa
+  estática e não carregam WebGL. O modo "elementos visuais reduzidos" desliga os efeitos
+  sem perder informação.
 
 ---
 

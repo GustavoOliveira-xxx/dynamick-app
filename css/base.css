@@ -131,6 +131,16 @@ button, [role="button"], a, input, select, textarea, label {
 
 .ck-enter { animation: ck-enter var(--ck-dur) var(--ck-ease) both; }
 
+/* Continuidade também nas navegações entre documentos, quando o navegador suporta. */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: ck-document-out 180ms var(--ck-ease) both; }
+::view-transition-new(root) { animation: ck-document-in 320ms var(--ck-ease) both; }
+@keyframes ck-document-out { to { opacity: 0; transform: scale(0.992); } }
+@keyframes ck-document-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
 /*
  * prefers-reduced-motion: transições complexas viram fade simples,
  * rotação contínua e parallax saem, e os estados continuam compreensíveis.

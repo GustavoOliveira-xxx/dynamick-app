@@ -80,8 +80,10 @@
             </p>
           </div>
 
-          <!-- Demonstração visual da sessão de estudo -->
-          <article class="card hero__demo ck-enter" aria-label="Exemplo de sessão de estudo">
+          <!-- Cubo de conhecimento + demonstração visual da sessão de estudo -->
+          <div class="hero__visual ck-enter">
+            <div id="cubo-conhecimento" class="hero__cube" aria-hidden="true"></div>
+          <article class="card hero__demo" aria-label="Exemplo de sessão de estudo">
             <header class="hero__demo-head">
               <span class="eyebrow">Exemplo de sessão</span>
               <span class="badge badge--green">20 min</span>
@@ -118,6 +120,7 @@
               </div>
             </div>
           </article>
+          </div>
         </section>
 
         <!-- Três benefícios concretos -->
@@ -218,12 +221,18 @@
     <script type="module">
       import { dynamickLogo, consciousKnowledgeLogo } from './js/ui/brand.js';
       import { mountBackground } from './js/ui/background.js';
+      import { knowledgeCube } from './js/ui/knowledge-cube.js';
 
       document.getElementById('marca').append(dynamickLogo({ variant: 'full', signature: true }));
       document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
+      document.getElementById('cubo-conhecimento').append(knowledgeCube({ variant: 'hero' }));
 
       // Intensidade alta e reativa ao cursor — só aqui e no início.
-      mountBackground(document.getElementById('fundo'), { intensity: 'high', interactive: true });
+      mountBackground(document.getElementById('fundo'), {
+        intensity: 'high',
+        interactive: true,
+        context: 'landing',
+      });
     </script>
   </body>
 </html>

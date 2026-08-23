@@ -17,6 +17,12 @@ describe('quantidades mínimas do pacote inicial', () => {
   it('12 tópicos completos', () => expect(TOPICS).toHaveLength(12));
   it('pelo menos 60 questões principais', () =>
     expect(health.totals.questions - health.totals.recoveryQuestions).toBeGreaterThanOrEqual(60));
+  it('a expansão adiciona exatamente 5 questões a cada tópico completo', () => {
+    const incompletos = TOPICS.filter(
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_EXPANSAO_2026_08').length !== 5,
+    );
+    expect(incompletos.map((topic) => topic.slug)).toEqual([]);
+  });
   it('pelo menos 24 questões de recuperação', () =>
     expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));

@@ -15,22 +15,32 @@
  */
 
 const PRESETS = {
-  high: { nodes: 78, link: 0.62, glow: 0.5, spin: 0.045, tilt: 0.24 },
-  'medium-high': { nodes: 56, link: 0.56, glow: 0.4, spin: 0.035, tilt: 0.2 },
-  medium: { nodes: 38, link: 0.5, glow: 0.3, spin: 0.026, tilt: 0.16 },
-  low: { nodes: 20, link: 0.42, glow: 0.2, spin: 0.016, tilt: 0.1 },
+  high: { nodes: 82, dust: 38, link: 0.62, glow: 0.68, spin: 0.06, tilt: 0.24 },
+  'medium-high': { nodes: 60, dust: 26, link: 0.56, glow: 0.52, spin: 0.045, tilt: 0.2 },
+  medium: { nodes: 40, dust: 18, link: 0.5, glow: 0.36, spin: 0.032, tilt: 0.16 },
+  low: { nodes: 20, dust: 8, link: 0.42, glow: 0.2, spin: 0.018, tilt: 0.1 },
 };
 
 const GRADIENTS = {
   high:
-    'radial-gradient(1100px 620px at 50% -12%, rgb(46 232 138 / 12%), transparent 62%),' +
-    'radial-gradient(760px 520px at 88% 8%, rgb(53 214 192 / 9%), transparent 60%),' +
-    'radial-gradient(680px 460px at 6% 32%, rgb(99 230 255 / 7%), transparent 58%)',
+    'radial-gradient(1100px 720px at 72% 20%, rgb(46 232 138 / 17%), transparent 64%),' +
+    'radial-gradient(800px 580px at 92% 8%, rgb(53 214 192 / 13%), transparent 61%),' +
+    'radial-gradient(720px 520px at 2% 38%, rgb(99 230 255 / 9%), transparent 60%)',
   'medium-high':
-    'radial-gradient(900px 520px at 50% -14%, rgb(46 232 138 / 9%), transparent 60%),' +
-    'radial-gradient(640px 420px at 92% 12%, rgb(53 214 192 / 7%), transparent 58%)',
-  medium: 'radial-gradient(760px 420px at 50% -16%, rgb(46 232 138 / 6%), transparent 58%)',
+    'radial-gradient(980px 620px at 76% 18%, rgb(46 232 138 / 13%), transparent 62%),' +
+    'radial-gradient(720px 480px at 8% 34%, rgb(53 214 192 / 9%), transparent 60%)',
+  medium:
+    'radial-gradient(820px 480px at 72% 16%, rgb(46 232 138 / 8%), transparent 60%),' +
+    'radial-gradient(560px 420px at 10% 62%, rgb(99 230 255 / 5%), transparent 62%)',
   low: 'radial-gradient(640px 360px at 50% -20%, rgb(46 232 138 / 4%), transparent 55%)',
+};
+
+const CONTEXT_ORIGINS = {
+  landing: { x: 0.73, y: 0.43 },
+  dashboard: { x: 0.76, y: 0.34 },
+  map: { x: 0.58, y: 0.44 },
+  app: { x: 0.72, y: 0.38 },
+  focus: { x: 0.5, y: 0.3 },
 };
 
 /** Só uma cena pesada por vez. */
@@ -57,22 +67,35 @@ function visualSettings() {
 /**
  * Monta o fundo dentro de um contêiner.
  * @param {HTMLElement} host
- * @param {{intensity?: keyof PRESETS, interactive?: boolean}} options
+ * @param {{intensity?: keyof PRESETS, interactive?: boolean, context?: keyof CONTEXT_ORIGINS}} options
  * @returns {() => void} função de limpeza
  */
 export function mountBackground(host, options = {}) {
   const intensity = options.intensity ?? 'medium';
   const interactive = options.interactive ?? false;
+  const sceneContext = options.context ?? 'app';
 
   host.replaceChildren();
   host.setAttribute('aria-hidden', 'true');
   host.className = 'bg-layer';
+  host.dataset.context = sceneContext;
 
   // Gradiente base em CSS puro: dá profundidade sozinho e não depende de JS.
   const gradient = document.createElement('div');
   gradient.className = 'bg-layer__gradient';
   gradient.style.background = GRADIENTS[intensity];
   host.append(gradient);
+
+  // Camadas CSS de baixo custo: aurora, malha acadêmica em perspectiva e varredura.
+  const atmosphere = document.createElement('div');
+  atmosphere.className = 'bg-layer__atmosphere';
+  atmosphere.append(
+    Object.assign(document.createElement('span'), { className: 'bg-layer__aurora bg-layer__aurora--a' }),
+    Object.assign(document.createElement('span'), { className: 'bg-layer__aurora bg-layer__aurora--b' }),
+    Object.assign(document.createElement('span'), { className: 'bg-layer__grid' }),
+    Object.assign(document.createElement('span'), { className: 'bg-layer__scan' }),
+  );
+  host.append(atmosphere);
 
   const { motion, decoration, density } = visualSettings();
 
@@ -113,10 +136,18 @@ export function mountBackground(host, options = {}) {
     const phi = index * Math.PI * (3 - Math.sqrt(5));
     return { x: Math.cos(phi) * radius, y, z: Math.sin(phi) * radius, seed: index * 0.618 };
   });
+  const dust = Array.from({ length: Math.max(4, Math.round(preset.dust * density)) }, (_, index) => ({
+    x: ((index * 0.754877666) % 1),
+    y: ((index * 0.569840296 + 0.17) % 1),
+    depth: 0.28 + ((index * 0.381966) % 1) * 0.72,
+    phase: index * 1.732,
+  }));
 
   let width = 0;
   let height = 0;
   let sphere = 0;
+  let originX = 0;
+  let originY = 0;
 
   function resize() {
     const rect = host.getBoundingClientRect();
@@ -126,7 +157,11 @@ export function mountBackground(host, options = {}) {
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    sphere = Math.min(width, height) * 0.42;
+    sphere = Math.min(width, height) * (sceneContext === 'landing' ? 0.46 : 0.42);
+    const origin = CONTEXT_ORIGINS[sceneContext] ?? CONTEXT_ORIGINS.app;
+    const compact = width < 760;
+    originX = width * (compact ? 0.55 : origin.x);
+    originY = height * (compact ? 0.36 : origin.y);
   }
 
   resize();
@@ -142,6 +177,8 @@ export function mountBackground(host, options = {}) {
     // Resposta indireta e sutil. O layout nunca persegue o cursor.
     targetX = (event.clientX / window.innerWidth - 0.5) * 2;
     targetY = (event.clientY / window.innerHeight - 0.5) * 2;
+    host.style.setProperty('--background-shift-x', `${(event.clientX - window.innerWidth / 2) * -0.012}px`);
+    host.style.setProperty('--background-shift-y', `${(event.clientY - window.innerHeight / 2) * -0.012}px`);
   }
   if (interactive && motion) {
     window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -175,8 +212,8 @@ export function mountBackground(host, options = {}) {
     // Perspectiva: pontos ao fundo ficam menores e mais apagados.
     const perspective = 2.6 / (2.6 - z2);
     return {
-      x: width / 2 + x1 * sphere * perspective,
-      y: height / 2 + y1 * sphere * perspective,
+      x: originX + x1 * sphere * perspective,
+      y: originY + y1 * sphere * perspective,
       depth: (z2 + 1) / 2,
       scale: perspective,
     };
@@ -202,6 +239,18 @@ export function mountBackground(host, options = {}) {
 
     context.clearRect(0, 0, width, height);
 
+    // Campo de profundidade: pontos lentos e discretos que atravessam a malha.
+    for (const particle of dust) {
+      const drift = motion ? time * (2 + particle.depth * 4) : 0;
+      const x = (particle.x * width + drift + pointerX * 12 * particle.depth) % (width + 24) - 12;
+      const y = particle.y * height + Math.sin(time * 0.28 + particle.phase) * 12 * particle.depth;
+      const radius = 0.45 + particle.depth * 1.1;
+      context.fillStyle = `rgba(99, 230, 255, ${0.04 + particle.depth * 0.12})`;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+
     const projected = nodes
       .map((node) => ({ node, point: project(node, angle, tilt) }))
       .sort((a, b) => a.point.depth - b.point.depth);
@@ -226,6 +275,36 @@ export function mountBackground(host, options = {}) {
       }
     }
 
+    // Órbitas do conhecimento: marcam continuidade e criam leitura tridimensional.
+    context.save();
+    context.translate(originX, originY);
+    context.rotate(-0.22 + pointerY * 0.035);
+    context.scale(1, 0.34);
+    for (let ring = 0; ring < 3; ring += 1) {
+      const ringRadius = sphere * (0.72 + ring * 0.17);
+      context.strokeStyle = `rgba(${ring === 1 ? '99, 230, 255' : '53, 214, 192'}, ${0.055 + preset.glow * 0.08})`;
+      context.lineWidth = 1 / 0.34;
+      context.beginPath();
+      context.arc(0, 0, ringRadius, 0, Math.PI * 2);
+      context.stroke();
+    }
+    context.restore();
+
+    // Sinais de energia percorrem as órbitas, como informação sendo conectada.
+    for (let signal = 0; signal < 3; signal += 1) {
+      const phase = time * (0.34 + signal * 0.05) + signal * 2.1;
+      const radius = sphere * (0.78 + signal * 0.16);
+      const x = originX + Math.cos(phase) * radius;
+      const y = originY + Math.sin(phase) * radius * 0.34;
+      const glow = context.createRadialGradient(x, y, 0, x, y, 13);
+      glow.addColorStop(0, `rgba(184, 243, 106, ${0.45 * preset.glow})`);
+      glow.addColorStop(1, 'rgba(184, 243, 106, 0)');
+      context.fillStyle = glow;
+      context.beginPath();
+      context.arc(x, y, 13, 0, Math.PI * 2);
+      context.fill();
+    }
+
     // Nós
     for (const { node, point } of projected) {
       const pulse = motion ? 0.75 + Math.sin(time * 1.1 + node.seed * 6) * 0.25 : 1;
@@ -239,15 +318,12 @@ export function mountBackground(host, options = {}) {
 
     // Núcleo luminoso central
     const coreRadius = sphere * 0.22;
-    const core = context.createRadialGradient(
-      width / 2, height / 2, 0,
-      width / 2, height / 2, coreRadius,
-    );
+    const core = context.createRadialGradient(originX, originY, 0, originX, originY, coreRadius);
     core.addColorStop(0, `rgba(92, 255, 176, ${0.16 * preset.glow})`);
     core.addColorStop(1, 'rgba(92, 255, 176, 0)');
     context.fillStyle = core;
     context.beginPath();
-    context.arc(width / 2, height / 2, coreRadius, 0, Math.PI * 2);
+    context.arc(originX, originY, coreRadius, 0, Math.PI * 2);
     context.fill();
 
     // Com movimento reduzido, desenhamos um único quadro e paramos.

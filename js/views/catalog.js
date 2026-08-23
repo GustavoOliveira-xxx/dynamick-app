@@ -11,9 +11,8 @@ import {
   COGNITIVE_FORMAT_LABELS,
   DIFFICULTY_LABELS,
   SEED_LICENSE,
-  SEED_ORIGIN,
 } from '../engine/domain.js';
-import { catalogHealth } from '../data/content.js';
+import { catalogHealth, QUESTIONS } from '../data/content.js';
 
 /** Mínimos declarados na especificação do material de desenvolvimento. */
 const MINIMOS = [
@@ -30,6 +29,7 @@ const MINIMOS = [
 
 export function renderCatalog(root) {
   const health = catalogHealth();
+  const origins = [...new Set(QUESTIONS.map((question) => question.origin))];
 
   const problemas = [
     { label: 'Tópicos sem nenhum conteúdo escrito', list: health.topicsWithoutContent.map((t) => t.name) },
@@ -74,7 +74,14 @@ export function renderCatalog(root) {
           { style: { marginTop: '0.5rem' } },
           'Ele não cobre o programa completo do ENEM. Serve para exercitar o ciclo de estudo inteiro — entender, praticar, corrigir, revisar e acompanhar — com material verificável.',
         ),
-        el('p', { class: 'xsmall muted', style: { marginTop: '0.5rem' } }, 'Origem: ', SEED_ORIGIN, ' · ', SEED_LICENSE),
+        el(
+          'p',
+          { class: 'xsmall muted', style: { marginTop: '0.5rem' } },
+          'Origens: ',
+          origins.join(' + '),
+          ' · ',
+          SEED_LICENSE,
+        ),
       ),
 
       problemas.length === 0

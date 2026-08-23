@@ -179,7 +179,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. "Encharcado" é a única pista concreta e ela sustenta uma única conclusão obrigatória: houve contato com muita água antes de entrar.',
+            '"Encharcado" é a única pista concreta e ela sustenta uma única conclusão obrigatória: houve contato com muita água antes de entrar.',
           detailed:
             'As demais alternativas acrescentam informações que o texto não garante (atraso, preferência, dano ao aparelho) ou contradizem o que está escrito (perder o celular). Em interpretação, a conclusão precisa estar ancorada em uma passagem que você consiga apontar.',
           strategy:
@@ -236,7 +236,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. A placa troca uma consequência abstrata (a natureza) por uma consequência concreta e próxima (a próxima família), o que torna o pedido mais persuasivo.',
+            'A placa troca uma consequência abstrata (a natureza) por uma consequência concreta e próxima (a próxima família), o que torna o pedido mais persuasivo.',
           detailed:
             'Textos que pedem comportamento costumam funcionar melhor quando a consequência é imaginável. Perceber esse mecanismo é reconhecer a intenção comunicativa por trás da escolha das palavras.',
           strategy:
@@ -294,7 +294,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. "Gloriosos" para descrever 2 minutos é um exagero deliberado: o autor diz o contrário do que pensa para criticar.',
+            '"Gloriosos" para descrever 2 minutos é um exagero deliberado: o autor diz o contrário do que pensa para criticar.',
           detailed:
             'Repare que a crítica tem alvo específico — a insuficiência do ganho prático. Concluir que o autor "é contra a ampliação da frota" seria extrapolar: ele critica a dimensão da medida, não a ideia.',
           strategy:
@@ -350,7 +350,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. A diferença entre as leituras é de **grau**: criticar que a melhora é pequena não é o mesmo que negar que exista melhora.',
+            'A diferença entre as leituras é de **grau**: criticar que a melhora é pequena não é o mesmo que negar que exista melhora.',
           detailed:
             'Questões com afirmações I/II costumam colocar lado a lado uma leitura correta e uma versão exagerada dela. Verifique cada uma isoladamente antes de olhar as alternativas.',
           strategy: 'Marque V ou F em cada afirmação na margem antes de ler as alternativas.',
@@ -405,7 +405,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. Mesma informação de base, propósitos diferentes: informar com precisão x chamar a atenção.',
+            'Mesma informação de base, propósitos diferentes: informar com precisão x chamar a atenção.',
           detailed:
             'Esta questão integra dois conceitos: intenção comunicativa e adequação do gênero ao objetivo. Nenhum dos materiais é "melhor" — eles cumprem funções diferentes dentro da mesma campanha.',
           strategy:
@@ -460,7 +460,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. "Ainda destampada" é o único detalhe que produz uma conclusão obrigatória: a escrita foi recente.',
+            '"Ainda destampada" é o único detalhe que produz uma conclusão obrigatória: a escrita foi recente.',
           strategy: 'Procure o detalhe que parece "sobrando" na frase — ele costuma ser a pista.',
         },
       },
@@ -511,7 +511,7 @@ Em narrativas e reportagens, a opinião entre aspas é da **fonte**, não do aut
         ],
         explanation: {
           summary:
-            'A resposta é A. A segunda frase dá um motivo à ordem, tornando o pedido mais persuasivo sem deixar de ser regra.',
+            'A segunda frase dá um motivo à ordem, tornando o pedido mais persuasivo sem deixar de ser regra.',
           strategy: 'Pergunte o que se perderia se aquele trecho fosse apagado.',
         },
       },
@@ -688,7 +688,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. A pirâmide invertida existe porque o leitor de notícia pode parar a qualquer instante — a forma serve a essa necessidade.',
+            'A pirâmide invertida existe porque o leitor de notícia pode parar a qualquer instante — a forma serve a essa necessidade.',
           strategy:
             'Identifique o gênero pela estrutura e pela função, nunca pelo assunto tratado.',
         },
@@ -742,7 +742,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. A situação concreta de leitura (de pé, com pressa x voluntária, com contexto) explica a diferença de forma.',
+            'A situação concreta de leitura (de pé, com pressa x voluntária, com contexto) explica a diferença de forma.',
           detailed:
             'Esse é o princípio central do estudo de gêneros: a forma responde ao suporte, ao público e à finalidade. Nenhuma das três pode ser ignorada.',
         },
@@ -797,7 +797,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. A forma de bula é usada de propósito para transferir a seriedade do risco médico para o risco no trânsito.',
+            'A forma de bula é usada de propósito para transferir a seriedade do risco médico para o risco no trânsito.',
           strategy:
             'Quando um texto imita outro gênero, pergunte: "o que esse formato original carrega que serve aqui?".',
         },
@@ -851,7 +851,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. A diferença não é "certo x errado", e sim o que cada escolha ganha e o que ela perde.',
+            'A diferença não é "certo x errado", e sim o que cada escolha ganha e o que ela perde.',
           detailed:
             'Reconhecer o custo de cada registro é mais preciso do que classificar um como melhor. Em provas, a alternativa correta costuma ser a que reconhece o trade-off.',
         },
@@ -905,7 +905,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. Transformar um gênero em outro significa manter a informação essencial e refazer a forma para o novo suporte, público e objetivo.',
+            'Transformar um gênero em outro significa manter a informação essencial e refazer a forma para o novo suporte, público e objetivo.',
           detailed:
             'A questão integra três dimensões: o que preservar do conteúdo, o que mudar na forma e qual ação se espera do leitor no novo contexto.',
           conceptRecap:
@@ -959,7 +959,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. A forma "Art. 1º" indica texto normativo, cuja exigência central é não deixar margem a leituras divergentes.',
+            'A forma "Art. 1º" indica texto normativo, cuja exigência central é não deixar margem a leituras divergentes.',
         },
       },
       {
@@ -1010,7 +1010,7 @@ Dizer "usa imperativo" não responde nada. A questão quer saber **por que** ess
         ],
         explanation: {
           summary:
-            'A resposta é A. O canal (leitura x escuta) impõe diferenças reais de ritmo, repetição e ordem.',
+            'O canal (leitura x escuta) impõe diferenças reais de ritmo, repetição e ordem.',
         },
       },
     ],
