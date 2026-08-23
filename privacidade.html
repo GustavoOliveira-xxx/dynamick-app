@@ -5,7 +5,9 @@
     <script>
       // Antes da primeira pintura: sem isto a página pisca no tema errado.
       try {
-        var p = JSON.parse(localStorage.getItem("dynamick:v1") || "{}").preferences || {};
+        var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
+        var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
+        var p = JSON.parse(localStorage.getItem(k) || "{}").preferences || {};
         var r = document.documentElement;
         r.dataset.theme = p.theme || "dark";
         r.dataset.textScale = p.textScale || "100";
@@ -35,8 +37,8 @@
       <header class="shell site-header">
         <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
         <nav class="row" aria-label="Acesso">
-          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
-          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+          <a class="btn btn--ghost btn--sm" href="entrar.html#/entrar">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="entrar.html#/entrar/criar">Começar</a>
         </nav>
       </header>
 
@@ -75,7 +77,7 @@
         <h2>Sincronização entre aparelhos</h2>
         <p>
           É <strong>opcional e desligada por padrão</strong>. Se você ligar, em
-          <a href="app.html#/perfil/dados">Perfil › Meus dados</a>, a plataforma gera um código de
+          <a href="perfil.html#/perfil/dados">Perfil › Meus dados</a>, a plataforma gera um código de
           20 caracteres. Esse código é a chave dos seus dados.
         </p>
         <ul>
@@ -122,7 +124,7 @@
 
         <h2>Exportar e apagar</h2>
         <p>
-          Em <a href="app.html#/perfil/dados">Perfil › Meus dados</a> você baixa tudo em um arquivo
+          Em <a href="perfil.html#/perfil/dados">Perfil › Meus dados</a> você baixa tudo em um arquivo
           JSON legível, importa um backup em outro navegador, ou apaga tudo de uma vez. A exclusão
           local é imediata e definitiva.
         </p>

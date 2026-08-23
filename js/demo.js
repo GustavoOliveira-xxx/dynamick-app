@@ -238,7 +238,7 @@ function fim(lista) {
     el(
       'div',
       { class: 'row' },
-      linkButton({ href: 'app.html#/onboarding', label: 'Montar meu perfil de estudo' }),
+      linkButton({ href: 'onboarding.html#/onboarding', label: 'Montar meu perfil de estudo' }),
       linkButton({ href: 'index.html', label: 'Voltar ao início', variant: 'ghost' }),
     ),
   );

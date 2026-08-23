@@ -5,7 +5,9 @@
     <script>
       // Antes da primeira pintura: sem isto a página pisca no tema errado.
       try {
-        var p = JSON.parse(localStorage.getItem("dynamick:v1") || "{}").preferences || {};
+        var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
+        var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
+        var p = JSON.parse(localStorage.getItem(k) || "{}").preferences || {};
         var r = document.documentElement;
         r.dataset.theme = p.theme || "dark";
         r.dataset.textScale = p.textScale || "100";
@@ -34,12 +36,37 @@
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
     <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/landing.css" />
   </head>
 
   <body>
+    <!-- A mesma tela de carregamento da área de estudo: uma identidade só. -->
+    <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
+      <div class="ck-boot__stage" aria-hidden="true">
+        <span class="ck-boot__halo"></span>
+        <svg class="ck-boot__ring" viewBox="0 0 190 190" aria-hidden="true">
+          <circle class="ck-boot__ring-track" cx="95" cy="95" r="88" />
+          <circle class="ck-boot__ring-signal" cx="95" cy="95" r="88" />
+        </svg>
+        <div class="ck-boot__logo">
+          <picture>
+            <source srcset="assets/brand/logo-dynamic.webp" type="image/webp" />
+            <img src="assets/brand/logo-dynamic.png" alt="" width="116" height="105" decoding="async" fetchpriority="high" />
+          </picture>
+          <span class="ck-boot__sweep"></span>
+        </div>
+      </div>
+      <p class="ck-boot__word" aria-hidden="true">
+        <span>D</span><span>y</span><span>n</span><span>a</span><span>m</span><span>i</span><span class="ck-boot__ck">CK</span>
+      </p>
+      <p class="ck-boot__label">Preparando a sua jornada</p>
+      <p class="ck-boot__signature" aria-hidden="true">by Conscious Knowledge</p>
+      <div class="ck-boot__bar" aria-hidden="true"><span></span></div>
+    </div>
+
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
     <!-- Fundo dinâmico: intensidade ALTA na landing -->
@@ -49,8 +76,8 @@
       <header class="shell site-header">
         <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
         <nav class="row" aria-label="Acesso">
-          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
-          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+          <a class="btn btn--ghost btn--sm" href="entrar.html#/entrar">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="entrar.html#/entrar/criar">Começar</a>
         </nav>
       </header>
 
@@ -68,7 +95,7 @@
               que você tem.
             </p>
             <div class="row hero__actions">
-              <a class="btn btn--primary btn--lg" href="app.html#/onboarding">
+              <a class="btn btn--primary btn--lg" href="entrar.html#/entrar/criar">
                 Começar gratuitamente
               </a>
               <a class="btn btn--secondary btn--lg" href="experimentar.html">
@@ -80,9 +107,9 @@
             </p>
           </div>
 
-          <!-- Cubo de conhecimento + demonstração visual da sessão de estudo -->
+          <!-- Cubo mágico interativo + demonstração visual da sessão de estudo -->
           <div class="hero__visual ck-enter">
-            <div id="cubo-conhecimento" class="hero__cube" aria-hidden="true"></div>
+            <div id="cubo-conhecimento" class="hero__cube"></div>
           <article class="card hero__demo" aria-label="Exemplo de sessão de estudo">
             <header class="hero__demo-head">
               <span class="eyebrow">Exemplo de sessão</span>
@@ -195,7 +222,7 @@
                 O onboarding rápido tem 3 perguntas obrigatórias e leva cerca de dois minutos.
               </p>
             </div>
-            <a class="btn btn--primary" href="app.html#/onboarding">Começar agora</a>
+            <a class="btn btn--primary" href="entrar.html#/entrar/criar">Começar agora</a>
           </div>
         </section>
       </main>
@@ -221,11 +248,14 @@
     <script type="module">
       import { dynamickLogo, consciousKnowledgeLogo } from './js/ui/brand.js';
       import { mountBackground } from './js/ui/background.js';
-      import { knowledgeCube } from './js/ui/knowledge-cube.js';
+      import { rubikCube } from './js/ui/rubik-cube.js';
+      import { hideLoader, showLoaderForNavigation } from './js/ui/loader.js';
 
       document.getElementById('marca').append(dynamickLogo({ variant: 'full', signature: true }));
       document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
-      document.getElementById('cubo-conhecimento').append(knowledgeCube({ variant: 'hero' }));
+
+      // O mesmo cubo da tela inicial, já mexível aqui.
+      document.getElementById('cubo-conhecimento').append(rubikCube({ size: 'md' }));
 
       // Intensidade alta e reativa ao cursor — só aqui e no início.
       mountBackground(document.getElementById('fundo'), {
@@ -233,6 +263,13 @@
         interactive: true,
         context: 'landing',
       });
+
+      // Sair da landing para a área de estudo mostra o carregamento na hora.
+      for (const link of document.querySelectorAll('a[href*=".html#/"]')) {
+        link.addEventListener('click', () => showLoaderForNavigation('Abrindo sua área de estudo'));
+      }
+
+      hideLoader();
     </script>
   </body>
 </html>
