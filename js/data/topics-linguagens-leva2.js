@@ -1,14 +1,14 @@
-/**
- * Linguagens — segunda leva de tópicos.
- *
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhum enunciado, texto motivador ou alternativa foi copiado de prova oficial,
- * livro ou plataforma de terceiros. Os textos de apoio são curtos e autorais.
- *
- * Cobre os assuntos previstos no escopo que ainda não tinham tópico próprio:
- * funções da linguagem, variação linguística, recursos expressivos e literatura
- * brasileira — este último abre a matéria de Literatura, até então vazia.
- */
+
+
+
+
+
+
+
+
+
+
+
 
 import { question as q, topic } from './topic-factory.js';
 

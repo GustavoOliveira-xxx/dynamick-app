@@ -1,10 +1,10 @@
-/**
- * Transição curta e cancelável entre telas do mesmo documento.
- *
- * Usa a mesma logo animada da tela de carregamento inicial, em escala menor:
- * trocar de tela dentro de "Conteúdos" e ir de "Conteúdos" para "Praticar"
- * passam a ter a mesma linguagem visual, mudando só a duração.
- */
+
+
+
+
+
+
+
 
 import { el } from '../core/dom.js';
 import { brandStage, brandWord } from './loader.js';
@@ -43,18 +43,18 @@ function labelFor(path) {
   return ROUTE_LABELS.find(([pattern]) => pattern.test(path))?.[1] ?? 'Conectando conhecimentos';
 }
 
-/**
- * Começa a saída da tela atual e devolve controles para montar a próxima tela.
- * Só uma transição pode existir; iniciar outra cancela a anterior sem deixar overlay.
- */
+
+
+
+
 export function beginRouteTransition(main, path) {
   activeTransition?.cancel();
 
-  /*
-   * Primeira tela da página: a tela de carregamento do HTML ainda está no ar e
-   * mostra exatamente a mesma logo. Empilhar as duas só atrasaria a primeira
-   * pintura em ~200ms sem acrescentar informação nenhuma.
-   */
+
+
+
+
+
   const boot = document.getElementById('ck-boot');
   if (boot && !boot.hidden && !boot.classList.contains('ck-boot--done')) {
     main.classList.add('page-view--entering');
@@ -93,7 +93,7 @@ export function beginRouteTransition(main, path) {
   document.body.append(overlay);
   main.classList.remove('page-view--entering');
   main.classList.add('page-view--leaving');
-  // Garante que a classe de entrada seja pintada antes da animação.
+
   requestAnimationFrame(() => overlay.classList.add('route-transition--visible'));
 
   const transition = {

@@ -1,13 +1,13 @@
-/**
- * Matemática — segunda leva de tópicos.
- *
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhum enunciado foi copiado de prova oficial, livro ou plataforma de terceiros.
- *
- * Cobre os assuntos previstos no escopo que ainda não tinham tópico próprio:
- * razão e proporção, regra de três, geometria plana, estatística, probabilidade
- * e matemática financeira.
- */
+
+
+
+
+
+
+
+
+
+
 
 import { question as q, topic } from './topic-factory.js';
 

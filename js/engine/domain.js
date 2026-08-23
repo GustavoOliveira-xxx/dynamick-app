@@ -1,4 +1,4 @@
-/** Domínios fechados e rótulos em português. Fonte única de verdade. */
+
 
 export const PROFILE_SLUGS = [
   'explorador-sem-rota',

@@ -1,7 +1,7 @@
-/**
- * Cinco novas questões autorais para cada um dos 12 tópicos completos do MVP.
- * A separação mantém o acervo original intacto e torna a atualização auditável.
- */
+
+
+
+
 
 import { LINGUAGENS_QUESTION_EXPANSION } from './questions-expansion-linguagens.js';
 import { MATEMATICA_QUESTION_EXPANSION } from './questions-expansion-matematica.js';

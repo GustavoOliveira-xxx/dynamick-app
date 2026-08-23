@@ -1,8 +1,8 @@
-/**
- * Revisar — fila espaçada e caderno de erros.
- * A revisão nunca repete apenas o item original: a leva sempre inclui uma questão nova
- * do mesmo tópico, para separar "lembrei da questão" de "aprendi o conteúdo".
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, button, card, choiceGroup, emptyState, linkButton, message, textarea, toast } from '../ui/components.js';
@@ -30,14 +30,14 @@ import { startSession } from './dashboard.js';
 
 const RECALL_TONE = { forgot: 'danger', partial: 'warning', mastered: 'green' };
 
-/* ---------------------------------------------------------------- Fila */
+
 
 export function renderReview(root) {
   const due = pendingReviews();
   const upcoming = upcomingReviewCount();
   const openNotes = errorNotes('open');
 
-  // Agrupa por tópico: revisar cinco itens do mesmo assunto é uma sessão, não cinco.
+
   const byTopic = new Map();
   for (const item of due) {
     const list = byTopic.get(item.topicSlug) ?? [];
@@ -146,7 +146,7 @@ export function renderReview(root) {
   );
 }
 
-/** Linha de um item da fila: o estudante declara o quanto lembrou antes de resolver. */
+
 function reviewItemRow(item) {
   const question = getQuestion(item.questionSlug);
   const container = el('li', { class: 'item-row' });
@@ -176,8 +176,8 @@ function reviewItemRow(item) {
       name: `recall-${item.id}`,
       options: RECALL_LEVELS.map((level) => ({ value: level, label: RECALL_LABELS[level] })),
       onChange: (value) => {
-        // A declaração sozinha não move o intervalo para frente: ela é comparada
-        // com o desempenho real na sessão. Aqui só registramos o autorrelato.
+
+
         registerRecall(item.id, value, value === 'mastered');
         toast('Anotado. A próxima data de revisão levou isso em conta.', 'info');
         refresh();
@@ -189,7 +189,7 @@ function reviewItemRow(item) {
   return container;
 }
 
-/* ---------------------------------------------------------------- Caderno */
+
 
 export function renderNotebook(root, { query }) {
   const showResolved = query.get('estado') === 'resolvidos';
@@ -314,7 +314,7 @@ function noteCard(note) {
           const reabrindo = note.status === 'resolved';
           toggleErrorNoteResolved(note.id);
           toast(reabrindo ? 'Erro reaberto.' : 'Erro marcado como resolvido.', 'success');
-          // A nota saiu da lista filtrada: a tela precisa refletir isso.
+
           refresh();
         },
       }),

@@ -1,12 +1,12 @@
-/**
- * Sessões de estudo: criação, seleção de itens, respostas e encerramento.
- *
- * Pontos de cuidado tratados aqui:
- *  - criar sessão é idempotente por minuto, então recarregar não duplica;
- *  - a PRIMEIRA resposta e a resposta FINAL ficam separadas;
- *  - abandonar pausa a sessão sem perder nada;
- *  - o tempo é acumulado por item, não recalculado do zero.
- */
+
+
+
+
+
+
+
+
+
 
 import { getState, update } from './store.js';
 import { newId, clamp } from './format.js';
@@ -15,13 +15,13 @@ import { getQuestion, getTopic, questionsForTopic, QUESTIONS, getSimulation } fr
 import { generateSimulation } from '../engine/simulation.js';
 import { buildReviewBatch } from '../engine/spaced.js';
 
-/* ---------------------------------------------------------------- Seleção */
 
-/**
- * Escolhe questões para uma sessão de prática.
- * Evita repetir em curto intervalo e busca variedade de formato cognitivo — cinco
- * questões que só trocam números não avaliam a mesma habilidade em contextos diferentes.
- */
+
+
+
+
+
+
 export function selectQuestions(topicSlug, count) {
   const state = getState();
   const fiveDaysAgo = Date.now() - 5 * 86400000;
@@ -42,7 +42,7 @@ export function selectQuestions(topicSlug, count) {
   const fresh = candidates.filter((question) => !recentlySeen.has(question.slug));
   const pool = fresh.length >= count ? fresh : candidates;
 
-  // No máximo dois do mesmo formato cognitivo por sessão.
+
   const perFormat = new Map();
   const picked = [];
 
@@ -62,23 +62,23 @@ export function selectQuestions(topicSlug, count) {
   return picked;
 }
 
-/** Monta a leva de revisão: sempre com pelo menos um item inédito. */
+
 export function selectReviewQuestions(topicSlug, originalSlugs, count) {
   const candidates = questionsForTopic(topicSlug).map((question) => ({
     id: question.slug,
     isRecovery: question.isRecovery,
   }));
-  // Questões de recuperação primeiro: foram feitas para reencontrar a mesma habilidade.
+
   candidates.sort((a, b) => (a.isRecovery === b.isRecovery ? 0 : a.isRecovery ? -1 : 1));
   return buildReviewBatch(originalSlugs, candidates, count);
 }
 
-/* ---------------------------------------------------------------- Criação */
 
-/**
- * Chave de idempotência por minuto: recarregar a página ou clicar duas vezes não cria
- * uma segunda sessão idêntica.
- */
+
+
+
+
+
 function idempotencyKey(parts) {
   return `${parts.join('|')}|${Math.floor(Date.now() / 60000)}`;
 }
@@ -137,7 +137,7 @@ export function createSession({
   return getState().sessions[id];
 }
 
-/** Cria a sessão a partir de um tópico, respeitando o perfil e o tempo declarado. */
+
 export function createTopicSession(topicSlug, kind = 'practice') {
   const topic = getTopic(topicSlug);
   if (!topic) return null;
@@ -185,7 +185,7 @@ export function createTopicSession(topicSlug, kind = 'practice') {
   });
 }
 
-/** Diagnóstico leve: questões distribuídas entre as quatro áreas. */
+
 export function createDiagnosticSession(perArea = 2) {
   const byArea = new Map();
   for (const question of QUESTIONS) {
@@ -204,7 +204,7 @@ export function createDiagnosticSession(perArea = 2) {
   return createSession({
     title: 'Diagnóstico leve',
     kind: 'diagnostic',
-    // Correção ao final: o diagnóstico mede o ponto de partida, não ensina ainda.
+
     mode: 'exam',
     reason:
       'Questões distribuídas entre as quatro áreas para um primeiro mapa. Não é prova e você pode pular o que não souber.',
@@ -213,7 +213,7 @@ export function createDiagnosticSession(perArea = 2) {
   });
 }
 
-/** Execução de simulado, com matriz de distribuição e regra de fallback. */
+
 export function createSimulationSession(simulationSlug, timed = true) {
   const simulation = getSimulation(simulationSlug);
   if (!simulation) return null;
@@ -239,7 +239,7 @@ export function createSimulationSession(simulationSlug, timed = true) {
   const session = createSession({
     title: simulation.title,
     kind: 'simulate',
-    mode: 'exam', // simulado mostra o resultado só no final
+    mode: 'exam',
     reason: simulation.description,
     questionSlugs: result.questionIds,
     minutes: simulation.minutes,
@@ -259,7 +259,7 @@ export function createSimulationSession(simulationSlug, timed = true) {
       score: 0,
       submittedAt: null,
       analysis: null,
-      // Falta de questões vira aviso registrado, não silêncio.
+
       fallbackNote: result.fallbackNote,
       shortfall: result.shortfall,
       createdAt: new Date().toISOString(),
@@ -269,7 +269,7 @@ export function createSimulationSession(simulationSlug, timed = true) {
   return session;
 }
 
-/* ---------------------------------------------------------------- Leitura */
+
 
 export function getSession(id) {
   return getState().sessions[id] ?? null;
@@ -291,13 +291,13 @@ export function runForSession(sessionId) {
   return Object.values(getState().simulationRuns).find((run) => run.sessionId === sessionId) ?? null;
 }
 
-/* ---------------------------------------------------------------- Escrita */
 
-/**
- * Registra a resposta.
- * A primeira resposta é preservada mesmo se o estudante trocar de alternativa —
- * mudar de ideia é dado pedagógico, não ruído.
- */
+
+
+
+
+
+
 export function answerQuestion({ sessionId, questionSlug, optionLabel, confidence, timeSpentMs }) {
   const question = getQuestion(questionSlug);
   if (!question) return null;
@@ -314,7 +314,7 @@ export function answerQuestion({ sessionId, questionSlug, optionLabel, confidenc
       id,
       sessionId,
       questionSlug,
-      // firstAnswer NUNCA é sobrescrito: guarda o primeiro impulso.
+
       firstAnswer: previous?.firstAnswer ?? optionLabel,
       answer: optionLabel,
       changedAnswer: previous ? previous.firstAnswer !== optionLabel : false,
@@ -337,7 +337,7 @@ export function answerQuestion({ sessionId, questionSlug, optionLabel, confidenc
   return getState().attempts[id];
 }
 
-/** "O que dificultou esta questão?" — gera ação, não apenas estatística. */
+
 export function classifyError(attemptId, reason) {
   const attempt = getState().attempts[attemptId];
   if (!attempt) return;
@@ -380,7 +380,7 @@ export function saveItemNote(sessionId, questionSlug, note) {
   }, { immediate: true });
 }
 
-/** Abandonar não perde o estado: a sessão fica pausada e retomável. */
+
 export function pauseSession(sessionId) {
   update((state) => {
     const session = state.sessions[sessionId];
@@ -400,7 +400,7 @@ export function completeSession(sessionId) {
     }
   }, { immediate: true });
 
-  // Marca o bloco do plano correspondente como feito, se houver.
+
   const session = getSession(sessionId);
   if (session?.topicSlug) {
     update((state) => {
@@ -412,7 +412,7 @@ export function completeSession(sessionId) {
   }
 }
 
-/* ---------------------------------------------------------------- Resumo */
+
 
 export function summarizeSession(sessionId) {
   const session = getSession(sessionId);
@@ -447,7 +447,7 @@ export function summarizeSession(sessionId) {
       if (attempt.isCorrect) {
         correct += 1;
         bucket.correct += 1;
-        // Diferencia acerto com confiança, com dúvida e após troca de alternativa.
+
         if (attempt.changedAnswer) correctAfterChange += 1;
         else if (attempt.confidence === 'sure') correctWithConfidence += 1;
         else correctWithDoubt += 1;
@@ -481,13 +481,13 @@ export function summarizeSession(sessionId) {
   };
 }
 
-/** Envio do simulado: calcula a análise por área, tópico, habilidade e tempo. */
+
 export function submitSimulation(sessionId) {
   const run = runForSession(sessionId);
   const session = getSession(sessionId);
   if (!run || !session) return null;
 
-  // Envio duplicado ao terminar o tempo não recalcula nem duplica.
+
   if (run.submittedAt) return run;
 
   const byArea = {};

@@ -1,9 +1,9 @@
-/**
- * Questionário de onboarding, versão v1.
- *
- * Cada opção declara o efeito que tem nas dimensões do perfil. É a fonte única:
- * o motor de perfil lê daqui, e a tela de confirmação explica a partir daqui.
- */
+
+
+
+
+
+
 
 export const QUESTIONNAIRE_VERSION = 'v1';
 
@@ -402,7 +402,7 @@ export function previousStepSlug(slug) {
   return index <= 0 ? null : ONBOARDING_STEPS[index - 1].slug;
 }
 
-/** Primeira etapa ainda não concluída nem pulada — usada na retomada. */
+
 export function firstIncompleteStep(completed, skipped) {
   const done = new Set([...completed, ...skipped]);
   return ONBOARDING_STEPS.find((step) => !done.has(step.slug))?.slug ?? null;

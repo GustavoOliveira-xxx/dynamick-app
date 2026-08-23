@@ -1,8 +1,8 @@
-/**
- * Mapa de conteúdos e página do tópico.
- * O mapa mostra os cinco estados de domínio; o tópico traz os níveis de profundidade
- * sem obrigar leitura longa antes de praticar.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, card, emptyState, message, progress, seedNotice, button } from '../ui/components.js';
@@ -35,7 +35,7 @@ const ACCENT_VAR = {
   lime: 'var(--ck-lime)',
 };
 
-/* ---------------------------------------------------------------- Mapa */
+
 
 export function renderContentMap(root, { query }) {
   const filters = {
@@ -237,7 +237,7 @@ function topicCard(topic) {
   );
 }
 
-/* ---------------------------------------------------------------- Tópico */
+
 
 export function renderTopic(root, { params, query }) {
   const topic = getTopic(params.slug);
@@ -251,7 +251,7 @@ export function renderTopic(root, { params, query }) {
     return;
   }
 
-  // Abrir o conteúdo já conta como "explorado".
+
   markTopicViewed(topic.slug);
 
   const area = getArea(topic.areaSlug);

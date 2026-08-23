@@ -1,7 +1,7 @@
-/**
- * Gera db/02-seed-acervo.sql a partir dos módulos de dados.
- * Fonte única: os arquivos js/data/. O SQL é derivado, nunca escrito à mão.
- */
+
+
+
+
 import { writeFileSync } from 'node:fs';
 import {
   AREAS, SUBJECTS, TOPICS, QUESTIONS, STUDY_METHODS,
@@ -108,9 +108,9 @@ const sql = linhas.join('\n') + '\n';
 writeFileSync(new URL('02-seed-acervo.sql', import.meta.url), sql);
 console.log('linhas:', linhas.length, '| bytes:', sql.length);
 
-// Com --json, também emite o acervo em JSON, para um carregador via API que não
-// queira parsear SQL. Fora do repositório de propósito: é uma duplicata gerada de
-// js/data/, e arquivo gerado que fica versionado sai de sincronia em silêncio.
+
+
+
 if (process.argv.includes('--json')) {
   writeFileSync(new URL('acervo.json', import.meta.url), JSON.stringify({
     areas: AREAS, subjects: SUBJECTS, topics: TOPICS, questions: QUESTIONS,

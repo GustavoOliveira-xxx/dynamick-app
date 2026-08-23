@@ -6,22 +6,26 @@
     <title>Abrindo · Dynamic CK</title>
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#020504" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
     <script>
-      /*
-       * Compatibilidade.
-       *
-       * A área de estudo era um documento só (app.html#/rota). Agora cada área
-       * tem o seu arquivo, para que o navegador baixe apenas o necessário e o
-       * carregamento seja visível a cada troca. Endereços antigos — links
-       * salvos, favoritos, prints da documentação — continuam funcionando:
-       * este arquivo lê a rota e encaminha para o documento certo, sem deixar
-       * uma parada extra no histórico.
-       */
+
+
+
+
+
+
+
+
+
+
       (function () {
         var MAPA = [
           ['/entrar', 'entrar.html'],
@@ -33,6 +37,7 @@
           ['/sessao', 'sessao.html'],
           ['/revisar', 'revisar.html'],
           ['/simulados', 'simulados.html'],
+          ['/enems', 'enems.html'],
           ['/redacao', 'redacao.html'],
           ['/metodos', 'metodos.html'],
           ['/buscar', 'buscar.html'],
@@ -96,5 +101,6 @@
         </div>
       </div>
     </noscript>
+    <script type="module" src="js/pwa.js"></script>
   </body>
 </html>

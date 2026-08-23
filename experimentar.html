@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script>
-      // Antes da primeira pintura: sem isto a página pisca no tema errado.
+
       try {
         var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
         var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
@@ -23,8 +23,12 @@
       content="Três questões com correção completa, sem cadastro e sem salvar nada. Veja como o Dynamic CK corrige antes de montar seu perfil."
     />
     <meta name="theme-color" content="#020504" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
@@ -95,5 +99,6 @@
     </div>
 
     <script type="module" src="js/demo.js"></script>
+    <script type="module" src="js/pwa.js"></script>
   </body>
 </html>

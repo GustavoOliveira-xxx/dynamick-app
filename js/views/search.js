@@ -1,8 +1,8 @@
-/**
- * Busca — encontra tópicos, conteúdos, métodos, simulados e temas de redação.
- * A busca é local e imediata: não há servidor para consultar.
- * Resultado vazio nunca é um beco sem saída — sempre oferece um caminho.
- */
+
+
+
+
+
 
 import { el, render, debounce } from '../core/dom.js';
 import { badge, card, emptyState } from '../ui/components.js';
@@ -18,7 +18,7 @@ import {
 import { masteryFor } from '../core/student.js';
 import { navigate } from '../core/router.js';
 
-/** Remove acento para que "funcoes" encontre "funções". */
+
 function normalize(text) {
   return (text ?? '')
     .toLowerCase()
@@ -26,7 +26,7 @@ function normalize(text) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Índice montado uma vez por carregamento — o catálogo é estático. */
+
 let index = null;
 
 function buildIndex() {
@@ -119,7 +119,7 @@ function search(term) {
         if (normalize(entry.title).includes(word)) score += 3;
         else score += 1;
       }
-      // Tópico vale mais que trecho de conteúdo: é o destino navegável.
+
       if (entry.kind === 'topic') score += 2;
       return { ...entry, score };
     })
@@ -221,7 +221,7 @@ export function renderSearch(root, { query }) {
 
   const onType = debounce((term) => {
     run(term);
-    // Mantém o endereço compartilhável sem empilhar histórico a cada tecla.
+
     const target = term.trim() ? `/buscar?q=${encodeURIComponent(term.trim())}` : '/buscar';
     navigate(target, { replace: true });
   }, 250);
@@ -261,7 +261,7 @@ export function renderSearch(root, { query }) {
   input.focus();
 }
 
-/** Sugestões quando não há busca ativa: evita a tela vazia sem saída. */
+
 function sugestoes() {
   const destaques = TOPICS.slice(0, 6);
   return card(

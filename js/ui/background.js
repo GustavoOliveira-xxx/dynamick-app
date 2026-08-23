@@ -1,18 +1,18 @@
-/**
- * Fundo dinâmico: rede de conhecimento em 3D.
- *
- * Pontos distribuídos numa esfera (sequência de Fibonacci), rotacionados por matriz e
- * projetados em perspectiva sobre canvas 2D.
- *
- * POR QUE CANVAS 2D E NÃO WebGL: a aplicação precisa continuar utilizável se o WebGL
- * falhar. Aqui o caminho principal e o fallback são o mesmo código — não há contexto
- * perdido, não há vazamento de memória de cena, e o custo é baixo o bastante para
- * rodar em celular modesto.
- *
- * Garantias: pausa fora da viewport, pausa com a aba oculta, densidade reduzida em
- * telas pequenas e em economia de dados, um único quadro com movimento reduzido, e o
- * canvas é sempre aria-hidden + pointer-events:none — nunca cobre um botão.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const PRESETS = {
   high: { nodes: 82, dust: 38, link: 0.62, glow: 0.68, spin: 0.06, tilt: 0.24 },
@@ -43,7 +43,7 @@ const CONTEXT_ORIGINS = {
   focus: { x: 0.5, y: 0.3 },
 };
 
-/** Só uma cena pesada por vez. */
+
 let heavySceneOwner = null;
 
 function visualSettings() {
@@ -64,12 +64,12 @@ function visualSettings() {
   return { motion, decoration, density };
 }
 
-/**
- * Monta o fundo dentro de um contêiner.
- * @param {HTMLElement} host
- * @param {{intensity?: keyof PRESETS, interactive?: boolean, context?: keyof CONTEXT_ORIGINS}} options
- * @returns {() => void} função de limpeza
- */
+
+
+
+
+
+
 export function mountBackground(host, options = {}) {
   const intensity = options.intensity ?? 'medium';
   const interactive = options.interactive ?? false;
@@ -80,13 +80,13 @@ export function mountBackground(host, options = {}) {
   host.className = 'bg-layer';
   host.dataset.context = sceneContext;
 
-  // Gradiente base em CSS puro: dá profundidade sozinho e não depende de JS.
+
   const gradient = document.createElement('div');
   gradient.className = 'bg-layer__gradient';
   gradient.style.background = GRADIENTS[intensity];
   host.append(gradient);
 
-  // Camadas CSS de baixo custo: aurora, malha acadêmica em perspectiva e varredura.
+
   const atmosphere = document.createElement('div');
   atmosphere.className = 'bg-layer__atmosphere';
   atmosphere.append(
@@ -99,7 +99,7 @@ export function mountBackground(host, options = {}) {
 
   const { motion, decoration, density } = visualSettings();
 
-  // Véu final: garante contraste do texto sobre qualquer estado da cena.
+
   const veil = document.createElement('div');
   veil.className = 'bg-layer__veil';
 
@@ -115,7 +115,7 @@ export function mountBackground(host, options = {}) {
 
   const context = canvas.getContext('2d');
   if (!context) {
-    // Sem canvas 2D o gradiente continua valendo. Nada quebra.
+
     return () => host.replaceChildren();
   }
 
@@ -128,7 +128,7 @@ export function mountBackground(host, options = {}) {
   const isOwner = !heavy || heavySceneOwner === token;
   const nodeCount = Math.max(8, Math.round(preset.nodes * density * (isOwner ? 1 : 0.4)));
 
-  // Distribuição de Fibonacci: pontos espalhados na esfera, sem aglomerados.
+
   const nodes = Array.from({ length: nodeCount }, (_, index) => {
     const offset = 2 / nodeCount;
     const y = index * offset - 1 + offset / 2;
@@ -174,7 +174,7 @@ export function mountBackground(host, options = {}) {
   let targetY = 0;
 
   function onPointerMove(event) {
-    // Resposta indireta e sutil. O layout nunca persegue o cursor.
+
     targetX = (event.clientX / window.innerWidth - 0.5) * 2;
     targetY = (event.clientY / window.innerHeight - 0.5) * 2;
     host.style.setProperty('--background-shift-x', `${(event.clientX - window.innerWidth / 2) * -0.012}px`);
@@ -198,7 +198,7 @@ export function mountBackground(host, options = {}) {
   let last = 0;
 
   function project(node, angle, tilt) {
-    // Rotação em Y, depois inclinação em X — matriz aplicada à mão.
+
     const cosY = Math.cos(angle);
     const sinY = Math.sin(angle);
     const x1 = node.x * cosY - node.z * sinY;
@@ -209,7 +209,7 @@ export function mountBackground(host, options = {}) {
     const y1 = node.y * cosX - z1 * sinX;
     const z2 = node.y * sinX + z1 * cosX;
 
-    // Perspectiva: pontos ao fundo ficam menores e mais apagados.
+
     const perspective = 2.6 / (2.6 - z2);
     return {
       x: originX + x1 * sphere * perspective,
@@ -239,7 +239,7 @@ export function mountBackground(host, options = {}) {
 
     context.clearRect(0, 0, width, height);
 
-    // Campo de profundidade: pontos lentos e discretos que atravessam a malha.
+
     for (const particle of dust) {
       const drift = motion ? time * (2 + particle.depth * 4) : 0;
       const x = (particle.x * width + drift + pointerX * 12 * particle.depth) % (width + 24) - 12;
@@ -255,7 +255,7 @@ export function mountBackground(host, options = {}) {
       .map((node) => ({ node, point: project(node, angle, tilt) }))
       .sort((a, b) => a.point.depth - b.point.depth);
 
-    // Conexões: conhecimento ligado, não decoração aleatória.
+
     context.lineWidth = 1;
     const maxDistance = sphere * preset.link;
     for (let i = 0; i < projected.length; i += 1) {
@@ -275,7 +275,7 @@ export function mountBackground(host, options = {}) {
       }
     }
 
-    // Órbitas do conhecimento: marcam continuidade e criam leitura tridimensional.
+
     context.save();
     context.translate(originX, originY);
     context.rotate(-0.22 + pointerY * 0.035);
@@ -290,7 +290,7 @@ export function mountBackground(host, options = {}) {
     }
     context.restore();
 
-    // Sinais de energia percorrem as órbitas, como informação sendo conectada.
+
     for (let signal = 0; signal < 3; signal += 1) {
       const phase = time * (0.34 + signal * 0.05) + signal * 2.1;
       const radius = sphere * (0.78 + signal * 0.16);
@@ -305,7 +305,7 @@ export function mountBackground(host, options = {}) {
       context.fill();
     }
 
-    // Nós
+
     for (const { node, point } of projected) {
       const pulse = motion ? 0.75 + Math.sin(time * 1.1 + node.seed * 6) * 0.25 : 1;
       const radius = Math.max(0.6, 1.9 * point.scale * point.depth) * pulse;
@@ -316,7 +316,7 @@ export function mountBackground(host, options = {}) {
       context.fill();
     }
 
-    // Núcleo luminoso central
+
     const coreRadius = sphere * 0.22;
     const core = context.createRadialGradient(originX, originY, 0, originX, originY, coreRadius);
     core.addColorStop(0, `rgba(92, 255, 176, ${0.16 * preset.glow})`);
@@ -326,7 +326,7 @@ export function mountBackground(host, options = {}) {
     context.arc(originX, originY, coreRadius, 0, Math.PI * 2);
     context.fill();
 
-    // Com movimento reduzido, desenhamos um único quadro e paramos.
+
     if (!motion) cancelAnimationFrame(frame);
   }
 

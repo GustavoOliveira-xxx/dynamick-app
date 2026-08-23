@@ -1,8 +1,8 @@
-/**
- * Diagnóstico leve — opcional, curto e sempre recusável.
- * Ele existe para dar um primeiro mapa quando o estudante não sabe o próprio nível.
- * Recusar não bloqueia nada: a plataforma passa a usar o desempenho das sessões.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { button, card, emptyState, linkButton, message } from '../ui/components.js';
@@ -18,7 +18,7 @@ const PER_AREA = 2;
 export function renderDiagnostic(root) {
   const s = student();
 
-  // Diagnóstico já concluído: mostra o mapa em vez de repetir a oferta.
+
   const done = Object.values(getState().sessions)
     .filter((session) => session.kind === 'diagnostic' && session.status === 'completed')
     .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0];
@@ -128,7 +128,7 @@ export function renderDiagnostic(root) {
   );
 }
 
-/** Mapa do resultado: por área, sem nota e sem ranking. */
+
 function resultado(session) {
   const summary = summarizeSession(session.id);
 

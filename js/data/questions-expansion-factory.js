@@ -1,4 +1,4 @@
-/** Estrutura editorial comum às questões da expansão de agosto de 2026. */
+
 
 const LABELS = ['A', 'B', 'C', 'D', 'E'];
 

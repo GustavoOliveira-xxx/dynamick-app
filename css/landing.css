@@ -1,4 +1,4 @@
-/* Estilos exclusivos da landing e das páginas institucionais */
+
 
 .page {
   position: relative;
@@ -17,7 +17,7 @@
 }
 .site-header a { text-decoration: none; }
 
-/* ---------------------------------------------------------------- Hero */
+
 
 .hero {
   display: grid;
@@ -55,11 +55,11 @@
   padding-top: clamp(4.5rem, 12vw, 7rem);
 }
 .hero__cube {
-  /*
-   * O cubo deixou de ser enfeite: dá para arrastar e girar as camadas. Por isso
-   * saiu de cima do cartão de exemplo — um objeto que recebe cliques não pode
-   * cobrir conteúdo nem roubar o gesto de rolagem da página.
-   */
+
+
+
+
+
   position: relative;
   z-index: 2;
   margin-bottom: 1.25rem;
@@ -118,7 +118,7 @@
   background: var(--ck-bg-raised);
 }
 
-/* ---------------------------------------------------------------- Seções */
+
 
 .section { padding-block: 2.5rem; }
 .section__grid { margin-top: 1.5rem; }
@@ -183,7 +183,7 @@
   gap: 1.25rem;
 }
 
-/* ---------------------------------------------------------------- Rodapé */
+
 
 .site-footer {
   margin-top: auto;
@@ -202,7 +202,7 @@
 .site-footer a { color: var(--ck-text-2); text-decoration: none; }
 .site-footer a:hover { color: var(--ck-text); text-decoration: underline; }
 
-/* ---------------------------------------------------------------- Páginas de texto */
+
 
 .doc { padding-block: 1rem 3rem; }
 .doc h1 { margin-bottom: 1.25rem; }
