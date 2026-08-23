@@ -1,8 +1,8 @@
-/**
- * Saúde do conteúdo — a tela que declara o que o material tem e o que falta.
- * Ela existe porque esconder as lacunas do acervo faria a plataforma parecer
- * mais completa do que é. Aqui a limitação aparece por escrito.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, card, linkButton, message, progress } from '../ui/components.js';
@@ -14,7 +14,7 @@ import {
 } from '../engine/domain.js';
 import { catalogHealth, QUESTIONS } from '../data/content.js';
 
-/** Mínimos declarados na especificação do material de desenvolvimento. */
+
 const MINIMOS = [
   { key: 'areas', label: 'Áreas', min: 4 },
   { key: 'subjects', label: 'Disciplinas', min: 10 },
@@ -109,7 +109,7 @@ export function renderCatalog(root) {
             ),
           ),
 
-      /* Mínimos declarados. */
+
       card(
         {},
         el('h2', {}, 'Mínimos do acervo'),
@@ -144,7 +144,7 @@ export function renderCatalog(root) {
         ),
       ),
 
-      /* Distribuições. */
+
       el(
         'div',
         { class: 'grid grid--3' },

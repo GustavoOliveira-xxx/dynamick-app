@@ -1,9 +1,9 @@
-/**
- * Motor de perfil: determinístico e explicável.
- *
- * O mesmo conjunto de respostas sempre produz o mesmo perfil, a mesma confiança e os
- * mesmos sinais legíveis. Nenhuma pontuação técnica é mostrada ao estudante.
- */
+
+
+
+
+
+
 
 import { DIMENSION_KEYS } from './domain.js';
 import { clamp } from '../core/format.js';
@@ -43,11 +43,11 @@ function asList(value) {
   return [];
 }
 
-/**
- * Quais etapas o estudante efetivamente respondeu.
- * Uma lista vazia CONTA como resposta: marcar "nenhuma dessas" é uma resposta
- * legítima, não uma etapa em branco. Só texto vazio não conta.
- */
+
+
+
+
+
 export function answeredSteps(answers) {
   return ONBOARDING_STEPS.filter((step) =>
     step.questions.some((question) => {
@@ -81,7 +81,7 @@ export function computeDimensions(answers) {
     }
   }
 
-  // Consistência é derivada diretamente dos dias por semana.
+
   const days = Number(asString(answers.daysPerWeek) ?? NaN);
   if (Number.isFinite(days) && days >= 1 && days <= 7) {
     dimensions.consistency = 30 + days * 8;
@@ -93,7 +93,7 @@ export function computeDimensions(answers) {
     if (asList(answers.frictions).includes('perder_ritmo')) dimensions.consistency -= 10;
   }
 
-  // Tempo personalizado interpola a mesma escala das opções fixas.
+
   const minutes = Number(asString(answers.sessionMinutes) ?? NaN);
   if (Number.isFinite(minutes) && ![10, 20, 30, 45, 60].includes(minutes)) {
     const bounded = clamp(minutes, 5, 180);
@@ -101,11 +101,11 @@ export function computeDimensions(answers) {
     dimensions.needsShortSessions += Math.round(effect);
   }
 
-  // Objetivo principal tem peso dobrado (o efeito já foi aplicado uma vez em `goals`).
+
   const primaryGoal = asString(answers.primaryGoal);
   if (primaryGoal) applyEffect(dimensions, findOption('goals', primaryGoal)?.effect);
 
-  // Autopercepção move a base percebida.
+
   const selfAssessment = answers.selfAssessment;
   if (selfAssessment && typeof selfAssessment === 'object' && !Array.isArray(selfAssessment)) {
     let delta = 0;
@@ -134,7 +134,7 @@ function scoreProfile(dimensions, profile) {
   return Math.round((100 - weighted / totalWeight) * 100) / 100;
 }
 
-/** Sinais legíveis: o estudante vê o que motivou a sugestão, sem número técnico. */
+
 export function buildSignals(answers) {
   const signals = [];
 
@@ -176,7 +176,7 @@ export function buildSignals(answers) {
   return signals;
 }
 
-/** Contradições declaradas. Nunca viram erro de formulário. */
+
 export function detectContradictions(answers) {
   const found = [];
 
@@ -231,7 +231,7 @@ export function classifyProfile(answers) {
     return getProfile(a.slug).priority - getProfile(b.slug).priority;
   });
 
-  // A sugestão automática respeita a premissa; a escolha manual continua livre.
+
   const suggested = (ranking.find((item) => item.eligible) ?? ranking[0])?.slug ?? 'explorador-sem-rota';
 
   let confidence;
@@ -239,7 +239,7 @@ export function classifyProfile(answers) {
   else if (answered.length === ONBOARDING_STEPS.length) confidence = 'high';
   else confidence = 'medium';
 
-  // Onboarding totalmente pulado: perfil provisório guiado, confiança baixa.
+
   if (answered.length === 0) {
     return {
       suggested: 'explorador-sem-rota',
@@ -276,14 +276,14 @@ export function classifyProfile(answers) {
   };
 }
 
-/** Apoios práticos derivados da etapa F — nunca diagnóstico. */
+
 export function supportsFor(answers) {
   return asList(answers.frictions)
     .map((value) => findOption('frictions', value)?.support)
     .filter(Boolean);
 }
 
-/** Descreve, em linguagem natural, como o perfil muda a experiência. */
+
 export function describePersonalization(slug) {
   const p = getProfile(slug).personalization;
   return [

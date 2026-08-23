@@ -1,44 +1,44 @@
-/**
- * Fábrica dos tópicos da segunda leva.
- *
- * Os doze tópicos originais foram escritos à mão, um a um, e continuam assim.
- * Esta leva cobre os demais assuntos previstos no escopo — inclusive as três
- * matérias que ainda não tinham nenhum tópico: Literatura, História e Filosofia.
- *
- * A fábrica existe por um motivo simples: com quase trinta tópicos novos, repetir
- * a mesma estrutura editorial à mão convida ao erro — um `kind` trocado, uma
- * ordem repetida, um `skillSlug` que não existe. Aqui a estrutura é garantida por
- * construção e o que se escreve é só o conteúdo.
- *
- * O que a fábrica NÃO faz: gerar texto. Cada resumo, explicação, exemplo, erro
- * comum e questão é escrito por pessoa, em português do Brasil, e passa pelas
- * mesmas checagens de integridade dos originais (tests/content.test.mjs).
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const LABELS = ['A', 'B', 'C', 'D', 'E'];
 
 export const ORIGIN = 'AUTORAL_LEVA_2';
 export const LICENSE = 'Conteúdo autoral de desenvolvimento — Conscious Knowledge';
 
-/**
- * Uma questão.
- *
- * @param {{
- *   slug: string,
- *   stem: string,
- *   difficulty: 'intro'|'intermediate'|'challenging',
- *   format: 'concept'|'applied'|'interpretation'|'comparison'|'integration',
- *   reasoning: string,
- *   seconds?: number,
- *   recovery?: boolean,
- *   errors?: string[],
- *   correct: number,           índice (0 a 4) da alternativa correta
- *   options: [string, string, string?][],  texto, comentário e (opcional) dica de erro
- *   explanation: string,
- *   detail?: string,
- *   strategy?: string,
- * }} definition
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export function question(definition) {
   const {
     slug, stem, difficulty, format, reasoning, seconds = 120, recovery = false,
@@ -78,23 +78,23 @@ export function question(definition) {
   };
 }
 
-/**
- * Um tópico completo: resumo rápido, explicação, dois exemplos resolvidos, três
- * erros comuns, perguntas de autoexplicação e as questões.
- *
- * @param {{
- *   slug: string, name: string, subject: string, area: string, summary: string,
- *   difficulty?: string, minutes?: number, weight?: number, order?: number,
- *   prerequisites?: string[], related?: string[],
- *   skill: { slug: string, name: string, description: string },
- *   quick: string,
- *   explanation: { title: string, body: string },
- *   examples: [{ title: string, body: string }, { title: string, body: string }],
- *   mistakes: string,
- *   selfCheck: string[],
- *   questions: object[],
- * }} definition
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export function topic(definition) {
   const {
     slug, name, subject, area, summary,
@@ -113,7 +113,7 @@ export function topic(definition) {
     }
   }
 
-  // Toda questão precisa apontar para uma habilidade que existe no tópico.
+
   const comHabilidade = questions.map((item) => ({ ...item, skillSlug: item.skillSlug ?? skill.slug }));
 
   return {

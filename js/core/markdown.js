@@ -1,11 +1,11 @@
-/**
- * Renderizador de markdown leve — só o subconjunto usado no conteúdo editorial:
- * títulos, listas, tabelas, citação, código, negrito, itálico e código inline.
- *
- * Escrito à mão em vez de trazer uma dependência: o conteúdo é controlado e nada aqui
- * interpreta HTML bruto, o que elimina a superfície de XSS sem sanitizador.
- * Devolve um DocumentFragment, não string.
- */
+
+
+
+
+
+
+
+
 
 import { el, frag } from './dom.js';
 
@@ -23,7 +23,7 @@ export function markdown(source) {
       continue;
     }
 
-    // Tabela
+
     if (line.trim().startsWith('|') && (lines[index + 1] ?? '').includes('---')) {
       const header = splitRow(line);
       const rows = [];
@@ -36,7 +36,7 @@ export function markdown(source) {
       continue;
     }
 
-    // Título
+
     const heading = /^(#{2,4})\s+(.*)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
@@ -45,14 +45,14 @@ export function markdown(source) {
       continue;
     }
 
-    // Citação
+
     if (line.startsWith('> ')) {
       blocks.push(el('blockquote', { class: 'md-quote' }, inline(line.slice(2).trim())));
       index += 1;
       continue;
     }
 
-    // Bloco de código
+
     if (line.startsWith('```')) {
       const code = [];
       index += 1;
@@ -65,7 +65,7 @@ export function markdown(source) {
       continue;
     }
 
-    // Lista
+
     if (/^[-*•]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
       const ordered = /^\d+\.\s+/.test(line);
       const items = [];
@@ -80,7 +80,7 @@ export function markdown(source) {
       continue;
     }
 
-    // Parágrafo: junta linhas consecutivas
+
     const paragraph = [];
     while (index < lines.length && (lines[index] ?? '').trim() && !isBlockStart(lines[index])) {
       paragraph.push(lines[index].trim());
@@ -129,7 +129,7 @@ function tableBlock(header, rows) {
   );
 }
 
-/** Formatação inline: **negrito**, *itálico* e `código`. Nada de HTML bruto. */
+
 function inline(text) {
   const nodes = [];
   const pattern = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;

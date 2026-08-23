@@ -1,4 +1,4 @@
-/** Formatação de texto, tempo e números — em português do Brasil. */
+
 
 export function formatMinutes(minutes) {
   if (minutes < 60) return `${minutes} min`;
@@ -20,7 +20,7 @@ export function formatDate(value) {
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(date);
 }
 
-/** Linguagem de tempo sem cobrança: "há 3 dias", nunca "você está atrasado". */
+
 export function relativeDays(value) {
   if (!value) return 'ainda não praticado';
   const date = value instanceof Date ? value : new Date(value);
@@ -60,7 +60,7 @@ export function daysBetween(from, to = new Date()) {
 
 export const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-/** Slug estável a partir de texto — usado em ids de conteúdo criado pelo usuário. */
+
 export function slugify(text) {
   return text
     .normalize('NFD')
@@ -71,7 +71,7 @@ export function slugify(text) {
     .slice(0, 60);
 }
 
-/** Identificador único sem dependência externa. */
+
 export function newId(prefix = 'id') {
   const random = Math.random().toString(36).slice(2, 10);
   return `${prefix}_${Date.now().toString(36)}${random}`;

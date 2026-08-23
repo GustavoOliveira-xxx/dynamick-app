@@ -1,4 +1,4 @@
-/** sessao.html — resolução de questões, correção e resultado da sessão. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderSession, renderSessionResult } from '../views/session.js';

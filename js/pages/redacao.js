@@ -1,4 +1,4 @@
-/** redacao.html — temas, planejamento, rascunho e histórico de redação. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderEssayHub, renderEssayPrompt } from '../views/essay.js';

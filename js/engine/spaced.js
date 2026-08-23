@@ -1,16 +1,16 @@
-/**
- * Revisão espaçada.
- * Combina o que o estudante declara ("não lembro / lembro parcialmente / domino")
- * com o resultado observado na questão de recuperação.
- */
+
+
+
+
+
 
 export const REVIEW_INTERVALS = [1, 3, 7, 14, 30, 60];
 export const EASE_BOUNDS = { min: 130, max: 320 };
 
-/**
- * A declaração não vale sozinha: dizer "domino" e errar é tratado como
- * "lembro parcialmente" — e o contrário também.
- */
+
+
+
+
 export function reconcileRecall({ recall, wasCorrect }) {
   if (wasCorrect === undefined) return recall;
   if (recall === 'mastered' && wasCorrect === false) return 'partial';
@@ -22,7 +22,7 @@ export function nextReviewState(current, outcome) {
   const recall = reconcileRecall(outcome);
 
   if (recall === 'forgot') {
-    // Volta ao começo, mas guarda o histórico de repetições no ease.
+
     return {
       interval: REVIEW_INTERVALS[0],
       ease: Math.max(EASE_BOUNDS.min, current.ease - 30),
@@ -41,7 +41,7 @@ export function nextReviewState(current, outcome) {
     };
   }
 
-  // "domino" confirmado: cresce pelo fator de facilidade, com teto.
+
   const grown = Math.round((current.interval * current.ease) / 100);
   return {
     interval: Math.min(180, Math.max(REVIEW_INTERVALS[1], grown)),
@@ -57,10 +57,10 @@ export function nextDueDate(state, from = new Date()) {
   return due;
 }
 
-/**
- * A revisão SEMPRE inclui um item novo ou reformulado: o estudante não pode "passar"
- * só por lembrar o enunciado antigo.
- */
+
+
+
+
 export function buildReviewBatch(originalIds, candidates, size) {
   const seen = new Set(originalIds);
   const fresh = candidates.filter((candidate) => !seen.has(candidate.id));

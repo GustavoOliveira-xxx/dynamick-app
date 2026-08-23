@@ -1,9 +1,9 @@
-/**
- * Motor de recomendação.
- *
- * Regras determinísticas e explicáveis. Nenhum modelo estatístico: cada ponto de
- * prioridade tem nome, peso declarado e uma frase legível que o estudante lê no início.
- */
+
+
+
+
+
+
 
 import { clamp } from '../core/format.js';
 
@@ -12,12 +12,12 @@ export const FACTOR_WEIGHTS = {
   repeatedErrors: 7,
   lowConfidence: 5,
   timeSinceReview: 6,
-  /*
-   * A curadoria é LINHA DE BASE, não fator dominante.
-   * Com peso alto ela superava três erros recentes em qualquer tópico bem avaliado, e a
-   * justificativa virava sempre a mesma frase genérica. Aqui ela desempata entre
-   * tópicos parecidos, sem apagar o comportamento do estudante.
-   */
+
+
+
+
+
+
   curation: 0.12,
   examProximity: 12,
   studentPriority: 8,
@@ -26,7 +26,7 @@ export const FACTOR_WEIGHTS = {
 };
 
 export const PENALTIES = {
-  /** Impede que um tópico com muitos erros monopolize a rotina inteira. */
+
   practicedRecently: -28,
   sameAreaRepeated: -14,
   consolidated: -22,
@@ -42,10 +42,10 @@ function timeDecayPoints(days) {
   return 1.2;
 }
 
-/**
- * Proximidade da prova reforça revisão e consolidação — nunca "conteúdo novo e
- * difícil". A plataforma não induz a abandonar fundamentos perto da prova.
- */
+
+
+
+
 function examProximityFactor(daysToExam) {
   if (daysToExam === null || daysToExam === undefined) return 0;
   if (daysToExam > 180) return 0.1;
@@ -89,7 +89,7 @@ export function scoreTopic(signals, context) {
     add('neverPracticed', 'tópico ainda não praticado', FACTOR_WEIGHTS.neverPracticed);
   }
 
-  // ---- Limites e penalidades ----
+
   if (signals.availableQuestions <= 0) {
     penalize('noQuestions', 'sem questões publicadas disponíveis', PENALTIES.noQuestions);
   }
@@ -118,11 +118,11 @@ export function scoreTopic(signals, context) {
   };
 }
 
-/**
- * Fatores que explicam algo sobre o ESTUDANTE.
- * A justificativa prefere sempre um destes: dizer "este tópico é importante" é
- * verdadeiro, mas não é o que faz a recomendação parecer feita para a pessoa.
- */
+
+
+
+
+
 const EXPLANATORY_FACTORS = [
   'dueReviews',
   'repeatedErrors',
@@ -134,7 +134,7 @@ const EXPLANATORY_FACTORS = [
   'examProximity',
 ];
 
-/** Justificativa legível — sempre existe, nunca expõe pontuação técnica. */
+
 export function buildReason(signals, factors) {
   const ranked = [...factors].sort((a, b) => b.points - a.points);
   const explanatory = ranked.filter((factor) => EXPLANATORY_FACTORS.includes(factor.key));
@@ -154,7 +154,7 @@ export function buildReason(signals, factors) {
     case 'timeSinceReview':
       return `Faz ${signals.daysSinceLastPractice} dias desde a última prática de ${signals.topicName}. É um bom momento para retomar.`;
     case 'neverPracticed':
-      // Frase construída para não depender do gênero do nome do tópico.
+
       return `Você ainda não praticou ${signals.topicName}, um dos temas centrais de ${signals.subjectName}.`;
     case 'examProximity':
       return `Com a prova se aproximando, consolidar ${signals.topicName} tem mais efeito do que começar um tópico novo.`;
@@ -169,16 +169,16 @@ export function buildReason(signals, factors) {
   }
 }
 
-/**
- * Ordena os tópicos e monta a seleção final preservando variedade:
- * no máximo 2 tópicos por área e no máximo `subjectsPerWeek` áreas distintas.
- */
+
+
+
+
 export function recommendTopics(signals, context, limit = 5) {
   const ranked = signals
     .map((signal) => scoreTopic(signal, context))
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return a.topicId.localeCompare(b.topicId); // desempate estável
+      return a.topicId.localeCompare(b.topicId);
     });
 
   const byTopic = new Map(signals.map((signal) => [signal.topicId, signal]));
@@ -191,14 +191,14 @@ export function recommendTopics(signals, context, limit = 5) {
     if (!signal || signal.availableQuestions <= 0) continue;
 
     const areaCount = perArea.get(signal.areaId) ?? 0;
-    if (areaCount >= 2) continue; // nenhuma área ocupa a rotina inteira
+    if (areaCount >= 2) continue;
     if (perArea.size >= clamp(context.subjectsPerWeek, 1, 5) && areaCount === 0) continue;
 
     perArea.set(signal.areaId, areaCount + 1);
     selection.push(candidate);
   }
 
-  // Se os limites zeraram a seleção, relaxa a variedade em vez de não recomendar nada.
+
   if (selection.length === 0) {
     for (const candidate of ranked) {
       const signal = byTopic.get(candidate.topicId);

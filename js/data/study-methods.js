@@ -1,12 +1,12 @@
-/**
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhuma questão foi copiada de prova oficial, livro ou plataforma de terceiros.
- */
 
-/**
- * Biblioteca de métodos de estudo (§11.5).
- * Nenhum método é apresentado como solução universal — todos declaram limitações.
- */
+
+
+
+
+
+
+
+
 export const STUDY_METHODS = [
   {
     slug: 'estudo-ativo',

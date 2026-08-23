@@ -1,18 +1,18 @@
-/**
- * Entrar — a porta de entrada da área de estudo.
- *
- * Antes desta tela, clicar em "Entrar" na página inicial caía direto no
- * onboarding: quem já tinha respondido tudo era obrigado a responder de novo,
- * e quem só queria voltar a estudar não tinha para onde ir. Agora existem três
- * abas explícitas:
- *
- *   Entrar        — contas já criadas neste navegador
- *   Criar conta   — nome, e-mail opcional e senha opcional
- *   Tenho um código — traz o progresso de outro aparelho pela sincronização
- *
- * O texto da tela não promete o que não existe: a conta vive neste navegador,
- * não há e-mail de recuperação e o caminho entre aparelhos é o código cifrado.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { el, render, uid } from '../core/dom.js';
 import { navigate } from '../core/router.js';
@@ -38,13 +38,13 @@ const TABS = [
   { id: 'codigo', label: 'Tenho um código' },
 ];
 
-/** Depois de entrar, quem já respondeu o onboarding vai direto estudar. */
+
 function afterSignIn() {
   const status = student().onboardingStatus;
   navigate(status === 'not_started' ? '/onboarding' : '/inicio', { replace: true });
 }
 
-/* ---------------------------------------------------------------- Aba: entrar */
+
 
 function signInPanel(accounts, rerender) {
   if (accounts.length === 0) {
@@ -95,7 +95,7 @@ function signInPanel(accounts, rerender) {
         checked: account.id === selected || undefined,
         onChange: () => {
           selected = account.id;
-          // O campo de senha só existe para contas que têm senha.
+
           passwordField.hidden = !account.protegida;
         },
       });
@@ -133,7 +133,7 @@ function signInPanel(accounts, rerender) {
       novalidate: true,
       onSubmit: async (event) => {
         event.preventDefault();
-        if (submit.disabled) return; // trava contra envio duplo
+        if (submit.disabled) return;
         render(error);
         setButtonLoading(submit, true, 'Entrando…');
 
@@ -175,7 +175,7 @@ function signInPanel(accounts, rerender) {
   );
 }
 
-/* ---------------------------------------------------------------- Aba: criar */
+
 
 function createPanel() {
   const error = el('div', { 'aria-live': 'polite' });
@@ -276,7 +276,7 @@ function createPanel() {
   );
 }
 
-/* ---------------------------------------------------------------- Aba: código */
+
 
 function codePanel() {
   if (!syncDisponivel) {
@@ -312,7 +312,7 @@ function codePanel() {
 
         setButtonLoading(submit, true, 'Buscando…');
         try {
-          // O convidado entra primeiro para que o pacote baixado tenha onde morar.
+
           continueAsGuest();
           await vincularExistente(codigo);
           toast('Progresso restaurado neste aparelho.', 'success');
@@ -354,7 +354,7 @@ function codePanel() {
   );
 }
 
-/* ---------------------------------------------------------------- Tela */
+
 
 export function renderAccount(root, context) {
   const requested = context?.params?.aba ?? context?.query?.get('aba') ?? null;
@@ -411,11 +411,11 @@ export function renderAccount(root, context) {
   const cube = rubikCube({ size: 'sm', autoSpin: true });
   const sessaoAtual = currentAccount();
 
-  /*
-   * Já existe sessão aberta. Em vez de mandar direto para o início — o que
-   * impediria trocar de conta — a tela oferece continuar como um atalho grande
-   * e mantém as abas disponíveis logo abaixo.
-   */
+
+
+
+
+
   const resume = sessaoAtual
     ? card(
         { pad: 'lg', accent: 'green' },
