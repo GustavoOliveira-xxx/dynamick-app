@@ -150,7 +150,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'E', text: 'Direito trabalhista, pois inclui trabalhadores em sua composição.', rationale: 'A presença de trabalhadores é parte da composição, não a natureza do direito exercido.', errorHint: 'classificar pela composição' },
         ],
         explanation: {
-          summary: 'A resposta é A. O direito exercido é o político; a saúde é o objeto sobre o qual se decide.',
+          summary: 'O direito exercido é o político; a saúde é o objeto sobre o qual se decide.',
           strategy: 'Pergunte "o que a pessoa está FAZENDO?", não "sobre o que é o assunto?".',
         },
       },
@@ -172,7 +172,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'E', text: 'A crítica só faria sentido se a escola fosse privada.', rationale: 'A obrigação de acessibilidade não depende da natureza da instituição.', errorHint: 'condicionar o direito à natureza da instituição' },
         ],
         explanation: {
-          summary: 'A resposta é A. Equidade é o mecanismo que torna a universalidade real quando existem barreiras distintas.',
+          summary: 'Equidade é o mecanismo que torna a universalidade real quando existem barreiras distintas.',
           conceptRecap: 'Igualdade de tratamento nem sempre produz igualdade de acesso.',
         },
       },
@@ -195,7 +195,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'E', text: 'O excesso de recursos orçamentários destinados a acessibilidade.', rationale: 'Só 31% preveem orçamento específico — o oposto de excesso.', errorHint: 'inverter a leitura do dado' },
         ],
         explanation: {
-          summary: 'A resposta é A. A queda ao longo da cadeia lei → orçamento → execução é a medida da não efetivação.',
+          summary: 'A queda ao longo da cadeia lei → orçamento → execução é a medida da não efetivação.',
           strategy: 'Quando houver três dados em sequência decrescente, a pergunta costuma ser sobre onde o processo trava.',
         },
       },
@@ -217,7 +217,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'E', text: 'I e II, desde que consideradas apenas as décadas recentes.', rationale: 'Nenhum recorte temporal torna II compatível com o conceito.', errorHint: 'salvar a afirmação com condição artificial' },
         ],
         explanation: {
-          summary: 'A resposta é A. O conceito descreve exatamente a **exclusão** de quem estava fora do emprego formal reconhecido.',
+          summary: 'O conceito descreve exatamente a **exclusão** de quem estava fora do emprego formal reconhecido.',
           detailed: 'Trabalhadores rurais e domésticos só tiveram equiparação plena de direitos décadas depois da legislação trabalhista urbana — o que ilustra concretamente o conceito.',
         },
       },
@@ -239,7 +239,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'E', text: 'A solução correta seria transferir os estudantes para escolas particulares.', rationale: 'A solução não enfrenta a barreira de deslocamento e desloca a obrigação do poder público.', errorHint: 'propor solução que ignora a causa' },
         ],
         explanation: {
-          summary: 'A resposta é A. A política precisa responder à barreira identificada pelos dados — no caso, deslocamento, não desinformação.',
+          summary: 'A política precisa responder à barreira identificada pelos dados — no caso, deslocamento, não desinformação.',
           detailed: 'Esta questão integra três ideias: direito social exige condições materiais; política pública deve endereçar a causa diagnosticada; e responsabilizar o indivíduo por barreira estrutural desloca o problema em vez de resolvê-lo.',
           conceptRecap: 'Diagnóstico errado produz política ineficaz mesmo com boa intenção.',
         },
@@ -261,7 +261,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'D', text: 'Direitos trabalhistas.', rationale: 'Direitos trabalhistas são um subconjunto dos sociais e não tratam de participação eleitoral.', errorHint: 'usar categoria específica demais' },
           { label: 'E', text: 'Não é um direito, mas um dever obrigatório.', rationale: 'No Brasil o voto é obrigatório para parte da população, mas isso não retira sua natureza de direito.', errorHint: 'confundir obrigatoriedade com ausência de direito' },
         ],
-        explanation: { summary: 'A resposta é A. Votar e ser votado são a expressão central dos direitos políticos.' },
+        explanation: { summary: 'Votar e ser votado são a expressão central dos direitos políticos.' },
       },
       {
         slug: 'q-cid-rec-2',
@@ -281,7 +281,7 @@ A prova quase sempre apresenta um caso em que a lei existe e o direito não cheg
           { label: 'D', text: 'O excesso de direitos garantidos à população.', rationale: 'O problema apontado é de implementação, não de quantidade de direitos.', errorHint: 'deslocar o problema' },
           { label: 'E', text: 'Uma escolha legítima da unidade quanto ao seu funcionamento.', rationale: 'Descumprir norma de prioridade não é escolha administrativa legítima.', errorHint: 'legitimar descumprimento' },
         ],
-        explanation: { summary: 'A resposta é A. Direito garantido e direito efetivado são coisas distintas — e a segunda depende de meios concretos.' },
+        explanation: { summary: 'Direito garantido e direito efetivado são coisas distintas — e a segunda depende de meios concretos.' },
       },
     ],
   },
@@ -451,7 +451,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'A concentração exclusiva do crescimento em cidades de pequeno porte.', rationale: 'O crescimento concentrou-se sobretudo em grandes cidades e regiões metropolitanas.', errorHint: 'errar a escala do fenômeno' },
         ],
         explanation: {
-          summary: 'A resposta é A. Chegada rápida sem oferta de moradia acessível produz ocupação periférica e precária.',
+          summary: 'Chegada rápida sem oferta de moradia acessível produz ocupação periférica e precária.',
           conceptRecap: 'A localização da moradia popular é determinada pelo preço da terra, não por preferência.',
         },
       },
@@ -473,7 +473,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'A superioridade do modelo de cidades isoladas sobre regiões metropolitanas.', rationale: 'O texto descreve um desafio de gestão, não uma comparação entre modelos.', errorHint: 'extrapolar juízo de valor' },
         ],
         explanation: {
-          summary: 'A resposta é A. A cidade funcional ultrapassa o limite administrativo, e o financiamento público não acompanha.',
+          summary: 'A cidade funcional ultrapassa o limite administrativo, e o financiamento público não acompanha.',
           detailed: 'Consórcios intermunicipais e mecanismos de repartição de receita existem justamente para enfrentar esse descompasso.',
         },
       },
@@ -495,7 +495,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'O tempo de deslocamento é uma escolha individual dos moradores da Zona B.', rationale: 'Morar longe do trabalho decorre do preço do solo, não de preferência por deslocamento longo.', errorHint: 'individualizar causa estrutural' },
         ],
         explanation: {
-          summary: 'A resposta é A. Renda, tempo e espaço público variam juntos — é assim que a desigualdade se inscreve no território.',
+          summary: 'Renda, tempo e espaço público variam juntos — é assim que a desigualdade se inscreve no território.',
           conceptRecap: 'Segregação socioespacial: a posição social vira posição geográfica.',
         },
       },
@@ -517,7 +517,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'A primeira é preferível por não interferir no mercado imobiliário.', rationale: 'Investimento público em transporte já interfere fortemente no mercado imobiliário — a questão é se essa interferência será regulada ou não.', errorHint: 'supor neutralidade do investimento público' },
         ],
         explanation: {
-          summary: 'A resposta é A. Sem instrumentos de permanência, requalificação urbana tende a gentrificar.',
+          summary: 'Sem instrumentos de permanência, requalificação urbana tende a gentrificar.',
           detailed: 'Reserva de área para habitação de interesse social e moderação temporária da carga tributária são exemplos de instrumentos previstos no arcabouço urbanístico brasileiro para enfrentar esse efeito.',
         },
       },
@@ -539,7 +539,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'Os lotes vazios devem permanecer assim para preservar o valor do solo urbano.', rationale: 'Preservar o valor do solo é justamente o interesse que sustenta a retenção — e o que a política urbana busca moderar em nome da função social da propriedade.', errorHint: 'confundir interesse privado com interesse público' },
         ],
         explanation: {
-          summary: 'A resposta é A. Terra vazia bem localizada e ocupação em área de risco são dois efeitos do mesmo mercado de terras.',
+          summary: 'Terra vazia bem localizada e ocupação em área de risco são dois efeitos do mesmo mercado de terras.',
           detailed: 'Instrumentos como parcelamento compulsório e IPTU progressivo no tempo existem para enfrentar a retenção especulativa, aumentando a oferta de solo urbanizado.',
           conceptRecap: 'Função social da propriedade: o solo urbano com infraestrutura deve cumprir uso, não apenas valorizar.',
         },
@@ -561,7 +561,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'D', text: 'A migração de moradores urbanos para o campo.', rationale: 'É o movimento inverso ao descrito pelo conceito.', errorHint: 'inverter o sentido' },
           { label: 'E', text: 'A valorização dos imóveis das áreas mais afastadas.', rationale: 'A periferização decorre justamente do preço mais baixo dessas áreas.', errorHint: 'inverter a lógica de preço' },
         ],
-        explanation: { summary: 'A resposta é A. Periferização liga renda baixa a localização distante e mal servida.' },
+        explanation: { summary: 'Periferização liga renda baixa a localização distante e mal servida.' },
       },
       {
         slug: 'q-urb-rec-2',
@@ -582,7 +582,7 @@ A migração explica o volume. A **localização** de quem chegou é explicada p
           { label: 'E', text: 'Êxodo rural.', rationale: 'Êxodo rural é a saída da população do campo para a cidade.', errorHint: 'trocar de fenômeno' },
         ],
         explanation: {
-          summary: 'A resposta é A. Melhoria urbana sem política de permanência tende a substituir a população do bairro.',
+          summary: 'Melhoria urbana sem política de permanência tende a substituir a população do bairro.',
         },
       },
     ],
@@ -744,7 +744,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'Depreciação de capital.', rationale: 'Depreciação refere-se à perda de valor de bens da própria empresa.', errorHint: 'usar termo contábil não relacionado' },
         ],
         explanation: {
-          summary: 'A resposta é A. O custo não desapareceu: saiu da planilha da empresa e recaiu sobre a comunidade.',
+          summary: 'O custo não desapareceu: saiu da planilha da empresa e recaiu sobre a comunidade.',
           conceptRecap: 'Internalizar a externalidade é fazer o custo voltar a quem o produz.',
         },
       },
@@ -766,7 +766,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'Capacidade de suporte, que define o limite populacional de um ecossistema.', rationale: 'Capacidade de suporte é conceito ecológico sobre limites, não sobre distribuição social de danos.', errorHint: 'usar conceito ecológico em questão social' },
         ],
         explanation: {
-          summary: 'A resposta é A. Quando o mapa do dano ambiental coincide com o mapa da renda, o conceito aplicável é justiça ambiental.',
+          summary: 'Quando o mapa do dano ambiental coincide com o mapa da renda, o conceito aplicável é justiça ambiental.',
         },
       },
       {
@@ -788,7 +788,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'O estudo técnico é desnecessário quando há geração de emprego.', rationale: 'O estudo é justamente o instrumento que revela a assimetria e permite decidir com informação.', errorHint: 'dispensar instrumento de análise' },
         ],
         explanation: {
-          summary: 'A resposta é A. O ponto não é aprovar ou rejeitar, mas reconhecer quem ganha, quem perde e o que fazer a respeito.',
+          summary: 'O ponto não é aprovar ou rejeitar, mas reconhecer quem ganha, quem perde e o que fazer a respeito.',
           strategy: 'Em conflitos ambientais, separe sempre: quem recebe o benefício e quem suporta o custo.',
         },
       },
@@ -810,7 +810,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'Nenhuma das duas trata do problema, que é exclusivamente global.', rationale: 'Resíduo sólido urbano tem gestão local e regional bem definidas.', errorHint: 'deslocar tudo para a escala global' },
         ],
         explanation: {
-          summary: 'A resposta é A. Educação atua nas escolhas; regulação atua nas opções disponíveis e em quem paga a destinação.',
+          summary: 'Educação atua nas escolhas; regulação atua nas opções disponíveis e em quem paga a destinação.',
           conceptRecap: 'Responsabilidade estendida do produtor: quem coloca a embalagem no mercado responde pelo seu retorno.',
         },
       },
@@ -832,7 +832,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'A decisão é exclusivamente técnica e não comporta participação social.', rationale: 'Decisões sobre uso do território afetam direitos e envolvem participação prevista nos instrumentos urbanísticos.', errorHint: 'excluir a dimensão política do problema' },
         ],
         explanation: {
-          summary: 'A resposta é A. Dois direitos legítimos em conflito exigem instrumento de planejamento, não escolha entre lados.',
+          summary: 'Dois direitos legítimos em conflito exigem instrumento de planejamento, não escolha entre lados.',
           detailed: 'Esta questão integra três conteúdos: direito social à moradia, direito difuso à segurança hídrica e instrumentos de ordenamento territorial. A alternativa correta é a única que reconhece os três.',
         },
       },
@@ -853,7 +853,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'D', text: 'Países em desenvolvimento estão dispensados de qualquer compromisso.', rationale: 'Dispensa total contraria a parte "comuns" do princípio.', errorHint: 'confundir proporcionalidade com isenção' },
           { label: 'E', text: 'A responsabilidade recai exclusivamente sobre empresas, não sobre Estados.', rationale: 'O princípio organiza compromissos entre Estados em acordos internacionais.', errorHint: 'trocar o sujeito do princípio' },
         ],
-        explanation: { summary: 'A resposta é A. Comum a todos, proporcional a cada um.' },
+        explanation: { summary: 'Comum a todos, proporcional a cada um.' },
       },
       {
         slug: 'q-amb-rec-2',
@@ -874,7 +874,7 @@ Separar o lixo em casa não resolve destinação industrial de resíduos perigos
           { label: 'E', text: 'Programas municipais não podem tratar de resíduos.', rationale: 'Municípios têm competência sobre gestão de resíduos sólidos urbanos.', errorHint: 'negar competência existente' },
         ],
         explanation: {
-          summary: 'A resposta é A. A escala e o tipo da solução precisam corresponder à escala e ao tipo do problema.',
+          summary: 'A escala e o tipo da solução precisam corresponder à escala e ao tipo do problema.',
         },
       },
     ],

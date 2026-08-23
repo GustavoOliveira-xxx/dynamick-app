@@ -14,17 +14,29 @@ import { REDACAO_TOPICS } from './topics-redacao.js';
 import { STUDY_METHODS } from './study-methods.js';
 import { SESSION_TEMPLATES, SIMULATIONS } from './sessions.js';
 import { ESSAY_PROMPTS } from './essay-prompts.js';
+import { QUESTION_EXPANSION } from './questions-expansion.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, SIMULATIONS, ESSAY_PROMPTS };
 
-export const TOPICS = [
+const BASE_TOPICS = [
   ...LINGUAGENS_TOPICS,
   ...MATEMATICA_TOPICS,
   ...HUMANAS_TOPICS,
   ...NATUREZA_TOPICS,
   ...REDACAO_TOPICS,
 ];
+
+const expansionByTopic = QUESTION_EXPANSION.reduce((index, question) => {
+  if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
+  index.get(question.topicSlug).push(question);
+  return index;
+}, new Map());
+
+export const TOPICS = BASE_TOPICS.map((topic) => ({
+  ...topic,
+  questions: [...topic.questions, ...(expansionByTopic.get(topic.slug) ?? [])],
+}));
 
 /* ---------------------------------------------------------------- Índices */
 

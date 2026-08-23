@@ -9,6 +9,7 @@ import { getState, onStorageError, storageAvailable, subscribe, watchOtherTabs }
 import { applyPreferences, student } from './core/student.js';
 import { dynamickLogo } from './ui/brand.js';
 import { mountBackground } from './ui/background.js';
+import { beginRouteTransition } from './ui/transitions.js';
 import { emptyState, message, toast } from './ui/components.js';
 
 import { renderOnboardingWelcome, renderOnboardingStep, renderProfileConfirmation, renderOnboardingSummary } from './views/onboarding.js';
@@ -45,6 +46,8 @@ const main = document.getElementById('conteudo-principal');
 const backgroundHost = document.getElementById('fundo');
 let disposeBackground = null;
 let lastIntensity = null;
+let lastBackgroundContext = null;
+let viewSequence = 0;
 
 /** Intensidade visual por contexto: alta no início, baixa durante a leitura. */
 function intensityFor(path) {
@@ -57,14 +60,25 @@ function intensityFor(path) {
   return 'medium';
 }
 
+function backgroundContextFor(path) {
+  if (path === '/inicio') return 'dashboard';
+  if (path === '/conteudos') return 'map';
+  if (path.startsWith('/sessao')) return 'focus';
+  if (path.startsWith('/redacao/')) return 'focus';
+  return 'app';
+}
+
 function syncBackground(path) {
   const intensity = intensityFor(path);
-  if (intensity === lastIntensity) return;
+  const context = backgroundContextFor(path);
+  if (intensity === lastIntensity && context === lastBackgroundContext) return;
   lastIntensity = intensity;
+  lastBackgroundContext = context;
   disposeBackground?.();
   disposeBackground = mountBackground(backgroundHost, {
     intensity,
     interactive: intensity === 'medium-high' || intensity === 'high',
+    context,
   });
 }
 
@@ -140,6 +154,7 @@ function renderHeader() {
  */
 function view(handler, { guard } = {}) {
   return async (context) => {
+    const sequence = ++viewSequence;
     if (guard) {
       const redirectTo = guard(context);
       if (redirectTo) {
@@ -149,6 +164,13 @@ function view(handler, { guard } = {}) {
     }
 
     syncBackground(context.path);
+    const transition = beginRouteTransition(main, context.path);
+    await transition.ready;
+    if (sequence !== viewSequence) {
+      transition.cancel();
+      return undefined;
+    }
+
     render(main);
 
     let cleanup;
@@ -167,12 +189,19 @@ function view(handler, { guard } = {}) {
       );
     }
 
+    if (sequence !== viewSequence) {
+      cleanup?.();
+      transition.cancel();
+      return undefined;
+    }
+
     renderNav();
     renderHeader();
     // O título da aba acompanha a tela — ajuda orientação e histórico.
     document.title = `${main.querySelector('h1')?.textContent ?? 'Dynamic CK'} · Dynamic CK`;
     main.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: 'auto' });
+    await transition.complete();
     return cleanup;
   };
 }
