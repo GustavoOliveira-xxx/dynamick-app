@@ -1,7 +1,13 @@
-/** Transição curta e cancelável entre telas da SPA. */
+/**
+ * Transição curta e cancelável entre telas do mesmo documento.
+ *
+ * Usa a mesma logo animada da tela de carregamento inicial, em escala menor:
+ * trocar de tela dentro de "Conteúdos" e ir de "Conteúdos" para "Praticar"
+ * passam a ter a mesma linguagem visual, mudando só a duração.
+ */
 
 import { el } from '../core/dom.js';
-import { knowledgeCube } from './knowledge-cube.js';
+import { brandStage, brandWord } from './loader.js';
 
 const ROUTE_LABELS = [
   [/^\/inicio/, 'Organizando seu próximo passo'],
@@ -13,6 +19,11 @@ const ROUTE_LABELS = [
   [/^\/redacao/, 'Abrindo seu espaço de escrita'],
   [/^\/onboarding/, 'Ajustando a jornada ao seu ritmo'],
   [/^\/perfil/, 'Carregando suas escolhas'],
+  [/^\/entrar/, 'Abrindo sua conta'],
+  [/^\/metodos/, 'Reunindo as formas de estudar'],
+  [/^\/buscar/, 'Preparando a busca'],
+  [/^\/catalogo/, 'Conferindo a saúde do conteúdo'],
+  [/^\/diagnostico/, 'Montando seu diagnóstico'],
 ];
 
 let activeTransition = null;
@@ -39,6 +50,21 @@ function labelFor(path) {
 export function beginRouteTransition(main, path) {
   activeTransition?.cancel();
 
+  /*
+   * Primeira tela da página: a tela de carregamento do HTML ainda está no ar e
+   * mostra exatamente a mesma logo. Empilhar as duas só atrasaria a primeira
+   * pintura em ~200ms sem acrescentar informação nenhuma.
+   */
+  const boot = document.getElementById('ck-boot');
+  if (boot && !boot.hidden && !boot.classList.contains('ck-boot--done')) {
+    main.classList.add('page-view--entering');
+    return {
+      ready: Promise.resolve(),
+      complete: () => Promise.resolve(),
+      cancel: () => {},
+    };
+  }
+
   let cancelled = false;
   const reduced = reducedMotion();
   const label = labelFor(path);
@@ -53,8 +79,8 @@ export function beginRouteTransition(main, path) {
     el(
       'div',
       { class: 'route-transition__content' },
-      knowledgeCube({ variant: 'loader' }),
-      el('span', { class: 'route-transition__eyebrow', 'aria-hidden': 'true' }, 'DynamiCK'),
+      brandStage(),
+      brandWord(),
       el('span', { class: 'route-transition__label' }, label),
       el(
         'span',

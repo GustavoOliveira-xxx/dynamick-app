@@ -6,6 +6,8 @@
  * sem precisar de sanitizador.
  */
 
+import { linkTo } from './pages.js';
+
 /**
  * Cria um elemento.
  * @param {string} tag
@@ -20,7 +22,17 @@ export function el(tag, attrs = null, ...children) {
     for (const [key, value] of Object.entries(attrs)) {
       if (value === null || value === undefined || value === false) continue;
 
-      if (key === 'class') {
+      if (key === 'href' && typeof value === 'string' && value.startsWith('#/')) {
+        /*
+         * Rotas continuam sendo escritas como '#/conteudos/x' em toda a base.
+         * Como a aplicação foi dividida em vários documentos, o endereço real
+         * pode ser 'conteudos.html#/conteudos/x'. A tradução acontece aqui, em
+         * um lugar só: nenhuma view precisa saber em qual arquivo a tela mora,
+         * e o link continua sendo um link de verdade — copiável, abrível em
+         * outra aba e visível na barra de status do navegador.
+         */
+        node.setAttribute('href', linkTo(value));
+      } else if (key === 'class') {
         node.className = value;
       } else if (key === 'dataset') {
         Object.assign(node.dataset, value);

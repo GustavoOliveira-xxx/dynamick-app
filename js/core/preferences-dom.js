@@ -9,7 +9,23 @@
  * abertura da página, e falha em silêncio quando o navegador bloqueia o acesso.
  */
 
-const CHAVE = 'dynamick:v1';
+const CHAVE_BASE = 'dynamick:v1';
+const CHAVE_SESSAO = 'dynamick:session:v1';
+
+/**
+ * Onde está o estado da pessoa que está usando o navegador agora.
+ * Com conta ativa, o estado mora em 'dynamick:v1:<id>'; sem conta, em
+ * 'dynamick:v1'. As páginas estáticas precisam saber disso para não aplicarem
+ * o tema de outra conta.
+ */
+function chaveAtiva() {
+  try {
+    const sessao = JSON.parse(localStorage.getItem(CHAVE_SESSAO) || 'null');
+    return sessao?.accountId ? `${CHAVE_BASE}:${sessao.accountId}` : CHAVE_BASE;
+  } catch {
+    return CHAVE_BASE;
+  }
+}
 
 export const PADROES = {
   theme: 'dark',
@@ -22,7 +38,7 @@ export const PADROES = {
 /** Preferências salvas, com os padrões preenchendo o que faltar. */
 export function readPreferences() {
   try {
-    const bruto = localStorage.getItem(CHAVE);
+    const bruto = localStorage.getItem(chaveAtiva());
     if (!bruto) return { ...PADROES };
     return { ...PADROES, ...(JSON.parse(bruto).preferences ?? {}) };
   } catch {
