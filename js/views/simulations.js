@@ -1,8 +1,8 @@
-/**
- * Simulados — lista, preparação e resultado.
- * O simulado corrige só no fim, é cronometrado por padrão e nunca converte o
- * desempenho em previsão de nota oficial.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, progress } from '../ui/components.js';
@@ -13,7 +13,7 @@ import { getState } from '../core/store.js';
 import { createSimulationSession, getSession, summarizeSession } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
 
-/* ---------------------------------------------------------------- Lista */
+
 
 export function renderSimulations(root) {
   const state = getState();
@@ -171,7 +171,7 @@ function simulationCard(simulation, runs) {
   );
 }
 
-/* ---------------------------------------------------------------- Detalhe */
+
 
 export function renderSimulationDetail(root, { params }) {
   const simulation = getSimulation(params.slug);
@@ -326,7 +326,7 @@ export function renderSimulationDetail(root, { params }) {
   );
 }
 
-/* ---------------------------------------------------------------- Resultado */
+
 
 export function renderSimulationResult(root, { params }) {
   const run = getState().simulationRuns[params.runId];
@@ -349,7 +349,7 @@ export function renderSimulationResult(root, { params }) {
   const summary = summarizeSession(run.sessionId);
   const rate = percent(run.score, run.totalItems);
 
-  // Comparação com a tentativa anterior do MESMO simulado, quando existe.
+
   const previous = Object.values(getState().simulationRuns)
     .filter(
       (item) =>

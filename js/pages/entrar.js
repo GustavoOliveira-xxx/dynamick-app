@@ -1,4 +1,4 @@
-/** entrar.html — conta: entrar, criar ou trazer o progresso por código. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderAccount } from '../views/account.js';

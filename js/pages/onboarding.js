@@ -1,4 +1,4 @@
-/** onboarding.html — perfil de estudo: perguntas, confirmação e resumo. */
+
 
 import { startPage } from '../core/shell.js';
 import {

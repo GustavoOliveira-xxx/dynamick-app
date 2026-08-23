@@ -1,4 +1,4 @@
-/* Estrutura da aplicação autenticada */
+
 
 .app {
   position: relative;
@@ -30,7 +30,7 @@
   min-width: 0;
   flex: 1;
   padding-block: 1.5rem;
-  /* Espaço para a barra inferior no celular */
+
   padding-bottom: 7rem;
 }
 .app-main:focus { outline: none; }
@@ -54,7 +54,7 @@
   .app-main { padding-bottom: 4rem; }
 }
 
-/* ---------------------------------------------------------------- Navegação */
+
 
 .app-nav {
   position: sticky;
@@ -118,7 +118,12 @@
 .nav-item-mobile[aria-current="page"] { color: var(--ck-green); }
 .nav-item-mobile .nav-icon { font-size: 1.05rem; }
 
-/* ---------------------------------------------------------------- Cabeçalhos de tela */
+@media (max-width: 420px) {
+  .nav-item-mobile { min-width: 0; padding-inline: 0.12rem; font-size: 0.61rem; }
+  .nav-item-mobile .nav-icon { font-size: 0.98rem; }
+}
+
+
 
 .view-header { display: grid; gap: 0.4rem; margin-bottom: 1.5rem; }
 .view-header__row {
@@ -131,7 +136,7 @@
 .breadcrumb { font-size: 0.74rem; color: var(--ck-text-3); }
 .breadcrumb a { color: inherit; }
 
-/* ---------------------------------------------------------------- Sessão de questões */
+
 
 .session-shell { max-width: 46rem; margin-inline: auto; }
 
@@ -174,7 +179,7 @@
 }
 .session-controls__end { margin-left: auto; }
 
-/* ---------------------------------------------------------------- Correção */
+
 
 .correction { border-color: var(--ck-line-strong); }
 .correction--wrong { border-color: rgb(255 107 122 / 34%); }
@@ -205,14 +210,14 @@
 details > summary { cursor: pointer; }
 details > summary::marker { color: var(--ck-green); }
 
-/* ---------------------------------------------------------------- Mapa de conteúdos */
+
 
 .area-head { display: flex; align-items: center; gap: 0.75rem; }
 .area-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
 .topic-grid { display: grid; gap: 0.75rem; margin-top: 0.6rem; }
 @media (min-width: 640px) { .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-/* ---------------------------------------------------------------- Listas */
+
 
 .list-reset { list-style: none; }
 .item-row {
@@ -243,13 +248,13 @@ details > summary::marker { color: var(--ck-green); }
 .def-list dt { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ck-text-3); }
 .def-list dd { margin-top: 0.25rem; font-size: 1.05rem; font-weight: 500; }
 
-/* ---------------------------------------------------------------- Início: cubo */
 
-/*
- * O cubo ocupa a coluna da direita no desktop e vai para baixo do texto no
- * celular. Ele nunca cobre a recomendação principal: a ação do dia continua
- * sendo a primeira coisa que a pessoa lê.
- */
+
+
+
+
+
+
 .dashboard-hero {
   display: grid;
   gap: 1.25rem;
@@ -263,7 +268,199 @@ details > summary::marker { color: var(--ck-green); }
   .dashboard-hero__cube { justify-self: end; }
 }
 
-/* ---------------------------------------------------------------- Entrar */
+.practice-hero {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid rgb(53 214 192 / 18%);
+  border-radius: var(--ck-r-xl);
+  background: linear-gradient(125deg, rgb(5 22 18 / 78%), rgb(2 8 7 / 36%));
+  overflow: hidden;
+}
+.practice-hero__text { position: relative; z-index: 2; min-width: 0; }
+.practice-hero__brain { display: grid; justify-items: center; min-width: 0; }
+.practice-hero__brain p { max-width: 20rem; text-align: center; }
+@media (min-width: 760px) {
+  .practice-hero { grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem); }
+}
+
+.brain-3d {
+  --brain-pointer-x: 0deg;
+  --brain-pointer-y: 0deg;
+  position: relative;
+  width: min(100%, 20rem);
+  height: 15rem;
+  perspective: 720px;
+  isolation: isolate;
+}
+.brain-3d__field,
+.brain-3d__core,
+.brain-3d__lobes { position: absolute; inset: 0; transform-style: preserve-3d; }
+.brain-3d__field {
+  transform: rotateX(var(--brain-pointer-y)) rotateY(var(--brain-pointer-x));
+  transition: transform 360ms var(--ck-ease);
+}
+.brain-3d__core { animation: brain-hover 5.8s ease-in-out infinite; }
+.brain-3d__lobes { animation: brain-turn 11s ease-in-out infinite alternate; }
+.brain-3d__lobe {
+  position: absolute;
+  left: calc(50% + var(--brain-x));
+  top: calc(47% + var(--brain-y));
+  width: var(--brain-w);
+  height: var(--brain-h);
+  border: 1px solid rgb(99 230 255 / 34%);
+  border-radius: 48% 58% 45% 62%;
+  background:
+    radial-gradient(circle at 34% 24%, rgb(220 255 238 / 55%), transparent 18%),
+    radial-gradient(circle at 62% 65%, rgb(46 232 138 / 28%), transparent 48%),
+    linear-gradient(145deg, rgb(75 255 171 / 88%), rgb(8 102 78 / 72%));
+  box-shadow:
+    inset 5px 5px 10px rgb(228 255 242 / 16%),
+    inset -7px -8px 12px rgb(0 25 21 / 55%),
+    0 0 14px rgb(46 232 138 / 18%);
+  transform: translate(-50%, -50%) translateZ(var(--brain-z));
+}
+.brain-3d__lobe::before,
+.brain-3d__lobe::after {
+  content: "";
+  position: absolute;
+  border: 1px solid rgb(1 59 46 / 62%);
+  border-radius: 50%;
+  opacity: 0.78;
+}
+.brain-3d__lobe::before { inset: 22% 8% 44% 20%; transform: rotate(22deg); }
+.brain-3d__lobe::after { inset: 48% 22% 10% 6%; transform: rotate(-18deg); }
+.brain-3d__lobe--left { border-bottom-right-radius: 34%; }
+.brain-3d__lobe--right { border-bottom-left-radius: 34%; }
+.brain-3d__bridge {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  width: 8px;
+  height: 104px;
+  border-radius: 999px;
+  background: linear-gradient(rgb(184 243 106 / 70%), rgb(53 214 192 / 10%));
+  box-shadow: 0 0 18px rgb(92 255 176 / 65%);
+  transform: translateX(-50%) translateZ(48px);
+}
+.brain-3d__stem {
+  position: absolute;
+  left: 50%;
+  top: 71%;
+  width: 30px;
+  height: 50px;
+  border-radius: 50% 50% 65% 65%;
+  background: linear-gradient(90deg, #0b775a, #4dffae 48%, #075641);
+  box-shadow: 0 0 20px rgb(46 232 138 / 30%);
+  transform: translateX(-50%) translateZ(12px);
+}
+.brain-3d__orbit {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: 17rem;
+  height: 6rem;
+  border: 1px solid rgb(99 230 255 / 20%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(68deg);
+}
+.brain-3d__orbit--b { width: 14rem; height: 9rem; transform: translate(-50%, -50%) rotateX(64deg) rotateZ(56deg); }
+.brain-3d__orbit--c { width: 13rem; height: 8rem; transform: translate(-50%, -50%) rotateX(68deg) rotateZ(-53deg); }
+.brain-3d__signals { position: absolute; inset: 0; animation: brain-signals 8s linear infinite; }
+.brain-3d__signals span {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ck-lime);
+  box-shadow: 0 0 12px 3px rgb(184 243 106 / 45%);
+  transform: rotate(calc(var(--signal-index) * 40deg)) translateX(126px);
+}
+@keyframes brain-hover { 50% { transform: translateY(-7px) rotateX(3deg); } }
+@keyframes brain-turn { from { transform: rotateY(-12deg); } to { transform: rotateY(13deg); } }
+@keyframes brain-signals { to { transform: rotate(360deg); } }
+
+.question-card { position: relative; overflow: hidden; isolation: isolate; }
+.question-card--transitioning > :not(.answer-flight) { animation: answer-content-fold 820ms var(--ck-ease) both; }
+.answer-flight {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.65rem;
+  background:
+    radial-gradient(circle, rgb(7 50 39 / 86%), rgb(2 5 4 / 94%) 68%),
+    var(--ck-bg);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 130ms ease, transform 180ms var(--ck-ease);
+}
+.answer-flight--active { opacity: 1; transform: scale(1); }
+.answer-flight__portal { position: relative; display: grid; place-items: center; width: 11rem; height: 11rem; }
+.answer-flight__picture { position: relative; z-index: 3; display: block; width: 7.5rem; animation: answer-logo-flight 820ms var(--ck-ease) both; }
+.answer-flight__picture img { width: 100%; height: auto; filter: drop-shadow(0 0 24px rgb(46 232 138 / 55%)); }
+.answer-flight__ring {
+  position: absolute;
+  inset: 6%;
+  border: 2px solid rgb(92 255 176 / 28%);
+  border-radius: 50%;
+  box-shadow: inset 0 0 20px rgb(53 214 192 / 18%), 0 0 24px rgb(46 232 138 / 18%);
+  animation: answer-ring 820ms var(--ck-ease) both;
+}
+.answer-flight__ring--b { inset: 20%; border-style: dashed; animation-direction: reverse; }
+.answer-flight__particles { position: absolute; inset: 50%; }
+.answer-flight__particles span {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--ck-lime);
+  box-shadow: 0 0 10px var(--ck-green-glow);
+  animation: answer-particle 820ms var(--ck-ease) both;
+  animation-delay: calc(var(--particle) * 18ms);
+}
+.answer-flight__label { position: relative; z-index: 3; color: var(--ck-green-glow); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+@keyframes answer-content-fold { 45%, 100% { opacity: 0; transform: perspective(700px) rotateX(8deg) scale(0.97); filter: blur(5px); } }
+@keyframes answer-logo-flight {
+  0% { opacity: 0; transform: scale(0.3) rotateY(-100deg); }
+  44% { opacity: 1; transform: scale(1.08) rotateY(0); }
+  76% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: translateX(82px) scale(0.66) rotateY(55deg); }
+}
+@keyframes answer-ring { from { opacity: 0; transform: scale(0.4) rotate(-80deg); } 55% { opacity: 1; } to { opacity: 0; transform: scale(1.35) rotate(120deg); } }
+@keyframes answer-particle {
+  from { opacity: 0; transform: rotate(calc(var(--particle) * 30deg)) translateY(-12px) scale(0); }
+  45% { opacity: 1; }
+  to { opacity: 0; transform: rotate(calc(var(--particle) * 30deg)) translateY(-92px) scale(1.4); }
+}
+
+.enem-archive__hero { max-width: 52rem; }
+.enem-archive__grid { display: grid; gap: 0.85rem; }
+.enem-edition { display: flex; min-height: 14rem; flex-direction: column; }
+.enem-edition__top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.enem-edition__year { color: rgb(92 255 176 / 32%); font-family: var(--ck-mono); font-size: 2.4rem; font-weight: 800; line-height: 1; }
+.enem-edition__title { margin-top: 0.4rem; }
+.enem-edition__link { align-self: flex-start; margin-top: auto; }
+@media (min-width: 600px) { .enem-archive__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .enem-archive__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .brain-3d__core,
+  :root:not([data-motion="full"]) .brain-3d__lobes,
+  :root:not([data-motion="full"]) .brain-3d__signals,
+  :root:not([data-motion="full"]) .answer-flight * { animation: none !important; }
+}
+[data-motion="reduced"] .brain-3d__core,
+[data-motion="reduced"] .brain-3d__lobes,
+[data-motion="reduced"] .brain-3d__signals,
+[data-motion="reduced"] .answer-flight * { animation: none !important; }
+[data-visual="reduced"] .brain-3d { display: none; }
+
+
 
 .account {
   display: grid;
@@ -300,7 +497,7 @@ details > summary::marker { color: var(--ck-green); }
 .account-list__body { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
 .account-list__name { font-weight: 500; }
 
-/* ---------------------------------------------------------------- Abas */
+
 
 .tabs {
   display: flex;
@@ -331,7 +528,7 @@ details > summary::marker { color: var(--ck-green); }
   box-shadow: inset 0 0 0 1px var(--ck-line-strong);
 }
 
-/* Telas de acesso e onboarding escondem a navegação da área de estudo. */
+
 .app--focused .app-nav,
 .app--focused .app-nav-mobile { display: none; }
 .app--focused .app-main { padding-bottom: 3rem; }

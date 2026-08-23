@@ -1,10 +1,10 @@
-/**
- * Estado do estudante: leitura e escrita de alto nível.
- *
- * As views nunca falam com o store diretamente — falam com este módulo. Isso mantém as
- * regras (domínio, revisão, plano) em um só lugar e deixa a troca de persistência
- * contida no store.
- */
+
+
+
+
+
+
+
 
 import { getState, update } from './store.js';
 import { applyPreferencesTo } from './preferences-dom.js';
@@ -23,7 +23,7 @@ import {
   questionsForTopic,
 } from '../data/content.js';
 
-/* ---------------------------------------------------------------- Perfil */
+
 
 export function student() {
   return getState().student;
@@ -37,14 +37,14 @@ export function activeProfile() {
   return getProfile(student().activeProfile);
 }
 
-/** Recalcula a sugestão a partir das respostas e espelha os campos consultáveis. */
+
 export function syncProfile() {
   const result = classifyProfile(student().answers);
 
   update((state) => {
     const s = state.student;
     s.suggestedProfile = result.suggested;
-    // A escolha confirmada pelo usuário tem prioridade e não é sobrescrita.
+
     if (!s.confirmedAt) s.activeProfile = result.suggested;
     s.confidence = result.confidence;
     s.provisional = result.provisional;
@@ -75,7 +75,7 @@ export function markStepCompleted(stepSlug) {
     const completed = new Set(s.completedSteps);
     const skipped = new Set(s.skippedSteps);
     completed.add(stepSlug);
-    skipped.delete(stepSlug); // responder depois de pular deixa de contar como pulada
+    skipped.delete(stepSlug);
     s.completedSteps = [...completed];
     s.skippedSteps = [...skipped];
     s.onboardingStep = stepSlug;
@@ -106,7 +106,7 @@ export function skipOnboarding() {
   }, { immediate: true });
 }
 
-/** Registra a decisão do estudante na tela de confirmação. */
+
 export function confirmProfile(suggested, chosen, note) {
   const previous = student().activeProfile;
 
@@ -142,7 +142,7 @@ export function confirmProfile(suggested, chosen, note) {
   rebuildPlan();
 }
 
-/** Troca manual de perfil. Registra justificativa e preserva o histórico. */
+
 export function changeProfile(chosen, note) {
   const previous = student().activeProfile;
   if (previous === chosen) return;
@@ -185,7 +185,7 @@ export function updateAvailability({ daysPerWeek, sessionMinutes, examDate }) {
     s.answers.sessionMinutes = String(s.sessionMinutes);
   }, { immediate: true });
 
-  // Alterar disponibilidade recalcula o plano na hora.
+
   rebuildPlan();
 }
 
@@ -196,7 +196,7 @@ export function updatePreferences(partial) {
   applyPreferences();
 }
 
-/** Aplica as preferências ao documento. Chamado no boot e a cada mudança. */
+
 export function applyPreferences() {
   applyPreferencesTo(preferences());
 }
@@ -216,7 +216,7 @@ export function masteryFor(topicSlug) {
   );
 }
 
-/** Marca que o estudante abriu o conteúdo — vira "explorado". */
+
 export function markTopicViewed(topicSlug) {
   update((state) => {
     const current = state.mastery[topicSlug] ?? {
@@ -233,7 +233,7 @@ export function markTopicViewed(topicSlug) {
   });
 }
 
-/** Recalcula o domínio de um tópico a partir de todas as tentativas registradas. */
+
 export function refreshMastery(topicSlug) {
   const state = getState();
   const attempts = Object.values(state.attempts).filter((attempt) => {
@@ -274,9 +274,9 @@ export function refreshMastery(topicSlug) {
   });
 }
 
-/* ---------------------------------------------------------------- Recomendação */
 
-/** Reúne, para cada tópico, os sinais que o motor consome. */
+
+
 export function collectSignals() {
   const state = getState();
   const now = Date.now();
@@ -308,7 +308,7 @@ export function collectSignals() {
     dueByTopic.set(item.topicSlug, (dueByTopic.get(item.topicSlug) ?? 0) + 1);
   }
 
-  // Áreas marcadas como inseguras na autopercepção contam como prioridade declarada.
+
   const selfAssessment = state.student.answers.selfAssessment ?? {};
   const priorityAreas = new Set(
     Object.entries(selfAssessment)
@@ -323,7 +323,7 @@ export function collectSignals() {
     return {
       topicId: topic.slug,
       topicName: topic.name,
-      // Nome legível, não o slug: a justificativa é lida pelo estudante.
+
       subjectName: getSubject(topic.subjectSlug)?.name ?? topic.subjectSlug,
       areaId: topic.areaSlug,
       areaName: getArea(topic.areaSlug)?.name ?? topic.areaSlug,
@@ -373,7 +373,7 @@ export function recommendationContext() {
   };
 }
 
-/** A recomendação principal do início: uma só, sempre com justificativa legível. */
+
 export function mainRecommendation() {
   const signals = collectSignals();
   const { selection } = recommendTopics(signals, recommendationContext(), 4);
@@ -385,7 +385,7 @@ export function mainRecommendation() {
   if (!signal || !topic) return null;
 
   const personalization = activeProfile().personalization;
-  // O tempo informado é limite real, não meta.
+
   const minutes = Math.min(personalization.baseMinutes, student().sessionMinutes);
   const questionCount = clamp(
     Math.round((minutes / personalization.baseMinutes) * personalization.questionsPerSession),
@@ -415,7 +415,7 @@ export function alternativeRecommendations(limit = 3) {
   });
 }
 
-/* ---------------------------------------------------------------- Revisão */
+
 
 export function pendingReviews() {
   const now = Date.now();
@@ -477,7 +477,7 @@ export function registerRecall(reviewId, recall, wasCorrect) {
   }, { immediate: true });
 }
 
-/* ---------------------------------------------------------------- Caderno de erros */
+
 
 export function errorNotes(status = 'open') {
   return Object.values(getState().notes)
@@ -536,7 +536,7 @@ export function toggleErrorNoteResolved(id) {
   }, { immediate: true });
 }
 
-/* ---------------------------------------------------------------- Plano semanal */
+
 
 export function currentPlan() {
   const plan = getState().plan;
@@ -545,11 +545,11 @@ export function currentPlan() {
   return plan;
 }
 
-/**
- * Reconstrói o plano da semana.
- * Preserva os blocos já concluídos: replanejar nunca apaga o que a pessoa fez, e
- * perder um dia não gera punição — só recomposição.
- */
+
+
+
+
+
 export function rebuildPlan() {
   const personalization = activeProfile().personalization;
   const s = student();

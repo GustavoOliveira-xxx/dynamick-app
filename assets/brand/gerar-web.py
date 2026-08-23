@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Gera as versões web das logos a partir dos originais em assets/brand/originais/.
 
@@ -24,13 +24,13 @@ from PIL import Image
 RAIZ = Path(__file__).resolve().parent
 ORIGINAIS = RAIZ / 'originais'
 
-# Largura de exibição máxima de cada marca, dobrada para telas de alta densidade.
+
 ALVOS = {
-    'logo-dynamic': 400,  # produto: exibida a até 200px na landing
-    'logo-ck': 340,       # empresa: exibida a até 170px no rodapé
+    'logo-dynamic': 400,
+    'logo-ck': 340,
 }
 
-# Opacidade abaixo da qual o pixel é névoa invisível, não arte.
+
 LIMIAR_ALPHA = 6
 
 
@@ -49,8 +49,8 @@ def preparar(nome: str, largura: int) -> None:
     png = RAIZ / f'{nome}.png'
     webp = RAIZ / f'{nome}.webp'
     im.save(png, 'PNG', optimize=True)
-    # q90 foi conferido lado a lado com o PNG em 1:1: sem banda no brilho,
-    # sem borda dura no halo. Abaixo disso o brilho começa a chapar.
+
+
     im.save(webp, 'WEBP', quality=90, method=6)
 
     print(f'{nome}: {im.size[0]}x{im.size[1]}  '

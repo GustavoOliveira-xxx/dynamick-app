@@ -121,7 +121,7 @@ describe('buildReason — a justificativa fala do estudante, não do catálogo',
       baseContext,
     );
     expect(result.reason).toContain('ainda não praticou');
-    // A frase não pode depender do gênero do nome do tópico.
+
     expect(result.reason).notToContain('foi praticado');
   });
 

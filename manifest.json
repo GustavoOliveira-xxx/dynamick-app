@@ -1,0 +1,49 @@
+{
+  "name": "Dynamic CK — preparação para o ENEM",
+  "short_name": "DynamiCK",
+  "description": "Plano adaptativo, prática, revisão e provas anteriores para o ENEM.",
+  "lang": "pt-BR",
+  "id": "./",
+  "start_url": "./inicio.html#/inicio",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#020504",
+  "theme_color": "#020504",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "assets/brand/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/brand/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Meu início",
+      "short_name": "Início",
+      "url": "inicio.html#/inicio",
+      "icons": [{ "src": "assets/brand/favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Praticar agora",
+      "short_name": "Praticar",
+      "url": "praticar.html#/praticar",
+      "icons": [{ "src": "assets/brand/favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ENEMs anteriores",
+      "short_name": "ENEMs",
+      "url": "enems.html#/enems",
+      "icons": [{ "src": "assets/brand/favicon.png", "sizes": "192x192" }]
+    }
+  ]
+}

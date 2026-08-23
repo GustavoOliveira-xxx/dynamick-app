@@ -1,26 +1,26 @@
--- =============================================================================
--- Dynamic CK — esquema Postgres
---
--- Espelha o estado que hoje vive no localStorage (js/core/store.js) mais o
--- acervo que hoje vive em arquivos (js/data/).  Os nomes de coluna repetem os
--- nomes dos campos em JavaScript de propósito: a tradução entre os dois lados
--- fica óbvia na hora de reimplementar o store contra uma API.
---
--- Duas metades independentes:
---   1. ACERVO   — conteúdo editorial, igual para todo mundo.
---   2. ESTUDANTE — o que cada pessoa fez, hoje preso a um navegador.
---
--- A aplicação continua funcionando sem nada disto. Este esquema é o destino,
--- não um requisito da versão atual.
--- =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
--- citext: e-mail não pode diferenciar maiúsculas de minúsculas.
+
 CREATE EXTENSION IF NOT EXISTS "citext";
 
--- =============================================================================
--- 1. ACERVO
--- =============================================================================
+
+
+
 
 CREATE TABLE areas (
   slug          text PRIMARY KEY,
@@ -47,8 +47,8 @@ CREATE TABLE topics (
   summary           text NOT NULL,
   difficulty        text NOT NULL CHECK (difficulty IN ('intro', 'intermediate', 'challenging')),
   estimated_minutes int  NOT NULL DEFAULT 20,
-  -- Peso de curadoria: quanto o tema recorre na prova. Entra na recomendação
-  -- com peso deliberadamente baixo, para não sufocar o sinal do estudante.
+
+
   curation_weight   int  NOT NULL DEFAULT 50 CHECK (curation_weight BETWEEN 0 AND 100),
   display_order     int  NOT NULL DEFAULT 0,
   published         boolean NOT NULL DEFAULT true
@@ -56,7 +56,7 @@ CREATE TABLE topics (
 CREATE INDEX topics_subject_idx ON topics(subject_slug);
 CREATE INDEX topics_area_idx    ON topics(area_slug);
 
--- Pré-requisito e "relacionado" são relações entre tópicos, não campos de texto.
+
 CREATE TABLE topic_prerequisites (
   topic_slug        text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   prerequisite_slug text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
@@ -97,17 +97,17 @@ CREATE TABLE questions (
   topic_slug                text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   skill_slug                text REFERENCES skills(slug) ON DELETE SET NULL,
   difficulty                text NOT NULL CHECK (difficulty IN ('intro', 'intermediate', 'challenging')),
-  -- Formato cognitivo: cinco questões que só trocam números não avaliam a mesma
-  -- habilidade em contextos diferentes. A seleção usa isto para variar.
+
+
   cognitive_format          text NOT NULL,
-  -- Questão de recuperação: mesma habilidade, contexto novo, para depois do erro.
+
   is_recovery               boolean NOT NULL DEFAULT false,
   stem                      text NOT NULL,
   explanation_summary       text NOT NULL,
   explanation_detailed      text,
   explanation_strategy      text,
   explanation_concept_recap text,
-  -- Origem e licença são obrigatórias: conteúdo sem procedência não entra.
+
   origin                    text NOT NULL DEFAULT 'AUTORAL_SEED',
   license                   text NOT NULL,
   published                 boolean NOT NULL DEFAULT true,
@@ -123,14 +123,14 @@ CREATE TABLE question_options (
   label         text NOT NULL CHECK (label IN ('A', 'B', 'C', 'D', 'E')),
   body          text NOT NULL,
   is_correct    boolean NOT NULL DEFAULT false,
-  -- Justificativa obrigatória inclusive nas erradas: a correção precisa explicar
-  -- por que cada distrator atrai, não só apontar a certa.
+
+
   rationale     text NOT NULL,
   error_hint    text,
   PRIMARY KEY (question_slug, label)
 );
 
--- Exatamente uma alternativa correta por questão, garantido pelo banco.
+
 CREATE UNIQUE INDEX question_options_one_correct
   ON question_options(question_slug) WHERE is_correct;
 
@@ -142,7 +142,7 @@ CREATE TABLE study_methods (
   when_to_use      text NOT NULL,
   steps            jsonb NOT NULL DEFAULT '[]'::jsonb,
   example          text NOT NULL,
-  -- Nenhum método é universal: declarar a limitação é obrigatório.
+
   limitations      text NOT NULL,
   minutes          int  NOT NULL DEFAULT 20,
   suitable_topics  jsonb NOT NULL DEFAULT '[]'::jsonb,
@@ -157,8 +157,8 @@ CREATE TABLE session_templates (
   minutes             int  NOT NULL DEFAULT 20,
   mode                text NOT NULL CHECK (mode IN ('learning', 'exam')),
   kind                text NOT NULL,
-  -- Regra de seleção dos itens: lista fixa de tópicos ou fonte dinâmica
-  -- (fila de revisão, recomendação, intercalada, diagnóstico).
+
+
   item_rule           jsonb NOT NULL,
   completion_rule     text NOT NULL,
   next_recommendation text REFERENCES topics(slug) ON DELETE SET NULL,
@@ -173,7 +173,7 @@ CREATE TABLE simulations (
   area_slug      text REFERENCES areas(slug) ON DELETE SET NULL,
   question_count int  NOT NULL,
   minutes        int  NOT NULL,
-  -- Matriz de distribuição por área, dificuldade e tópico.
+
   blueprint      jsonb NOT NULL
 );
 
@@ -190,9 +190,9 @@ CREATE TABLE essay_prompts (
   review_checklist    jsonb NOT NULL DEFAULT '[]'::jsonb
 );
 
--- =============================================================================
--- 2. ESTUDANTE
--- =============================================================================
+
+
+
 
 CREATE TABLE students (
   id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -204,18 +204,18 @@ CREATE TABLE students (
   completed_steps       jsonb NOT NULL DEFAULT '[]'::jsonb,
   skipped_steps         jsonb NOT NULL DEFAULT '[]'::jsonb,
   questionnaire_version text NOT NULL DEFAULT 'v1',
-  -- Respostas do questionário, com a chave da pergunta como chave do objeto.
+
   answers               jsonb NOT NULL DEFAULT '{}'::jsonb,
   suggested_profile     text,
   active_profile        text,
   confidence            text NOT NULL DEFAULT 'low' CHECK (confidence IN ('low', 'medium', 'high')),
-  -- Perfil é provisório por definição. Nunca é diagnóstico, nunca é permanente.
+
   provisional           boolean NOT NULL DEFAULT true,
   confirmed_at          timestamptz,
   diagnostic_status     text NOT NULL DEFAULT 'pending'
                           CHECK (diagnostic_status IN ('pending', 'skipped', 'done')),
-  -- Duas leituras de cada dimensão: o que a pessoa declarou e o que o
-  -- comportamento indica. Uma nunca sobrescreve a outra em silêncio.
+
+
   dimensions_declared   jsonb NOT NULL DEFAULT '{}'::jsonb,
   dimensions_observed   jsonb NOT NULL DEFAULT '{}'::jsonb,
   days_per_week         int  NOT NULL DEFAULT 3 CHECK (days_per_week BETWEEN 1 AND 7),
@@ -241,7 +241,7 @@ CREATE TABLE student_preferences (
   reminder_time     text
 );
 
--- Toda mudança de perfil guarda a justificativa legível que foi mostrada.
+
 CREATE TABLE profile_history (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id       uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
@@ -253,8 +253,8 @@ CREATE TABLE profile_history (
 );
 CREATE INDEX profile_history_student_idx ON profile_history(student_id, created_at DESC);
 
--- Registra quando a escolha do estudante divergiu da sugestão automática.
--- A escolha da pessoa sempre prevalece; guardamos a divergência para calibrar.
+
+
 CREATE TABLE profile_confirmations (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id         uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
@@ -272,8 +272,8 @@ CREATE TABLE study_sessions (
   title              text NOT NULL,
   kind               text NOT NULL CHECK (kind IN ('learn', 'practice', 'review', 'simulate', 'diagnostic')),
   mode               text NOT NULL DEFAULT 'learning' CHECK (mode IN ('learning', 'exam')),
-  -- Por que esta sessão foi montada. Nunca é nulo em sessão recomendada:
-  -- o estudante tem direito de saber o motivo.
+
+
   reason             text,
   topic_slug         text REFERENCES topics(slug) ON DELETE SET NULL,
   simulation_slug    text REFERENCES simulations(slug) ON DELETE SET NULL,
@@ -282,8 +282,8 @@ CREATE TABLE study_sessions (
   current_index      int  NOT NULL DEFAULT 0,
   planned_minutes    int  NOT NULL DEFAULT 20,
   time_limit_seconds int,
-  -- Chave de idempotência: recarregar a página ou clicar duas vezes não pode
-  -- criar uma segunda sessão idêntica.
+
+
   idempotency_key    text NOT NULL,
   started_at         timestamptz NOT NULL DEFAULT now(),
   last_active_at     timestamptz NOT NULL DEFAULT now(),
@@ -309,15 +309,15 @@ CREATE TABLE attempts (
   student_id     uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   session_id     uuid REFERENCES study_sessions(id) ON DELETE SET NULL,
   question_slug  text NOT NULL REFERENCES questions(slug) ON DELETE RESTRICT,
-  -- A PRIMEIRA alternativa marcada nunca é sobrescrita: trocar de resposta é um
-  -- dado sobre o raciocínio, e some se guardarmos só a última.
+
+
   first_answer   text NOT NULL CHECK (first_answer IN ('A', 'B', 'C', 'D', 'E')),
   final_answer   text NOT NULL CHECK (final_answer IN ('A', 'B', 'C', 'D', 'E')),
   changed_answer boolean NOT NULL DEFAULT false,
   is_correct     boolean NOT NULL,
-  -- Confiança declarada: separa acerto com certeza de acerto com dúvida.
+
   confidence     text CHECK (confidence IN ('sure', 'unsure', 'guess')),
-  -- Motivo do erro, escolhido pelo estudante. Um erro sem motivo se repete.
+
   error_reason   text CHECK (error_reason IN (
                    'unknown_content', 'misread_question', 'calculation',
                    'attention', 'time', 'between_options', 'other')),
@@ -336,8 +336,8 @@ CREATE TABLE topic_mastery (
   score             int  NOT NULL DEFAULT 0 CHECK (score BETWEEN 0 AND 100),
   attempt_count     int  NOT NULL DEFAULT 0,
   correct_count     int  NOT NULL DEFAULT 0,
-  -- "Consolidado" exige questões DISTINTAS e mais de uma sessão. Domínio nunca
-  -- é declarado a partir de um acerto isolado.
+
+
   distinct_questions int NOT NULL DEFAULT 0,
   distinct_sessions  int NOT NULL DEFAULT 0,
   first_viewed_at   timestamptz,
@@ -366,7 +366,7 @@ CREATE TABLE review_queue (
 );
 CREATE INDEX review_queue_due_idx ON review_queue(student_id, status, due_at);
 
--- Caderno de erros: guarda o MOTIVO e o próximo passo, não a lista de acertos.
+
 CREATE TABLE error_notes (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id    uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
@@ -399,7 +399,7 @@ CREATE TABLE plan_blocks (
   kind       text NOT NULL,
   topic_slug text REFERENCES topics(slug) ON DELETE SET NULL,
   minutes    int  NOT NULL DEFAULT 20,
-  -- Perder um dia reajusta o plano. Não existe "atrasado" nem cobrança.
+
   status     text NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'done', 'moved')),
   block_order int NOT NULL DEFAULT 0
 );
@@ -414,10 +414,10 @@ CREATE TABLE simulation_runs (
   total_items     int  NOT NULL,
   score           int  NOT NULL DEFAULT 0,
   submitted_at    timestamptz,
-  -- Análise por área, tópico, habilidade e tempo. NUNCA contém estimativa de
-  -- nota do ENEM nem projeção de aprovação.
+
+
   analysis        jsonb,
-  -- Quando o acervo não cobre a matriz, avisamos em vez de repetir questão.
+
   fallback_note   text,
   shortfall       int NOT NULL DEFAULT 0,
   created_at      timestamptz NOT NULL DEFAULT now()
@@ -430,8 +430,8 @@ CREATE TABLE essays (
   prompt_slug text NOT NULL REFERENCES essay_prompts(slug) ON DELETE RESTRICT,
   outline     text NOT NULL DEFAULT '',
   body        text NOT NULL DEFAULT '',
-  -- Autoavaliação por critério. Não existe coluna de nota: sem leitor humano,
-  -- atribuir pontuação a uma redação seria inventar um número.
+
+
   self_check  jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at  timestamptz NOT NULL DEFAULT now(),
   updated_at  timestamptz NOT NULL DEFAULT now(),
@@ -452,11 +452,11 @@ CREATE TABLE content_reports (
 );
 CREATE INDEX content_reports_status_idx ON content_reports(status, created_at DESC);
 
--- =============================================================================
--- 3. VISÕES DE APOIO
--- =============================================================================
 
--- Saúde do acervo, equivalente ao que a tela #/catalogo mostra hoje.
+
+
+
+
 CREATE VIEW catalog_health AS
 SELECT
   (SELECT count(*) FROM areas)                                  AS areas,
@@ -475,8 +475,8 @@ SELECT
   (SELECT count(*) FROM question_options o
      WHERE o.rationale IS NULL OR btrim(o.rationale) = '')       AS options_without_rationale;
 
--- Distribuição do gabarito. Se uma posição concentrar demais, quem marca sempre
--- a mesma letra acerta sem ler — e todo o resto do sistema passa a medir ruído.
+
+
 CREATE VIEW answer_key_balance AS
 SELECT
   label,

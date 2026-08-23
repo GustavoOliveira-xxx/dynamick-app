@@ -1,4 +1,4 @@
-/** inicio.html — o início do estudante e o diagnóstico opcional. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderDashboard } from '../views/dashboard.js';

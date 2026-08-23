@@ -1,17 +1,17 @@
-/** Componentes de interface reutilizáveis. Todos devolvem nós do DOM. */
+
 
 import { el, uid, trapFocus } from '../core/dom.js';
 
-/* ---------------------------------------------------------------- Botão */
 
-/**
- * @param {{
- *   label: string, variant?: 'primary'|'secondary'|'ghost'|'danger',
- *   size?: 'sm'|'md'|'lg', type?: string, onClick?: Function,
- *   block?: boolean, disabled?: boolean, icon?: string, name?: string, value?: string,
- *   ariaLabel?: string
- * }} options
- */
+
+
+
+
+
+
+
+
+
 export function button(options) {
   const {
     label, variant = 'primary', size = 'md', type = 'button', onClick,
@@ -38,10 +38,10 @@ export function button(options) {
   return node;
 }
 
-/**
- * Coloca o botão em estado de carregando e o DESABILITA de verdade.
- * É isso que impede o envio duplo — não basta trocar o texto.
- */
+
+
+
+
 export function setButtonLoading(node, loading, loadingLabel) {
   const labelNode = node.querySelector('.btn__label');
   if (loading) {
@@ -60,7 +60,7 @@ export function setButtonLoading(node, loading, loadingLabel) {
   }
 }
 
-/** Link que se parece com botão — e navega de verdade. */
+
 export function linkButton({ href, label, variant = 'primary', size = 'md', block, icon }) {
   return el(
     'a',
@@ -77,7 +77,7 @@ export function linkButton({ href, label, variant = 'primary', size = 'md', bloc
   );
 }
 
-/* ---------------------------------------------------------------- Cartão */
+
 
 const ACCENT_COLORS = {
   green: 'var(--ck-green)',
@@ -107,7 +107,7 @@ export function card(options = {}, ...children) {
   );
 }
 
-/* ---------------------------------------------------------------- Selo */
+
 
 export function badge(label, tone = 'neutral', icon) {
   return el(
@@ -118,9 +118,9 @@ export function badge(label, tone = 'neutral', icon) {
   );
 }
 
-/* ---------------------------------------------------------------- Progresso */
 
-/** Barra de progresso com rótulo acessível — nunca comunica só por cor. */
+
+
 export function progress({ value, max = 100, label, tone = 'green', size = 'md' }) {
   const safeMax = max > 0 ? max : 100;
   const clamped = Math.max(0, Math.min(safeMax, value));
@@ -143,9 +143,9 @@ export function progress({ value, max = 100, label, tone = 'green', size = 'md' 
   );
 }
 
-/* ---------------------------------------------------------------- Campo */
 
-/** Campo de texto com rótulo, dica e erro ligados por aria-describedby. */
+
+
 export function field({ label, name, type = 'text', value = '', hint, error, required, ...rest }) {
   const id = uid('field');
   const hintId = `${id}-hint`;
@@ -187,17 +187,17 @@ export function textarea({ label, name, value = '', rows = 4, hint, placeholder,
       placeholder: placeholder || undefined,
       maxlength: maxlength || undefined,
       'aria-describedby': hint ? hintId : undefined,
-      // O handler recebe o texto já pronto: nenhuma tela precisa mexer no evento.
+
       onInput: onInput ? (event) => onInput(event.currentTarget.value, event) : undefined,
     }, value),
     hint ? el('p', { class: 'field__hint', id: hintId }, hint) : null,
   );
 }
 
-/**
- * Grupo de escolha com rádio/checkbox REAIS.
- * Isso garante teclado, leitor de tela e semântica correta — nada de div clicável.
- */
+
+
+
+
 export function choiceGroup({ legend, name, options, value, multiple, hint, error, onChange, variant = 'option' }) {
   const groupId = uid('group');
   const selected = new Set(Array.isArray(value) ? value : value ? [value] : []);
@@ -249,7 +249,7 @@ export function choiceGroup({ legend, name, options, value, multiple, hint, erro
   );
 }
 
-/* ---------------------------------------------------------------- Estados */
+
 
 export function emptyState({ title, description, actionLabel, actionHref, icon = '◇' }) {
   return card(
@@ -281,7 +281,7 @@ export function loadingState(label = 'Carregando…') {
   );
 }
 
-/** Aviso permanente de que o conteúdo é semente de desenvolvimento. */
+
 export function seedNotice(compact = false) {
   if (compact) {
     return el(
@@ -301,7 +301,7 @@ export function seedNotice(compact = false) {
   );
 }
 
-/* ---------------------------------------------------------------- Toast */
+
 
 let toastRegion = null;
 
@@ -316,12 +316,12 @@ export function toast(text, tone = 'info', timeout = 4500) {
   return node;
 }
 
-/* ---------------------------------------------------------------- Modal */
 
-/**
- * Modal acessível: foco preso dentro, Esc fecha, clique no fundo fecha.
- * Devolve { close } — e sempre restaura o foco e a rolagem ao fechar.
- */
+
+
+
+
+
 export function modal({ title, body, actions }) {
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
@@ -340,7 +340,7 @@ export function modal({ title, body, actions }) {
   const releaseFocus = trapFocus(dialog);
 
   function close() {
-    // A rolagem SEMPRE volta — modal que trava o scroll ao fechar é bug conhecido.
+
     document.body.style.overflow = previousOverflow;
     releaseFocus();
     backdrop.remove();
@@ -359,7 +359,7 @@ export function modal({ title, body, actions }) {
   return { close, dialog };
 }
 
-/** Confirmação com texto digitado — para ações destrutivas. */
+
 export function confirmDestructive({ title, description, confirmWord, confirmLabel, onConfirm }) {
   const input = el('input', { class: 'input', placeholder: confirmWord, 'aria-label': `Digite ${confirmWord} para confirmar` });
   const confirm = button({
