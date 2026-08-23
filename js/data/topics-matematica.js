@@ -165,7 +165,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: '83,3%', rationale: 'Corresponde a 250/300, que é a razão entre os preços, não a variação.', errorHint: 'calcular razão em vez de variação' },
         ],
         explanation: {
-          summary: 'A resposta é B. Variação = (final − inicial)/inicial = 50/250 = 20%.',
+          summary: 'Variação = (final − inicial)/inicial = 50/250 = 20%.',
           strategy: 'Antes de dividir, escreva no papel: "de onde eu saí?". Esse valor é o denominador.',
           conceptRecap: 'O denominador da variação percentual é sempre o valor inicial.',
         },
@@ -188,7 +188,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: 'R$ 112,00, com desconto total de 56%.', rationale: 'O valor final está correto, mas 56% é o fator que resta (0,56), não o desconto. O desconto é 1 − 0,56 = 44%.', errorHint: 'confundir fator restante com desconto' },
         ],
         explanation: {
-          summary: 'A resposta é B. 200 × 0,70 × 0,80 = 112. O desconto equivalente é 1 − 0,56 = 44%.',
+          summary: '200 × 0,70 × 0,80 = 112. O desconto equivalente é 1 − 0,56 = 44%.',
           detailed: 'A opção que apresenta 56% como desconto é a mais perigosa: acerta a conta e erra a leitura. 0,56 é quanto você **paga**; o desconto é o que **sobra do 1**.',
           strategy: 'Multiplique fatores, depois traduza: fator 0,56 significa pagar 56% e economizar 44%.',
         },
@@ -211,7 +211,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: 'A primeira está correta e a segunda exagera o resultado.', rationale: 'A primeira erra a unidade; a segunda aplica corretamente a fórmula de variação.', errorHint: 'julgar pelo tamanho do número' },
         ],
         explanation: {
-          summary: 'A resposta é A. São 3 **pontos percentuais** de diferença, o que equivale a 37,5% de variação relativa.',
+          summary: 'São 3 **pontos percentuais** de diferença, o que equivale a 37,5% de variação relativa.',
           detailed: 'Esse par de leituras aparece com frequência em notícias sobre desemprego, inflação e cobertura de serviços. Saber qual está sendo usada muda completamente a percepção do dado.',
           conceptRecap: 'Ponto percentual mede a diferença entre dois percentuais; porcentagem mede a variação relativa entre eles.',
         },
@@ -234,7 +234,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: 'Não é possível comparar sem saber o intervalo entre os aumentos.', rationale: 'O intervalo de tempo não altera o valor final quando os percentuais são dados.', errorHint: 'introduzir variável irrelevante' },
         ],
         explanation: {
-          summary: 'A resposta é A. 1,10 × 1,10 = 1,21 → os dois caminhos chegam a R$ 2.420.',
+          summary: '1,10 × 1,10 = 1,21 → os dois caminhos chegam a R$ 2.420.',
           detailed: 'O ponto da questão é que "10% duas vezes" equivale a 21%, e não a 20%. O 1% extra vem do aumento incidindo sobre o valor já aumentado.',
           strategy: 'Sempre converta para fatores e multiplique antes de comparar.',
         },
@@ -257,7 +257,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: 'Continua em 30%, pois as variações se compensam.', rationale: 'As variações têm sentidos que se somam no mesmo efeito: renda menor e gasto maior aumentam o comprometimento.', errorHint: 'supor compensação sem verificar' },
         ],
         explanation: {
-          summary: 'A resposta é A. Renda inicial R$ 3.000 → R$ 2.700; gasto R$ 900 → R$ 945; 945/2.700 = 35%.',
+          summary: 'Renda inicial R$ 3.000 → R$ 2.700; gasto R$ 900 → R$ 945; 945/2.700 = 35%.',
           detailed: 'A questão integra três passos: recuperar o valor inicial a partir de um percentual, aplicar duas variações independentes e recalcular a proporção. Nenhum atalho por soma de percentuais funciona aqui.',
           strategy: 'Quando o enunciado dá um percentual e um valor, comece encontrando o total. Depois trabalhe com valores absolutos.',
           conceptRecap: 'Percentual de participação precisa ser recalculado quando numerador e denominador mudam.',
@@ -280,7 +280,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'D', text: 'R$ 72,00', rationale: 'Corresponde a 10% de desconto.', errorHint: 'arredondar o percentual' },
           { label: 'E', text: 'R$ 92,00', rationale: 'Aplicou aumento em vez de desconto.', errorHint: 'inverter o sentido da variação' },
         ],
-        explanation: { summary: 'A resposta é C. Desconto de 15% → fator 0,85 → 80 × 0,85 = R$ 68,00.' },
+        explanation: { summary: 'Desconto de 15% → fator 0,85 → 80 × 0,85 = R$ 68,00.' },
       },
       {
         slug: 'q-porc-rec-2',
@@ -301,7 +301,7 @@ De 4% para 6% são 2 pontos percentuais e 50% de aumento relativo. Leia o enunci
           { label: 'E', text: '4%', rationale: 'Não corresponde a nenhuma operação válida com os dados.', errorHint: 'chute' },
         ],
         explanation: {
-          summary: 'A resposta é A. A base é 120 (valor inicial): 24/120 = 20% de queda.',
+          summary: 'A base é 120 (valor inicial): 24/120 = 20% de queda.',
           conceptRecap: 'Queda de 20% deixa 80% do valor: 120 × 0,80 = 96 confirma o resultado.',
         },
       },
@@ -470,7 +470,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'Não é possível comparar sem saber o número de profissionais.', rationale: 'A pergunta é sobre atendimentos por habitante, e os dois dados necessários estão na tabela.', errorHint: 'exigir dado desnecessário' },
         ],
         explanation: {
-          summary: 'A resposta é B. Taxa = atendimentos ÷ população: 0,15 (Norte) contra 0,20 (Sul).',
+          summary: 'Taxa = atendimentos ÷ população: 0,15 (Norte) contra 0,20 (Sul).',
           strategy: 'Sempre que as bases forem diferentes, converta para taxa antes de comparar.',
         },
       },
@@ -492,7 +492,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'Séries temporais não permitem nenhum tipo de conclusão.', rationale: 'Permitem conclusões, desde que controlados os fatores que competem pela explicação.', errorHint: 'generalizar a cautela' },
         ],
         explanation: {
-          summary: 'A resposta é A. Com padrão sazonal evidente, a queda entre janeiro e abril é esperada mesmo sem campanha alguma.',
+          summary: 'Com padrão sazonal evidente, a queda entre janeiro e abril é esperada mesmo sem campanha alguma.',
           detailed: 'A forma de testar seria comparar abril deste ano com abril de anos anteriores. Comparar meses seguidos dentro de uma série sazonal não isola o efeito da intervenção.',
           conceptRecap: 'Em séries sazonais, compare o mesmo período de anos diferentes.',
         },
@@ -515,7 +515,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'A diferença é de 4%, calculada como 66 − 62 dividido por 100.', rationale: 'Dividir por 100 pressupõe que o índice vá de 0 a 100 como base de variação, o que não é a fórmula de variação relativa.', errorHint: 'usar base arbitrária' },
         ],
         explanation: {
-          summary: 'A resposta é A. Quatro pontos de diferença, cerca de 6,5% em termos relativos — a forma exagera, os números corrigem.',
+          summary: 'Quatro pontos de diferença, cerca de 6,5% em termos relativos — a forma exagera, os números corrigem.',
           strategy: 'Leia os valores do eixo antes de comparar alturas. Sempre.',
         },
       },
@@ -537,7 +537,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'O gráfico I exagera as variações da série.', rationale: 'É o contrário: a escala ampla reduz a percepção das variações.', errorHint: 'inverter o efeito da escala' },
         ],
         explanation: {
-          summary: 'A resposta é A. Mesmos dados, leituras diferentes: a escala é uma escolha comunicativa.',
+          summary: 'Mesmos dados, leituras diferentes: a escala é uma escolha comunicativa.',
           detailed: 'A conclusão útil não é "gráfico com eixo cortado mente", e sim "a escala precisa ser lida antes da forma, e escolhida de acordo com a pergunta".',
         },
       },
@@ -559,7 +559,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'A associação observada só teria validade com mais de 100 municípios.', rationale: 'Não existe limiar fixo de 100 observações; o tamanho adequado depende do desenho do estudo.', errorHint: 'inventar critério estatístico' },
         ],
         explanation: {
-          summary: 'A resposta é A. O gráfico estabelece associação; causalidade exige desenho de estudo que controle outras explicações.',
+          summary: 'O gráfico estabelece associação; causalidade exige desenho de estudo que controle outras explicações.',
           detailed: 'A explicação alternativa mais provável aqui é a renda do município: cidades com mais orçamento tendem a ter mais bibliotecas E melhores indicadores educacionais. Essa terceira variável produziria a mesma associação sem qualquer relação causal direta.',
           conceptRecap: 'Associação é o que o gráfico mostra. Causa é uma hipótese que precisa de mais evidência.',
         },
@@ -582,7 +582,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'D', text: '400 pessoas', rationale: 'Corresponde a metade dos entrevistados, valor não relacionado às fatias citadas.', errorHint: 'chute' },
           { label: 'E', text: '120 pessoas', rationale: 'É o número de quem vai a pé.', errorHint: 'responder a outra fatia' },
         ],
-        explanation: { summary: 'A resposta é B. A diferença é de 20 pontos percentuais, e 20% de 800 = 160 pessoas.' },
+        explanation: { summary: 'A diferença é de 20 pontos percentuais, e 20% de 800 = 160 pessoas.' },
       },
       {
         slug: 'q-graf-rec-2',
@@ -603,7 +603,7 @@ O cérebro compara alturas em um instante. Se o eixo estiver cortado, essa compa
           { label: 'E', text: 'Os dados são insuficientes para qualquer descrição.', rationale: 'Cinco pontos permitem descrever o comportamento observado, ainda que não permitam projeções firmes.', errorHint: 'excesso de cautela' },
         ],
         explanation: {
-          summary: 'A resposta é A. Variações pequenas em ambas as direções indicam oscilação em torno de um patamar.',
+          summary: 'Variações pequenas em ambas as direções indicam oscilação em torno de um patamar.',
           strategy: 'Antes de dizer "tendência", verifique se os movimentos são todos na mesma direção e se o tamanho da variação é relevante.',
         },
       },
@@ -788,7 +788,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'V = 0,80(m + 45)', rationale: 'Aqui os R$ 45 entrariam como minutos, sendo multiplicados por 0,80 — resultaria em R$ 36 fixos.', errorHint: 'colocar o valor fixo dentro do parêntese' },
         ],
         explanation: {
-          summary: 'A resposta é B. O que varia com o uso multiplica a variável; o que é fixo entra somando.',
+          summary: 'O que varia com o uso multiplica a variável; o que é fixo entra somando.',
           strategy: 'Teste com m = 0: a expressão correta deve devolver exatamente a parte fixa (R$ 45).',
         },
       },
@@ -810,7 +810,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'A partir de 4 km.', rationale: 'Resultado de dividir 8 por 2 em vez de por 0,5.', errorHint: 'erro na divisão final' },
         ],
         explanation: {
-          summary: 'A resposta é B. O ponto de igualdade é 16 km; acima dele, Y é mais barata.',
+          summary: 'O ponto de igualdade é 16 km; acima dele, Y é mais barata.',
           detailed: 'A opção que diz depender da distância mostra por que o número sozinho não basta: quem tem taxa fixa menor ganha nas distâncias curtas; quem tem custo por km menor ganha nas longas.',
           strategy: 'Depois de achar o ponto, teste um valor de cada lado para confirmar quem ganha onde.',
         },
@@ -833,7 +833,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'Linear, P(t) = 400t.', rationale: 'Em t = 0 daria 0, contrariando o valor inicial de 200.', errorHint: 'ignorar o valor em t = 0' },
         ],
         explanation: {
-          summary: 'A resposta é B. Razão constante entre valores consecutivos (×2) indica crescimento exponencial.',
+          summary: 'Razão constante entre valores consecutivos (×2) indica crescimento exponencial.',
           strategy: 'Teste soma primeiro; se a diferença não for constante, teste divisão. Razão constante = exponencial.',
           conceptRecap: 'Diferença constante → linear. Razão constante → exponencial.',
         },
@@ -856,7 +856,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'I e II, mas apenas para x maior que 150.', rationale: 'As duas afirmações valem para qualquer x positivo; 150 é o custo fixo, não um limiar.', errorHint: 'confundir valor do custo fixo com limite de validade' },
         ],
         explanation: {
-          summary: 'A resposta é C. Custo marginal constante (R$ 25) e custo médio decrescente (25 + 150/x) coexistem sem contradição.',
+          summary: 'Custo marginal constante (R$ 25) e custo médio decrescente (25 + 150/x) coexistem sem contradição.',
           detailed: 'Verifique numericamente: com 10 unidades, o custo médio é 400/10 = R$ 40. Com 50 unidades, é 1.400/50 = R$ 28. A média cai porque os R$ 150 fixos se distribuem entre mais peças, enquanto cada peça adicional continua custando R$ 25.',
           conceptRecap: 'Custo marginal é o coeficiente angular. Custo médio inclui a diluição do custo fixo.',
         },
@@ -879,7 +879,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'A função deveria ter coeficiente angular negativo, pois a qualidade do ar tende a piorar.', rationale: 'O sinal do coeficiente vem dos dados observados, não de uma expectativa sobre o tema.', errorHint: 'substituir dado por opinião' },
         ],
         explanation: {
-          summary: 'A resposta é A. Dois problemas se somam: extrapolação muito além dos dados e resultado impossível no contexto.',
+          summary: 'Dois problemas se somam: extrapolação muito além dos dados e resultado impossível no contexto.',
           detailed: 'O limite físico é o teste mais rápido: um trimestre tem cerca de 91 dias. A função ultrapassa esse teto quando 3,5t + 42 > 91, ou seja, a partir de t ≈ 14 — bem antes de t = 40. Modelos lineares descrevem bem trechos curtos e falham em horizontes longos.',
           strategy: 'Sempre confronte o resultado de uma projeção com os limites do contexto antes de aceitá-la.',
           conceptRecap: 'Um modelo vale no intervalo em que foi ajustado e enquanto fizer sentido no mundo real.',
@@ -902,7 +902,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'D', text: '32 — a soma dos dois coeficientes.', rationale: 'Somar 7 e 25 corresponderia a f(1), não a f(0).', errorHint: 'somar sem substituir x' },
           { label: 'E', text: 'Não é possível calcular sem saber a unidade.', rationale: 'O valor numérico não depende da unidade escolhida.', errorHint: 'exigir dado irrelevante' },
         ],
-        explanation: { summary: 'A resposta é A. f(0) = 25 é o termo independente: a parte fixa da cobrança.' },
+        explanation: { summary: 'f(0) = 25 é o termo independente: a parte fixa da cobrança.' },
       },
       {
         slug: 'q-func-rec-2',
@@ -923,7 +923,7 @@ Encontrar t = 10 é metade da resposta. A outra metade é dizer qual opção val
           { label: 'E', text: 'y = x + 11', rationale: 'Em x = 2 daria 13, e não 19.', errorHint: 'assumir coeficiente 1' },
         ],
         explanation: {
-          summary: 'A resposta é B. Diferença constante de 7 dá o coeficiente; substituir um ponto revela o termo independente.',
+          summary: 'Diferença constante de 7 dá o coeficiente; substituir um ponto revela o termo independente.',
           strategy: 'Ache a diferença constante, depois substitua um par (x, y) para descobrir o valor que falta.',
         },
       },

@@ -73,6 +73,7 @@
   --ck-z-sticky: 20;
   --ck-z-modal: 40;
   --ck-z-toast: 50;
+  --ck-z-transition: 60;
 
   /* ---- Intensidade do fundo animado, por contexto ---- */
   --ck-visual-opacity: 1;

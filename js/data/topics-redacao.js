@@ -191,7 +191,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'Os jovens deveriam valorizar mais a oportunidade de estudar.', rationale: 'Atribui o problema exclusivamente ao indivíduo, sem sustentação, e desconsidera as condições que produzem a evasão.', errorHint: 'individualizar problema estrutural' },
         ],
         explanation: {
-          summary: 'A resposta é B. Tese é posição contestável e delimitada — não anúncio, constatação nem consenso.',
+          summary: 'Tese é posição contestável e delimitada — não anúncio, constatação nem consenso.',
           strategy: 'Teste da frase contrária: se o oposto da sua tese for absurdo, ela é óbvia demais.',
         },
       },
@@ -213,7 +213,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'O trecho apresenta erro gramatical que compromete o sentido.', rationale: 'Não há erro gramatical: o problema é de construção argumentativa.', errorHint: 'confundir gramática com argumentação' },
         ],
         explanation: {
-          summary: 'A resposta é A. Repertório sem análise é decoração — a etapa "isso mostra que…" está faltando.',
+          summary: 'Repertório sem análise é decoração — a etapa "isso mostra que…" está faltando.',
           strategy: 'Depois de citar, escreva sempre uma frase que explique o que aquilo prova no seu argumento.',
         },
       },
@@ -235,7 +235,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'Investimento em educação nunca resolve problemas sociais.', rationale: 'A crítica é à falta de especificidade da proposta, não ao mérito do investimento.', errorHint: 'trocar crítica de forma por juízo de conteúdo' },
         ],
         explanation: {
-          summary: 'A resposta é A. Faltam ação, meio, finalidade e detalhamento — só o agente aparece, e de forma vaga.',
+          summary: 'Faltam ação, meio, finalidade e detalhamento — só o agente aparece, e de forma vaga.',
           conceptRecap: 'Agente, ação, meio, finalidade e detalhamento: os cinco elementos são cumulativos.',
         },
       },
@@ -257,7 +257,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'É preciso que haja mais cultura para todos, com apoio de toda a sociedade.', rationale: 'Formulação genérica, sem nenhum dos cinco elementos.', errorHint: 'proposta vaga' },
         ],
         explanation: {
-          summary: 'A resposta é A. A proposta é coerente com a barreira defendida e traz os cinco elementos.',
+          summary: 'A proposta é coerente com a barreira defendida e traz os cinco elementos.',
           detailed: 'A proposta bem detalhada porém fora do problema é a mais perigosa: está bem escrita e completa, mas resolve um problema que o texto não levantou. Coerência com a própria tese vale mais que sofisticação isolada.',
         },
       },
@@ -279,7 +279,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'O texto deveria abandonar a tese inicial e tratar de outros fatores de saúde mental.', rationale: 'Delimitar é qualidade do texto dissertativo; abandonar a tese quebraria a coerência.', errorHint: 'confundir delimitação com limitação' },
         ],
         explanation: {
-          summary: 'A resposta é A. Os dois parágrafos atacam ângulos diferentes da mesma tese — isso é progressão.',
+          summary: 'Os dois parágrafos atacam ângulos diferentes da mesma tese — isso é progressão.',
           detailed: 'Esta questão integra três pontos: clareza da tese, progressão entre desenvolvimentos e coerência interna. O critério de progressão não é mudar de assunto, e sim mudar de ângulo sobre o mesmo problema.',
         },
       },
@@ -300,7 +300,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'D', text: 'Listar todas as fontes que serão citadas.', rationale: 'O gênero não exige lista de fontes.', errorHint: 'aplicar convenção de outro gênero' },
           { label: 'E', text: 'Resumir o texto motivador da prova.', rationale: 'Copiar ou resumir o texto motivador não constrói tese própria.', errorHint: 'depender do texto motivador' },
         ],
-        explanation: { summary: 'A resposta é A. Introdução: problema + tese.' },
+        explanation: { summary: 'Introdução: problema + tese.' },
       },
       {
         slug: 'q-red-rec-2',
@@ -321,7 +321,7 @@ Se o texto defendeu que o gargalo é logístico, propor campanha educativa contr
           { label: 'E', text: 'Nenhum elemento está ausente.', rationale: 'A finalidade não aparece de forma explícita.', errorHint: 'não conferir os cinco elementos' },
         ],
         explanation: {
-          summary: 'A resposta é A. Falta a finalidade: para que a ação existe.',
+          summary: 'Falta a finalidade: para que a ação existe.',
           strategy: 'Confira os cinco na ordem: quem, o quê, como, para quê, com que recorte.',
         },
       },
