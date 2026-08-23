@@ -242,3 +242,99 @@ details > summary::marker { color: var(--ck-green); }
 @media (min-width: 640px) { .def-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .def-list dt { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ck-text-3); }
 .def-list dd { margin-top: 0.25rem; font-size: 1.05rem; font-weight: 500; }
+
+/* ---------------------------------------------------------------- Início: cubo */
+
+/*
+ * O cubo ocupa a coluna da direita no desktop e vai para baixo do texto no
+ * celular. Ele nunca cobre a recomendação principal: a ação do dia continua
+ * sendo a primeira coisa que a pessoa lê.
+ */
+.dashboard-hero {
+  display: grid;
+  gap: 1.25rem;
+  align-items: center;
+}
+.dashboard-hero__text { min-width: 0; }
+.dashboard-hero__cube { justify-self: center; width: 100%; max-width: 22rem; }
+
+@media (min-width: 900px) {
+  .dashboard-hero { grid-template-columns: minmax(0, 1fr) 20rem; }
+  .dashboard-hero__cube { justify-self: end; }
+}
+
+/* ---------------------------------------------------------------- Entrar */
+
+.account {
+  display: grid;
+  gap: 1.75rem;
+  align-items: start;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+}
+@media (min-width: 900px) {
+  .account { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 2.5rem; }
+}
+
+.account__intro { display: grid; gap: 0.75rem; justify-items: start; }
+.account__intro h1 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1.15; }
+.account__brand { margin-bottom: 0.25rem; }
+.account__main { display: grid; gap: 1rem; }
+.account__foot { opacity: 0.72; }
+
+.account-list { display: grid; gap: 0.5rem; list-style: none; }
+.account-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-md);
+  background: var(--ck-bg-raised);
+  cursor: pointer;
+  transition: border-color var(--ck-dur-fast) var(--ck-ease), transform var(--ck-dur-fast) var(--ck-ease);
+}
+.account-list__item:hover { border-color: var(--ck-line-strong); transform: translateY(-1px); }
+.account-list__item:focus-within { outline: 2px solid var(--ck-green); outline-offset: 2px; }
+.account-list__body { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
+.account-list__name { font-weight: 500; }
+
+/* ---------------------------------------------------------------- Abas */
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--ck-line);
+  border-radius: var(--ck-r-pill);
+  background: var(--ck-bg-deep);
+}
+.tabs__tab {
+  flex: 1;
+  padding: 0.55rem 0.9rem;
+  border: 0;
+  border-radius: var(--ck-r-pill);
+  background: transparent;
+  color: var(--ck-text-2);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background var(--ck-dur-fast) var(--ck-ease), color var(--ck-dur-fast) var(--ck-ease);
+}
+.tabs__tab:hover { color: var(--ck-text); }
+.tabs__tab:focus-visible { outline: 2px solid var(--ck-green); outline-offset: 2px; }
+.tabs__tab--active {
+  background: color-mix(in srgb, var(--ck-green) 16%, transparent);
+  color: var(--ck-text);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--ck-line-strong);
+}
+
+/* Telas de acesso e onboarding escondem a navegação da área de estudo. */
+.app--focused .app-nav,
+.app--focused .app-nav-mobile { display: none; }
+.app--focused .app-main { padding-bottom: 3rem; }
+
+.header-account { text-decoration: none; }
+.header-account:hover { text-decoration: underline; }

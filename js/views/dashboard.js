@@ -19,9 +19,12 @@ import {
 } from '../core/student.js';
 import { createTopicSession, resumableSession, summarizeSession } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
+import { rubikCube } from '../ui/rubik-cube.js';
 
 export function renderDashboard(root) {
   const s = student();
+  // O cubo é a peça de identidade do início: está aqui toda vez, e é mexível.
+  const cube = rubikCube({ size: 'md' });
   const profile = activeProfile();
   const direction = profile.personalization.dashboardDirection;
 
@@ -51,23 +54,32 @@ export function renderDashboard(root) {
 
       el(
         'header',
-        { class: 'view-header' },
+        { class: 'view-header dashboard-hero' },
         el(
           'div',
-          { class: 'view-header__row' },
+          { class: 'dashboard-hero__text' },
           el(
             'div',
-            {},
-            el('h1', {}, firstName ? `Olá, ${firstName}` : 'Seu início'),
+            { class: 'view-header__row' },
             el(
-              'p',
-              { class: 'small secondary' },
-              profile.description,
-              ' ',
-              el('a', { href: '#/perfil/estudo' }, 'Ver meu perfil de estudo'),
+              'div',
+              {},
+              el('h1', {}, firstName ? `Olá, ${firstName}` : 'Seu início'),
+              el(
+                'p',
+                { class: 'small secondary' },
+                profile.description,
+                ' ',
+                el('a', { href: '#/perfil/estudo' }, 'Ver meu perfil de estudo'),
+              ),
             ),
+            s.provisional ? badge('Perfil provisório', 'warning') : null,
           ),
-          s.provisional ? badge('Perfil provisório', 'warning') : null,
+        ),
+        el(
+          'div',
+          { class: 'dashboard-hero__cube' },
+          cube,
         ),
       ),
 
@@ -259,6 +271,10 @@ export function renderDashboard(root) {
         : null,
     ),
   );
+
+  // O roteador chama isto ao sair da tela: sem esta linha o cubo continuaria
+  // animando em segundo plano e segurando ouvintes de ponteiro.
+  return () => cube.dispose?.();
 }
 
 /** Inicia a sessão. O botão fica desabilitado enquanto trabalha — sem clique duplo. */

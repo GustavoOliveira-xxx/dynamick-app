@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      // Antes da primeira pintura: sem isto a página pisca no tema errado.
+      // A conta ativa decide de qual espaço as preferências vêm.
+      try {
+        var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
+        var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
+        var p = JSON.parse(localStorage.getItem(k) || "{}").preferences || {};
+        var r = document.documentElement;
+        r.dataset.theme = p.theme || "dark";
+        r.dataset.textScale = p.textScale || "100";
+        if (p.highContrast) r.dataset.contrast = "high";
+        if (p.reducedMotion === "reduced" || p.reducedMotion === "full") r.dataset.motion = p.reducedMotion;
+        if (p.visualIntensity === "reduced") r.dataset.visual = "reduced";
+      } catch (e) {}
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sessão de estudo · Dynamic CK</title>
+    <meta name="description" content="Resolução de questões, correção explicada e resumo da sessão." />
+    <meta name="theme-color" content="#020504" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/loader.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="modulepreload" href="js/pages/sessao.js" />
+  </head>
+
+  <body data-page="sessao">
+    <!--
+      Tela de carregamento escrita no HTML de propósito: ela precisa aparecer na
+      primeira pintura, antes de qualquer módulo ser baixado. O mesmo desenho é
+      reconstruído por js/ui/loader.js nas transições internas.
+    -->
+    <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
+      <div class="ck-boot__stage" aria-hidden="true">
+        <span class="ck-boot__halo"></span>
+        <svg class="ck-boot__ring" viewBox="0 0 190 190" aria-hidden="true">
+          <circle class="ck-boot__ring-track" cx="95" cy="95" r="88" />
+          <circle class="ck-boot__ring-signal" cx="95" cy="95" r="88" />
+        </svg>
+        <div class="ck-boot__logo">
+          <picture>
+            <source srcset="assets/brand/logo-dynamic.webp" type="image/webp" />
+            <img src="assets/brand/logo-dynamic.png" alt="" width="116" height="105" decoding="async" fetchpriority="high" />
+          </picture>
+          <span class="ck-boot__sweep"></span>
+        </div>
+      </div>
+      <p class="ck-boot__word" aria-hidden="true">
+        <span>D</span><span>y</span><span>n</span><span>a</span><span>m</span><span>i</span><span class="ck-boot__ck">CK</span>
+      </p>
+      <p class="ck-boot__label">Montando sua sessão</p>
+      <p class="ck-boot__signature" aria-hidden="true">by Conscious Knowledge</p>
+      <div class="ck-boot__bar" aria-hidden="true"><span></span></div>
+    </div>
+
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+    <div id="fundo" aria-hidden="true"></div>
+
+    <div class="app" id="app-shell">
+      <header class="app-header">
+        <div class="shell app-header__inner">
+          <a href="inicio.html#/inicio" id="marca" aria-label="Dynamic CK, ir para o início"></a>
+          <div class="row app-header__actions" id="cabecalho-acoes"></div>
+        </div>
+      </header>
+
+      <div class="shell app-body">
+        <nav class="app-nav" id="navegacao" aria-label="Navegação principal"></nav>
+        <main id="conteudo-principal" class="app-main" tabindex="-1"></main>
+      </div>
+
+      <nav class="app-nav-mobile" id="navegacao-mobile" aria-label="Navegação principal"></nav>
+    </div>
+
+    <noscript>
+      <div class="shell" style="padding: 2rem 0">
+        <div class="message message--warning">
+          <p class="message__title">Esta parte precisa de JavaScript</p>
+          <p>
+            A área de estudo é interativa e roda inteiramente no seu navegador. Ative o JavaScript
+            para continuar. O conteúdo institucional continua disponível em
+            <a href="index.html">página inicial</a>, <a href="sobre.html">sobre</a> e
+            <a href="privacidade.html">privacidade</a>.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <script type="module" src="js/pages/sessao.js"></script>
+  </body>
+</html>

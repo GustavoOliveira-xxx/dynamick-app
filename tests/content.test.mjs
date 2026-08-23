@@ -14,14 +14,47 @@ describe('quantidades mínimas do pacote inicial', () => {
 
   it('4 áreas de conhecimento', () => expect(AREAS).toHaveLength(4));
   it('pelo menos 10 matérias', () => expect(SUBJECTS.length).toBeGreaterThanOrEqual(10));
-  it('12 tópicos completos', () => expect(TOPICS).toHaveLength(12));
+  it('pelo menos 12 tópicos completos', () => expect(TOPICS.length).toBeGreaterThanOrEqual(12));
+
+  it('toda matéria cadastrada tem pelo menos um tópico', () => {
+    // Uma matéria no mapa sem nenhum tópico é uma porta que não abre.
+    const vazias = SUBJECTS.filter(
+      (subject) => !TOPICS.some((topic) => topic.subjectSlug === subject.slug),
+    );
+    expect(vazias.map((subject) => subject.slug)).toEqual([]);
+  });
+
+  it('toda matéria tem pelo menos 5 questões', () => {
+    const poucas = SUBJECTS.filter(
+      (subject) => QUESTIONS.filter((question) => question.subjectSlug === subject.slug).length < 5,
+    );
+    expect(poucas.map((subject) => subject.slug)).toEqual([]);
+  });
+
   it('pelo menos 60 questões principais', () =>
     expect(health.totals.questions - health.totals.recoveryQuestions).toBeGreaterThanOrEqual(60));
-  it('a expansão adiciona exatamente 5 questões a cada tópico completo', () => {
-    const incompletos = TOPICS.filter(
+
+  it('os 12 tópicos do MVP mantêm as 5 questões da expansão de agosto', () => {
+    const daExpansao = TOPICS.filter((topic) =>
+      topic.questions.some((q) => q.origin === 'AUTORAL_EXPANSAO_2026_08'),
+    );
+    const incompletos = daExpansao.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_EXPANSAO_2026_08').length !== 5,
     );
+    expect(daExpansao).toHaveLength(12);
     expect(incompletos.map((topic) => topic.slug)).toEqual([]);
+  });
+
+  it('cada tópico da segunda leva tem 5 questões principais e 1 de recuperação', () => {
+    const daLeva2 = TOPICS.filter((topic) =>
+      topic.questions.some((q) => q.origin === 'AUTORAL_LEVA_2'),
+    );
+    const fora = daLeva2.filter((topic) => {
+      const principais = topic.questions.filter((q) => !q.isRecovery).length;
+      const recuperacao = topic.questions.filter((q) => q.isRecovery).length;
+      return principais !== 5 || recuperacao !== 1;
+    });
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
   it('pelo menos 24 questões de recuperação', () =>
     expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));

@@ -3,52 +3,98 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Dynamic CK</title>
-    <meta name="description" content="Sua jornada de estudos para o ENEM 2027." />
+    <title>Abrindo · Dynamic CK</title>
+    <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#020504" />
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
     <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
-    <link rel="stylesheet" href="css/app.css" />
+    <script>
+      /*
+       * Compatibilidade.
+       *
+       * A área de estudo era um documento só (app.html#/rota). Agora cada área
+       * tem o seu arquivo, para que o navegador baixe apenas o necessário e o
+       * carregamento seja visível a cada troca. Endereços antigos — links
+       * salvos, favoritos, prints da documentação — continuam funcionando:
+       * este arquivo lê a rota e encaminha para o documento certo, sem deixar
+       * uma parada extra no histórico.
+       */
+      (function () {
+        var MAPA = [
+          ['/entrar', 'entrar.html'],
+          ['/onboarding', 'onboarding.html'],
+          ['/inicio', 'inicio.html'],
+          ['/diagnostico', 'inicio.html'],
+          ['/conteudos', 'conteudos.html'],
+          ['/praticar', 'praticar.html'],
+          ['/sessao', 'sessao.html'],
+          ['/revisar', 'revisar.html'],
+          ['/simulados', 'simulados.html'],
+          ['/redacao', 'redacao.html'],
+          ['/metodos', 'metodos.html'],
+          ['/buscar', 'buscar.html'],
+          ['/catalogo', 'catalogo.html'],
+          ['/perfil', 'perfil.html'],
+        ];
+
+        var bruto = (location.hash || '').replace(/^#/, '');
+        var rota = bruto.split('?')[0] || '/inicio';
+        var busca = bruto.split('?')[1];
+        if (rota.charAt(0) !== '/') rota = '/' + rota;
+
+        var destino = 'inicio.html';
+        var maior = 0;
+        for (var i = 0; i < MAPA.length; i += 1) {
+          var prefixo = MAPA[i][0];
+          if ((rota === prefixo || rota.indexOf(prefixo + '/') === 0) && prefixo.length > maior) {
+            destino = MAPA[i][1];
+            maior = prefixo.length;
+          }
+        }
+
+        location.replace(destino + '#' + rota + (busca ? '?' + busca : ''));
+      })();
+    </script>
   </head>
 
   <body>
-    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
-
-    <div id="fundo" aria-hidden="true"></div>
-
-    <div class="app" id="app-shell">
-      <header class="app-header">
-        <div class="shell app-header__inner">
-          <a href="#/inicio" id="marca" aria-label="Dynamic CK, ir para o início"></a>
-          <div class="row app-header__actions" id="cabecalho-acoes"></div>
+    <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
+      <div class="ck-boot__stage" aria-hidden="true">
+        <span class="ck-boot__halo"></span>
+        <svg class="ck-boot__ring" viewBox="0 0 190 190" aria-hidden="true">
+          <circle class="ck-boot__ring-track" cx="95" cy="95" r="88" />
+          <circle class="ck-boot__ring-signal" cx="95" cy="95" r="88" />
+        </svg>
+        <div class="ck-boot__logo">
+          <picture>
+            <source srcset="assets/brand/logo-dynamic.webp" type="image/webp" />
+            <img src="assets/brand/logo-dynamic.png" alt="" width="116" height="105" decoding="async" />
+          </picture>
+          <span class="ck-boot__sweep"></span>
         </div>
-      </header>
-
-      <div class="shell app-body">
-        <nav class="app-nav" id="navegacao" aria-label="Navegação principal"></nav>
-        <main id="conteudo-principal" class="app-main" tabindex="-1"></main>
       </div>
-
-      <nav class="app-nav-mobile" id="navegacao-mobile" aria-label="Navegação principal"></nav>
+      <p class="ck-boot__word" aria-hidden="true">
+        <span>D</span><span>y</span><span>n</span><span>a</span><span>m</span><span>i</span><span class="ck-boot__ck">CK</span>
+      </p>
+      <p class="ck-boot__label">Levando você para a tela certa</p>
+      <p class="ck-boot__signature" aria-hidden="true">by Conscious Knowledge</p>
+      <div class="ck-boot__bar" aria-hidden="true"><span></span></div>
     </div>
 
     <noscript>
       <div class="shell" style="padding: 2rem 0">
         <div class="message message--warning">
-          <p class="message__title">Esta parte precisa de JavaScript</p>
+          <p class="message__title">Este endereço mudou</p>
           <p>
-            A área de estudo é interativa e roda inteiramente no seu navegador. Ative o JavaScript
-            para continuar. O conteúdo institucional continua disponível em
-            <a href="index.html">página inicial</a>, <a href="sobre.html">sobre</a> e
-            <a href="privacidade.html">privacidade</a>.
+            A área de estudo agora começa em
+            <a href="inicio.html#/inicio">inicio.html</a>. Para entrar na sua conta, use
+            <a href="entrar.html#/entrar">entrar.html</a>.
           </p>
         </div>
       </div>
     </noscript>
-
-    <script type="module" src="js/app.js"></script>
   </body>
 </html>

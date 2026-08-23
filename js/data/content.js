@@ -11,6 +11,11 @@ import { MATEMATICA_TOPICS } from './topics-matematica.js';
 import { HUMANAS_TOPICS } from './topics-humanas.js';
 import { NATUREZA_TOPICS } from './topics-natureza.js';
 import { REDACAO_TOPICS } from './topics-redacao.js';
+import { LINGUAGENS_TOPICS_LEVA_2 } from './topics-linguagens-leva2.js';
+import { MATEMATICA_TOPICS_LEVA_2 } from './topics-matematica-leva2.js';
+import { HUMANAS_TOPICS_LEVA_2 } from './topics-humanas-leva2.js';
+import { NATUREZA_TOPICS_LEVA_2 } from './topics-natureza-leva2.js';
+import { REDACAO_TOPICS_LEVA_2 } from './topics-redacao-leva2.js';
 import { STUDY_METHODS } from './study-methods.js';
 import { SESSION_TEMPLATES, SIMULATIONS } from './sessions.js';
 import { ESSAY_PROMPTS } from './essay-prompts.js';
@@ -19,12 +24,27 @@ import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, SIMULATIONS, ESSAY_PROMPTS };
 
+/*
+ * Duas levas de conteúdo autoral.
+ *
+ * A primeira são os 12 tópicos completos do MVP, escritos um a um. A segunda
+ * cobre os demais assuntos previstos no escopo — inclusive Literatura, História
+ * e Filosofia, que não tinham nenhum tópico — e usa a fábrica de topic-factory.js
+ * para garantir, por construção, a mesma estrutura editorial: resumo, explicação,
+ * dois exemplos resolvidos, erros comuns, autoexplicação e cinco questões nos
+ * cinco formatos cognitivos.
+ */
 const BASE_TOPICS = [
   ...LINGUAGENS_TOPICS,
+  ...LINGUAGENS_TOPICS_LEVA_2,
   ...MATEMATICA_TOPICS,
+  ...MATEMATICA_TOPICS_LEVA_2,
   ...HUMANAS_TOPICS,
+  ...HUMANAS_TOPICS_LEVA_2,
   ...NATUREZA_TOPICS,
+  ...NATUREZA_TOPICS_LEVA_2,
   ...REDACAO_TOPICS,
+  ...REDACAO_TOPICS_LEVA_2,
 ];
 
 const expansionByTopic = QUESTION_EXPANSION.reduce((index, question) => {
@@ -65,12 +85,24 @@ const topicBySlug = new Map(TOPICS.map((topic) => [topic.slug, topic]));
  * - É rotação, não embaralhamento. A ordem relativa das alternativas erradas se
  *   mantém, o que preserva progressões deliberadas dentro da lista.
  */
-const POSICAO_ALVO = [1, 3, 0, 4, 2, 3, 1, 4, 0, 2];
+const POSICAO_ALVO = [1, 3, 0, 4, 2, 3, 1, 4, 0, 2, 4, 0, 3, 1, 2, 0, 4, 1, 3, 2];
 
-/** Deslocamento por tópico: sem isso, todo tópico repetiria a mesma sequência de gabaritos. */
+/**
+ * Deslocamento por tópico: sem isso, todo tópico repetiria a mesma sequência de
+ * gabaritos. Duas sementes independentes, e não uma só, porque o acervo cresceu:
+ * com quase quarenta tópicos, uma semente única fazia sequências inteiras
+ * coincidirem entre tópicos diferentes — padrão que um estudante atento perceberia.
+ */
 function deslocamentoDoTopico(slug) {
   let soma = 0;
   for (const caractere of slug) soma = (soma * 31 + caractere.codePointAt(0)) % 9973;
+  return soma;
+}
+
+/** Segunda semente, com base e módulo diferentes: descorrelaciona início e passo. */
+function passoDoTopico(slug) {
+  let soma = 7;
+  for (const caractere of slug) soma = (soma * 131 + caractere.codePointAt(0)) % 7919;
   return soma;
 }
 
@@ -93,8 +125,8 @@ function balancearGabarito(question, ordem, topicSlug) {
   // Cada tópico entra na tabela com um ponto de partida e um passo próprios, para
   // que dois tópicos não terminem com a mesma sequência de gabaritos.
   const semente = deslocamentoDoTopico(topicSlug);
-  const passos = [1, 3, 7, 9]; // coprimos de 10: percorrem a tabela inteira
-  const passo = passos[semente % passos.length];
+  const passos = [1, 3, 7, 9, 11, 13, 17, 19]; // coprimos de 20: percorrem a tabela inteira
+  const passo = passos[passoDoTopico(topicSlug) % passos.length];
   const indice = (semente + ordem * passo) % POSICAO_ALVO.length;
   const alvo = POSICAO_ALVO[indice] % options.length;
   if (alvo === atual) return question;

@@ -55,10 +55,14 @@
   padding-top: clamp(4.5rem, 12vw, 7rem);
 }
 .hero__cube {
-  position: absolute;
+  /*
+   * O cubo deixou de ser enfeite: dá para arrastar e girar as camadas. Por isso
+   * saiu de cima do cartão de exemplo — um objeto que recebe cliques não pode
+   * cobrir conteúdo nem roubar o gesto de rolagem da página.
+   */
+  position: relative;
   z-index: 2;
-  top: -8.25rem;
-  right: clamp(-1rem, 2vw, 1.5rem);
+  margin-bottom: 1.25rem;
 }
 .hero__visual::before {
   content: '';
@@ -207,5 +211,5 @@
 
 @media (max-width: 639px) {
   .hero__visual { padding-top: 12rem; }
-  .hero__cube { top: -4.5rem; right: -3rem; transform: scale(0.72); }
+  .hero__cube { margin-bottom: 0.75rem; }
 }

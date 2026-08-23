@@ -5,7 +5,9 @@
     <script>
       // Antes da primeira pintura: sem isto a página pisca no tema errado.
       try {
-        var p = JSON.parse(localStorage.getItem("dynamick:v1") || "{}").preferences || {};
+        var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
+        var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
+        var p = JSON.parse(localStorage.getItem(k) || "{}").preferences || {};
         var r = document.documentElement;
         r.dataset.theme = p.theme || "dark";
         r.dataset.textScale = p.textScale || "100";
@@ -35,8 +37,8 @@
       <header class="shell site-header">
         <a href="index.html" id="marca" aria-label="Dynamic CK, página inicial"></a>
         <nav class="row" aria-label="Acesso">
-          <a class="btn btn--ghost btn--sm" href="app.html#/inicio">Entrar</a>
-          <a class="btn btn--primary btn--sm" href="app.html#/onboarding">Começar</a>
+          <a class="btn btn--ghost btn--sm" href="entrar.html#/entrar">Entrar</a>
+          <a class="btn btn--primary btn--sm" href="entrar.html#/entrar/criar">Começar</a>
         </nav>
       </header>
 
@@ -58,7 +60,7 @@
         </ul>
 
         <h2>O que você pode ajustar</h2>
-        <p>Em <a href="app.html#/perfil/configuracoes">Perfil › Configurações</a>:</p>
+        <p>Em <a href="perfil.html#/perfil/configuracoes">Perfil › Configurações</a>:</p>
         <ul>
           <li><strong>Tema</strong> — escuro, claro ou alto contraste.</li>
           <li><strong>Tamanho do texto</strong> — padrão, maior ou bem maior, sem quebrar o layout.</li>
@@ -86,7 +88,7 @@
         <p>
           Dentro de qualquer questão existe o botão <em>Relatar um problema</em>, com a opção
           "Problema de acessibilidade". Como não há servidor, o relato fica salvo no seu navegador e
-          aparece em <a href="app.html#/perfil/dados">Perfil › Meus dados</a>, de onde pode ser
+          aparece em <a href="perfil.html#/perfil/dados">Perfil › Meus dados</a>, de onde pode ser
           exportado e enviado.
         </p>
       </main>
