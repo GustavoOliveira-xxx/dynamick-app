@@ -1,8 +1,8 @@
-/**
- * Perfil — perfil de estudo, configurações, relatório e dados.
- * Regra que atravessa todas estas telas: o perfil é provisório, revisável a
- * qualquer momento, e a escolha do estudante vale mais que a classificação automática.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import {
@@ -50,7 +50,7 @@ import {
 } from '../core/sync.js';
 import { navigate, refresh } from '../core/router.js';
 
-/* ---------------------------------------------------------------- Hub */
+
 
 export function renderProfileHub(root) {
   const s = student();
@@ -120,7 +120,7 @@ function linkCard(title, description, href) {
   );
 }
 
-/* ---------------------------------------------------------------- Perfil de estudo */
+
 
 export function renderStudyProfile(root) {
   const s = student();
@@ -159,7 +159,7 @@ export function renderStudyProfile(root) {
         ),
       ),
 
-      /* Sinais que levaram até aqui. */
+
       card(
         {},
         el('h2', {}, 'Por que este perfil'),
@@ -199,7 +199,7 @@ export function renderStudyProfile(root) {
         ),
       ),
 
-      /* Efeitos concretos. */
+
       card(
         {},
         el('h2', {}, 'O que este perfil muda na prática'),
@@ -215,7 +215,7 @@ export function renderStudyProfile(root) {
         ),
       ),
 
-      /* Apoios pedidos. */
+
       supports.length > 0
         ? card(
             {},
@@ -233,7 +233,7 @@ export function renderStudyProfile(root) {
           )
         : null,
 
-      /* Troca de perfil. */
+
       card(
         {},
         el('h2', {}, 'Trocar de perfil'),
@@ -294,7 +294,7 @@ export function renderStudyProfile(root) {
         trocaBox,
       ),
 
-      /* Histórico. */
+
       history.length > 0
         ? card(
             {},
@@ -324,7 +324,7 @@ export function renderStudyProfile(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Configurações */
+
 
 export function renderSettings(root) {
   const prefs = preferences();
@@ -349,7 +349,7 @@ export function renderSettings(root) {
         el('p', { class: 'small secondary' }, 'Tudo aqui vale na hora e fica salvo neste navegador.'),
       ),
 
-      /* Aparência e acessibilidade. */
+
       card(
         {},
         el('h2', {}, 'Aparência'),
@@ -398,7 +398,7 @@ export function renderSettings(root) {
         }),
       ),
 
-      /* Estudo. */
+
       card(
         {},
         el('h2', {}, 'Estudo'),
@@ -442,10 +442,10 @@ export function renderSettings(root) {
         }),
       ),
 
-      /* Disponibilidade. */
+
       disponibilidadeCard(s),
 
-      /* Lembretes. */
+
       lembretesCard(prefs, set),
 
       el('div', { class: 'row' }, linkButton({ href: '#/perfil', label: 'Voltar', variant: 'ghost' })),
@@ -574,7 +574,7 @@ function lembretesCard(prefs, set) {
   );
 }
 
-/* ---------------------------------------------------------------- Relatório */
+
 
 export function renderReport(root) {
   const state = getState();
@@ -610,7 +610,7 @@ export function renderReport(root) {
   const antes = taxa(antigas);
   const depois = taxa(recentes);
 
-  // Estados de domínio: o que avançou, o que ficou parado, o que regrediu.
+
   const porEstado = new Map(MASTERY_STATES.map((estado) => [estado, []]));
   for (const topic of TOPICS) {
     const item = masteryFor(topic.slug);
@@ -772,7 +772,7 @@ export function renderReport(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Dados */
+
 
 export function renderDataPage(root) {
   const state = getState();
@@ -881,7 +881,7 @@ export function renderDataPage(root) {
               );
               navigate('/inicio');
             } catch (error) {
-              // A mensagem do store já explica o que está errado — não a escondemos.
+
               render(
                 importStatus,
                 message(
@@ -944,14 +944,14 @@ export function renderDataPage(root) {
                 confirmWord: 'APAGAR',
                 confirmLabel: 'Apagar definitivamente',
                 onConfirm: async () => {
-                  // Se houver sincronização, o servidor vai junto: a página de
-                  // privacidade promete isso, e a promessa precisa valer.
+
+
                   if (syncDisponivel && vinculoAtual()) {
                     try {
                       await apagarNoServidor();
                     } catch {
-                      // Apagar o local é o que o estudante pediu e não pode ficar
-                      // refém da rede. O que restou no servidor é dito adiante.
+
+
                       toast(
                         'Apagamos tudo neste aparelho, mas não conseguimos falar com o servidor. O que está lá continua, e some sozinho depois de um tempo sem uso.',
                         'warning',
@@ -973,16 +973,16 @@ export function renderDataPage(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Sincronização */
 
-/**
- * Cartão de sincronização entre aparelhos.
- *
- * Regras que a interface precisa deixar claras, porque o modelo é incomum:
- *   - o código É a chave: perdeu, perdeu;
- *   - o servidor não consegue ler o conteúdo;
- *   - sincronizar é sempre ação explícita, nunca automática em segundo plano.
- */
+
+
+
+
+
+
+
+
+
 function sincronizacaoCard() {
   if (!syncDisponivel) {
     return card(
@@ -1001,7 +1001,7 @@ function sincronizacaoCard() {
   const aviso = el('div');
   const vinculo = vinculoAtual();
 
-  /** Roda a operação mostrando estado no botão e erro legível em vez de silêncio. */
+
   async function executar(botao, rotulo, operacao) {
     setButtonLoading(botao, true, rotulo);
     render(aviso);
@@ -1021,7 +1021,7 @@ function sincronizacaoCard() {
     }
   }
 
-  /** O outro aparelho gravou depois: nunca sobrescrevemos sem perguntar. */
+
   function conflitoAviso() {
     return message(
       'warning',
@@ -1215,7 +1215,7 @@ function sincronizacaoCard() {
   return card({}, el('h2', {}, 'Sincronizar entre aparelhos'), corpo, aviso);
 }
 
-/** Mostrado uma vez, logo depois de criar: é a única hora garantida de anotar. */
+
 function codigoNovoAviso(codigo) {
   return message(
     'success',

@@ -1,12 +1,12 @@
-/**
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhuma questão foi copiada de prova oficial, livro ou plataforma de terceiros.
- */
 
-/**
- * Sessões prontas (§11.6). Cada uma tem objetivo, instruções, duração,
- * regra de seleção de itens, critério de conclusão e recomendação posterior.
- */
+
+
+
+
+
+
+
+
 export const SESSION_TEMPLATES = [
   {
     slug: 'comece-por-interpretacao',
@@ -178,10 +178,10 @@ export const SESSION_TEMPLATES = [
   },
 ];
 
-/**
- * Simulados iniciais (§11.7): quatro curtos por área e um diagnóstico geral.
- * A matriz de distribuição é explícita e usada pelo gerador.
- */
+
+
+
+
 export const SIMULATIONS = [
   {
     slug: 'simulado-linguagens',

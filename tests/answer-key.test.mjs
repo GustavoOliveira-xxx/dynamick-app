@@ -1,11 +1,11 @@
-/**
- * O gabarito não pode ser previsível.
- *
- * O material foi escrito com a resposta correta quase sempre na primeira posição.
- * Se isso voltar, quem marca sempre a letra A acerta a maioria sem ler — e todo o
- * resto do sistema (domínio, motivo do erro, recomendação) passa a medir ruído.
- * Estes testes travam a correção feita na montagem do catálogo.
- */
+
+
+
+
+
+
+
+
 
 import { describe, it, expect } from './run.mjs';
 import { QUESTIONS, TOPICS, getQuestion } from '../js/data/content.js';
@@ -57,7 +57,7 @@ describe('distribuição do gabarito', () => {
     for (const topic of TOPICS) {
       const chave = topic.questions.map((question) => letra(getQuestion(question.slug))).join('');
       const anterior = sequencias.get(chave);
-      // Duas repetições são aceitáveis com poucos tópicos; três já vira padrão perceptível.
+
       sequencias.set(chave, (anterior ?? 0) + 1);
     }
     const repetidas = [...sequencias.entries()].filter(([, total]) => total >= 3);
@@ -91,7 +91,7 @@ describe('integridade após o rebalanceamento', () => {
   });
 
   it('cada texto continua com a justificativa que foi escrita para ele', () => {
-    // A rotação move texto e justificativa juntos: um par quebrado é erro grave.
+
     const problemas = QUESTIONS.filter((question) =>
       question.options.some((option) => !option.text?.trim() || !option.rationale?.trim()),
     );
@@ -99,7 +99,7 @@ describe('integridade após o rebalanceamento', () => {
   });
 
   it('a posição do gabarito é estável entre carregamentos', async () => {
-    // Um gabarito que muda de posição quebraria revisão e caderno de erros.
+
     const outraCarga = await import(`../js/data/content.js?recarga=${Date.now()}`);
     const diferentes = QUESTIONS.filter(
       (question) => letra(question) !== letra(outraCarga.getQuestion(question.slug)),

@@ -1,4 +1,4 @@
-/** catalogo.html — saúde do acervo: cobertura, lacunas e denúncias. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderCatalog } from '../views/catalog.js';

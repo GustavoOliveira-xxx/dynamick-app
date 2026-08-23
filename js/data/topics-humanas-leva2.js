@@ -1,12 +1,12 @@
-/**
- * Ciências Humanas — segunda leva de tópicos.
- *
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhum enunciado foi copiado de prova oficial, livro ou plataforma de terceiros.
- *
- * Cobre os assuntos previstos no escopo que ainda não tinham tópico próprio e
- * abre duas matérias que estavam sem nenhum: História e Filosofia.
- */
+
+
+
+
+
+
+
+
+
 
 import { question as q, topic } from './topic-factory.js';
 

@@ -1,10 +1,10 @@
-/**
- * Demonstração sem conta: três questões, correção completa e nada salvo.
- *
- * Esta tela existe para que a pessoa veja como é a correção ANTES de responder o
- * questionário de perfil. Ela não grava nada — nem no localStorage — e diz isso
- * por escrito no fim.
- */
+
+
+
+
+
+
+
 
 import { el, render } from './core/dom.js';
 import { badge, button, card, linkButton, message, progress } from './ui/components.js';
@@ -14,7 +14,7 @@ import { getQuestion } from './data/content.js';
 import { mountBackground } from './ui/background.js';
 import { dynamickLogo, consciousKnowledgeLogo } from './ui/brand.js';
 
-/** Uma questão por área, das mais introdutórias — a amostra precisa ser justa. */
+
 const AMOSTRA = ['q-porc-1', 'q-interp-1', 'q-eco-1'];
 
 const respostas = new Map();
@@ -101,7 +101,12 @@ function pergunta(question) {
       'div',
       { class: 'row row--between row--wrap' },
       el('span', { class: 'eyebrow' }, question.areaName, ' · ', question.topicName),
-      badge(DIFFICULTY_LABELS[question.difficulty] ?? question.difficulty, 'neutral'),
+      el(
+        'span',
+        { class: 'row' },
+        badge(question.sourceLabel, 'green'),
+        badge(DIFFICULTY_LABELS[question.difficulty] ?? question.difficulty, 'neutral'),
+      ),
     ),
     el('div', { class: 'question__stem', style: { marginTop: '0.75rem' } }, markdown(question.stem)),
     alternativas,

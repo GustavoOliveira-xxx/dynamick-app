@@ -1,9 +1,9 @@
-/**
- * Gerador de simulados com composição controlada.
- *
- * Regra de fallback obrigatória: se faltarem questões para a matriz, o gerador informa
- * o que faltou em vez de repetir o mesmo item em excesso.
- */
+
+
+
+
+
+
 
 export function generateSimulation(pool, blueprint, totalRequested, seed = 'default') {
   const available = pool.filter((question) => !question.isRecovery);
@@ -23,7 +23,7 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     return taken;
   }
 
-  // 1. Cotas por tópico (mais específicas primeiro).
+
   for (const [topicSlug, count] of Object.entries(blueprint.topics ?? {})) {
     const candidates = sortStable(available.filter((q) => q.topicSlug === topicSlug));
     const taken = take(candidates, count);
@@ -32,7 +32,7 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     }
   }
 
-  // 2. Cotas por área, descontando o que já veio dos tópicos.
+
   for (const [areaSlug, count] of Object.entries(blueprint.areas ?? {})) {
     const alreadyFromArea = picked.filter((id) =>
       available.some((q) => q.id === id && q.areaSlug === areaSlug),
@@ -52,7 +52,7 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     }
   }
 
-  // 3. Completa até o total pedido, sem repetir item.
+
   if (picked.length < totalRequested) {
     take(sortStable(available), totalRequested - picked.length);
     if (picked.length < totalRequested) {
@@ -79,12 +79,12 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
   };
 }
 
-/** Ordenação estável por id: mesmo resultado a cada execução. */
+
 function sortStable(items) {
   return [...items].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/** Embaralhamento determinístico a partir de uma semente textual. */
+
 function shuffleStable(items, seed) {
   const result = [...items];
   let state = 0;

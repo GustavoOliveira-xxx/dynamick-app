@@ -1,6 +1,6 @@
-/* Componentes reutilizáveis do Dynamic CK */
 
-/* ---------------------------------------------------------------- Cartão */
+
+
 
 .card {
   position: relative;
@@ -27,7 +27,7 @@
   border-color: var(--ck-line-strong);
   box-shadow: var(--ck-glow);
 }
-/* Em toque, hover não é a única forma de feedback */
+
 .card--interactive:active {
   transform: translateY(0) scale(0.995);
   border-color: var(--ck-line-strong);
@@ -42,7 +42,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
   margin-block: 1.25rem;
 }
 
-/* ---------------------------------------------------------------- Botão */
+
 
 .btn {
   position: relative;
@@ -102,7 +102,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .btn--lg { min-height: 54px; padding-inline: 1.75rem; font-size: 1rem; }
 .btn--block { width: 100%; }
 
-/* Estado de carregando: o botão fica REALMENTE desabilitado, o que impede envio duplo */
+
 .btn__spinner {
   width: 1rem;
   height: 1rem;
@@ -113,7 +113,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
   animation: ck-spin 0.7s linear infinite;
 }
 
-/* ---------------------------------------------------------------- Selo */
+
 
 .badge {
   display: inline-flex;
@@ -134,7 +134,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .badge--warning { color: var(--ck-warning); border-color: rgb(255 200 97 / 38%); }
 .badge--danger { color: var(--ck-danger); border-color: rgb(255 107 122 / 38%); }
 
-/* ---------------------------------------------------------------- Progresso */
+
 
 .progress {
   width: 100%;
@@ -153,7 +153,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .progress__fill--warning { background: linear-gradient(90deg, #7a5a12, var(--ck-warning)); }
 .progress__fill--teal { background: linear-gradient(90deg, var(--ck-green-deep), var(--ck-teal)); }
 
-/* ---------------------------------------------------------------- Formulário */
+
 
 .field { display: grid; gap: 0.4rem; align-content: start; }
 .field__label { font-size: 0.9rem; font-weight: 500; }
@@ -179,7 +179,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .input[aria-invalid="true"] { border-color: var(--ck-danger); }
 .textarea { min-height: auto; line-height: 1.6; resize: vertical; }
 
-/* Opção clicável (rádio/checkbox reais por baixo) */
+
 .option {
   display: flex;
   align-items: flex-start;
@@ -202,7 +202,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .option--correct { border-color: var(--ck-success) !important; }
 .option--wrong { border-color: var(--ck-danger) !important; }
 
-/* Pílula de escolha compacta */
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -227,7 +227,7 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 fieldset { border: 0; }
 legend { padding: 0; }
 
-/* ---------------------------------------------------------------- Estados */
+
 
 .skeleton {
   border-radius: var(--ck-r-sm);
@@ -277,7 +277,7 @@ legend { padding: 0; }
 .message--danger { border-color: var(--ck-danger); }
 .message--danger .message__title { color: var(--ck-danger); }
 
-/* ---------------------------------------------------------------- Toast */
+
 
 .toast-region {
   position: fixed;
@@ -301,7 +301,7 @@ legend { padding: 0; }
 .toast--success { border-color: var(--ck-success); }
 .toast--danger { border-color: var(--ck-danger); }
 
-/* ---------------------------------------------------------------- Modal */
+
 
 .modal-backdrop {
   position: fixed;
@@ -325,9 +325,9 @@ legend { padding: 0; }
   animation: ck-enter var(--ck-dur) var(--ck-ease) both;
 }
 
-/* ---------------------------------------------------------------- Tabela */
 
-/* Tabelas rolam no próprio contêiner: a página nunca rola na horizontal */
+
+
 .table-wrap { overflow-x: auto; }
 .table {
   width: 100%;
@@ -345,7 +345,7 @@ legend { padding: 0; }
 .table th { font-weight: 600; border-bottom-color: var(--ck-line-strong); }
 .table td { color: var(--ck-text-2); }
 
-/* ---------------------------------------------------------------- Utilitários de layout */
+
 
 .stack { display: grid; gap: 1rem; }
 .stack--sm { gap: 0.5rem; }
@@ -382,7 +382,7 @@ legend { padding: 0; }
 }
 .flex-1 { flex: 1; min-width: 0; }
 
-/* ---------------------------------------------------------------- Marca */
+
 
 .brand {
   display: inline-flex;
@@ -414,7 +414,7 @@ legend { padding: 0; }
 }
 .brand-img { object-fit: contain; height: auto; }
 
-/* Animação de entrada curta da marca — nunca rotação contínua no lettering */
+
 .brand-mark--animated {
   animation: brand-in 900ms var(--ck-ease-spring) both;
 }
@@ -427,7 +427,7 @@ legend { padding: 0; }
   transition: filter var(--ck-dur) var(--ck-ease);
 }
 
-/* ---------------------------------------------------------------- Markdown */
+
 
 .md-heading { margin-top: 1.4em; font-size: 1.02rem; }
 .md-heading:first-child { margin-top: 0; }
@@ -454,7 +454,7 @@ legend { padding: 0; }
   font-size: 0.88em;
 }
 
-/* ---------------------------------------------------------------- Fundo dinâmico */
+
 
 .bg-layer {
   position: fixed;
@@ -553,7 +553,7 @@ legend { padding: 0; }
   );
 }
 
-/* ---------------------------------------------------------------- Grupo de escolha */
+
 
 .choice-group__legend {
   margin-bottom: 0.35rem;
@@ -564,7 +564,7 @@ legend { padding: 0; }
 .option__hint { display: block; margin-top: 0.25rem; }
 .option__support { display: block; margin-top: 0.5rem; color: var(--ck-teal); }
 
-/* Cartão com faixa de destaque — a cor nunca é o único sinal, sempre acompanha texto. */
+
 .card--accent {
   position: relative;
   border-color: color-mix(in srgb, var(--card-accent, var(--ck-green)) 40%, var(--ck-line));
@@ -578,24 +578,24 @@ legend { padding: 0; }
   background: var(--card-accent, var(--ck-green));
 }
 
-/* Marca oficial: <picture> com WebP e PNG.
-   A largura vem do atributo width de cada variante; a altura acompanha a
-   proporção real do arquivo, para que a marca nunca seja esticada. */
+
+
+
 .brand-picture { display: inline-flex; line-height: 0; max-width: 100%; }
 .brand-picture .brand-img { max-width: 100%; height: auto; }
 .brand-img--institutional { opacity: 0.9; }
 
-/* ---------------------------------------------------------------- Cubo de conhecimento 3D */
 
-/* ---------------------------------------------------------------- Cubo mágico interativo */
 
-/*
- * O cubo é um 3x3 de verdade: 26 peças posicionadas em 3D, giro livre por
- * arraste e giro de camadas. As cores são as originais do cubo — branco,
- * amarelo, vermelho, laranja, azul e verde — porque é isso que faz um cubo
- * mágico ser reconhecido como tal. O que vem do Dynamic CK é o entorno:
- * o corpo quase preto das peças, o brilho verde na borda e as órbitas.
- */
+
+
+
+
+
+
+
+
+
 .ck-cube {
   --cubie: 34px;
   --gap: 2px;
@@ -627,7 +627,7 @@ legend { padding: 0; }
   outline-offset: 6px;
 }
 
-/* Aura de fundo — a única parte que segue a paleta do produto. */
+
 .ck-cube__aura {
   position: absolute;
   inset: 8%;
@@ -666,7 +666,7 @@ legend { padding: 0; }
   will-change: transform;
 }
 
-/* Camada em rotação: um invólucro temporário para as 9 peças que giram. */
+
 .ck-cube__layer {
   position: absolute;
   width: 0;
@@ -694,13 +694,13 @@ legend { padding: 0; }
   backface-visibility: hidden;
 }
 
-/* Faces "internas" (para dentro do cubo) ficam pretas, como no cubo real. */
+
 .ck-cube__sticker--blank {
   background: #0b0f0e;
   box-shadow: none;
 }
 
-/* Cores originais do cubo mágico. */
+
 .ck-cube__sticker--U { --face: #f4f6f4; }
 .ck-cube__sticker--D { --face: #f7d64a; }
 .ck-cube__sticker--F { --face: #24b455; }
@@ -708,7 +708,7 @@ legend { padding: 0; }
 .ck-cube__sticker--R { --face: #d8342a; }
 .ck-cube__sticker--L { --face: #f08326; }
 
-/* O toque do produto: um brilho verde discreto na peça central de cada face. */
+
 .ck-cube__sticker--core::after {
   content: "";
   position: absolute;
@@ -742,7 +742,7 @@ legend { padding: 0; }
   text-align: center;
 }
 
-/* Sem preserve-3d o cubo viraria uma pilha de quadrados sobrepostos. */
+
 @supports not (transform-style: preserve-3d) {
   .ck-cube__viewport { display: none; }
   .ck-cube__fallback { display: block; }
@@ -755,7 +755,7 @@ legend { padding: 0; }
   text-align: center;
 }
 
-/* ---------------------------------------------------------------- Transição entre telas */
+
 .route-transition {
   position: fixed;
   inset: 0;

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+
 import { run } from './run.mjs';
 
 const files = [
@@ -9,6 +9,7 @@ const files = [
   './simulation.test.mjs',
   './content.test.mjs',
   './answer-key.test.mjs',
+  './pwa-archive.test.mjs',
   './sync.test.mjs',
 ];
 

@@ -1,13 +1,13 @@
-#!/usr/bin/env node
-/**
- * Verificador de imports.
- *
- * Em módulos ES, importar um nome que não existe é erro de LINK: a página inteira
- * deixa de carregar, sem mensagem útil na interface. Esta checagem pega isso antes
- * de chegar ao navegador — é o equivalente prático do typecheck que o projeto não tem.
- *
- * Também aponta imports não utilizados, que costumam indicar código morto.
- */
+
+
+
+
+
+
+
+
+
+
 
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, dirname, resolve, extname } from 'node:path';
@@ -28,7 +28,7 @@ const files = walk(JS_DIR);
 const problems = [];
 const warnings = [];
 
-/** Nomes exportados por um arquivo. */
+
 function exportsOf(file) {
   const source = readFileSync(file, 'utf8');
   const names = new Set();
@@ -57,7 +57,7 @@ for (const file of files) {
   const source = readFileSync(file, 'utf8');
   const rel = relative(ROOT, file);
 
-  // import { a, b } from './x.js'
+
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/g)) {
     const specifier = match[2];
     if (!specifier.startsWith('.')) continue;
@@ -80,7 +80,7 @@ for (const file of files) {
     }
   }
 
-  // import x from './y.js' (default)
+
   for (const match of source.matchAll(/import\s+(\w+)\s+from\s*['"](\.[^'"]+)['"]/g)) {
     const target = resolve(dirname(file), match[2]);
     if (!existsSync(target)) {
@@ -92,7 +92,7 @@ for (const file of files) {
     }
   }
 
-  // Imports declarados e nunca usados
+
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"][^'"]+['"]/g)) {
     for (const raw of match[1].split(',')) {
       const name = raw.trim().split(/\s+as\s+/).pop().trim();

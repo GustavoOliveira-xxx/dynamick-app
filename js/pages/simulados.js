@@ -1,4 +1,4 @@
-/** simulados.html — configuração, execução e análise de simulados. */
+
 
 import { startPage } from '../core/shell.js';
 import {

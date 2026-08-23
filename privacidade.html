@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script>
-      // Antes da primeira pintura: sem isto a página pisca no tema errado.
+
       try {
         var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
         var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
@@ -20,8 +20,12 @@
     <title>Privacidade e dados — Dynamic CK</title>
     <meta name="description" content="Onde seus dados ficam no Dynamic CK: no seu navegador, sem servidor e sem rastreamento." />
     <meta name="theme-color" content="#020504" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
@@ -162,5 +166,6 @@
       document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
       mountBackground(document.getElementById('fundo'), { intensity: 'low' });
     </script>
+    <script type="module" src="js/pwa.js"></script>
   </body>
 </html>
