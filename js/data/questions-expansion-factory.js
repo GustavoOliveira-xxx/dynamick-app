@@ -18,6 +18,7 @@ export function expandedQuestion(definition) {
     options,
     explanation,
     strategy,
+    origin = 'AUTORAL_EXPANSAO_2026_08',
   } = definition;
 
   if (options.length !== 5 || correct < 0 || correct > 4) {
@@ -35,7 +36,7 @@ export function expandedQuestion(definition) {
     estimatedSeconds,
     skillSlug,
     likelyErrors,
-    origin: 'AUTORAL_EXPANSAO_2026_08',
+    origin,
     license: 'Conteúdo autoral de desenvolvimento — Conscious Knowledge',
     status: 'reviewed',
     options: options.map(([text, rationale, errorHint], index) => ({

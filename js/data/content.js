@@ -21,6 +21,7 @@ import { SESSION_TEMPLATES, SIMULATIONS } from './sessions.js';
 import { ESSAY_PROMPTS } from './essay-prompts.js';
 import { QUESTION_EXPANSION } from './questions-expansion.js';
 import { QUESTION_REINFORCEMENT } from './questions-reinforcement.js';
+import { QUESTOES_LEVA_3 } from './questions-leva3.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, SIMULATIONS, ESSAY_PROMPTS };
@@ -60,6 +61,12 @@ const reinforcementByTopic = QUESTION_REINFORCEMENT.reduce((index, question) => 
   return index;
 }, new Map());
 
+const leva3ByTopic = QUESTOES_LEVA_3.reduce((index, question) => {
+  if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
+  index.get(question.topicSlug).push(question);
+  return index;
+}, new Map());
+
 export const TOPICS = BASE_TOPICS.map((topic) => ({
   ...topic,
   questions: [
@@ -69,6 +76,7 @@ export const TOPICS = BASE_TOPICS.map((topic) => ({
       ...question,
       skillSlug: topic.skills[0]?.slug ?? null,
     })),
+    ...(leva3ByTopic.get(topic.slug) ?? []),
   ],
 }));
 
