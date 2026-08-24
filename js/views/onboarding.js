@@ -1,12 +1,12 @@
-/**
- * Onboarding: boas-vindas, etapas, confirmação de perfil e resumo.
- *
- * Regras que a tela precisa sustentar:
- *  - salvamento a cada resposta, retomada exata na etapa incompleta;
- *  - voltar nunca apaga o que já foi respondido;
- *  - etapa obrigatória bloqueia avanço vazio, com mensagem que diz como corrigir;
- *  - o perfil apresentado é provisório, explicável e recusável.
- */
+
+
+
+
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { navigate } from '../core/router.js';
@@ -39,12 +39,12 @@ import { classifyProfile, describePersonalization, supportsFor } from '../engine
 import { getProfile } from '../engine/profiles.js';
 import { formatMinutes } from '../core/format.js';
 
-/* ---------------------------------------------------------------- Boas-vindas */
+
 
 export function renderOnboardingWelcome(root) {
   const s = student();
 
-  // Retomada: quem já começou volta direto para a primeira etapa incompleta.
+
   const started = s.completedSteps.length > 0 || s.skippedSteps.length > 0;
   const resume = firstIncompleteStep(s.completedSteps, s.skippedSteps);
   if (started && resume) {
@@ -131,7 +131,7 @@ export function renderOnboardingWelcome(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Etapa */
+
 
 export function renderOnboardingStep(root, { params }) {
   const step = getStep(params.etapa);
@@ -150,7 +150,7 @@ export function renderOnboardingStep(root, { params }) {
     (s.completedSteps.length > 0 || s.skippedSteps.length > 0) &&
     !s.completedSteps.includes(step.slug);
 
-  // Estado local da etapa: só é gravado ao continuar (mas cada mudança já persiste).
+
   const draft = {};
   for (const question of step.questions) draft[question.id] = answers[question.id];
 
@@ -162,7 +162,7 @@ export function renderOnboardingStep(root, { params }) {
   }
 
   function renderQuestion(question) {
-    // A pergunta de objetivo principal só aparece se houver objetivos marcados.
+
     if (question.dependsOn) {
       const source = draft[question.dependsOn];
       const selected = Array.isArray(source) ? source : [];
@@ -210,7 +210,7 @@ export function renderOnboardingStep(root, { params }) {
       onChange: (value) => {
         draft[question.id] = value;
         saveAnswer(question.id, value);
-        // Redesenha para revelar perguntas dependentes e apoios contextuais.
+
         if (question.type === 'multiple' || step.questions.some((q) => q.dependsOn === question.id)) {
           paintQuestions();
         }
@@ -248,14 +248,14 @@ export function renderOnboardingStep(root, { params }) {
         errorRegion,
         message('danger', 'Faltou responder', el('p', {}, 'Role a página e escolha uma opção nas perguntas marcadas.')),
       );
-      // Leva o foco ao primeiro controle com erro.
+
       questionsRegion.querySelector('[role="alert"]')?.scrollIntoView({ block: 'center' });
       return;
     }
 
     render(errorRegion);
 
-    // A etapa H aplica preferências de interface imediatamente.
+
     if (step.slug === 'conforto') {
       updatePreferences({
         theme: draft.theme ?? 'dark',
@@ -303,7 +303,7 @@ export function renderOnboardingStep(root, { params }) {
         }),
       ),
 
-      // A pergunta é o h1 da tela — orienta leitor de tela e o título da aba.
+
       el('h1', { class: 'sr-only' }, `${step.title} — etapa ${index + 1} de ${total}`),
 
       resumed ? message('info', null, el('p', {}, MESSAGES.resumed)) : null,
@@ -347,7 +347,7 @@ export function renderOnboardingStep(root, { params }) {
   );
 }
 
-/** Etapa G: uma linha por área, três opções reais de rádio por linha. */
+
 function selfAssessmentGrid(question, draft, onChange) {
   const value = { ...(draft[question.id] ?? {}) };
 
@@ -391,7 +391,7 @@ function selfAssessmentGrid(question, draft, onChange) {
   );
 }
 
-/** Escolha com opção "outro valor" — usado no tempo por sessão. */
+
 function choiceWithCustom(question, draft, errors, onChange) {
   const current = draft[question.id];
   const isCustom =
@@ -443,7 +443,7 @@ function choiceWithCustom(question, draft, errors, onChange) {
   return group;
 }
 
-/* ---------------------------------------------------------------- Confirmação */
+
 
 export function renderProfileConfirmation(root) {
   syncProfile();
@@ -679,7 +679,7 @@ export function renderProfileConfirmation(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Resumo */
+
 
 export function renderOnboardingSummary(root) {
   const s = student();

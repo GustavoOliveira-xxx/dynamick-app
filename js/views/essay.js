@@ -1,8 +1,8 @@
-/**
- * Redação — propostas autorais, planejamento guiado e autoavaliação por critério.
- * A plataforma não atribui nota de redação: ela devolve critérios e perguntas.
- * Dizer "sua redação vale 820" sem corretor humano seria inventar um número.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, textarea, toast } from '../ui/components.js';
@@ -10,7 +10,7 @@ import { formatDate, plural } from '../core/format.js';
 import { ESSAY_PROMPTS, getEssayPrompt } from '../data/content.js';
 import { getState, update } from '../core/store.js';
 
-/** Critérios de autoavaliação — descrevem o texto, não geram nota. */
+
 const CRITERIA = [
   {
     key: 'norma',
@@ -39,7 +39,7 @@ const CRITERIA = [
   },
 ];
 
-/* ---------------------------------------------------------------- Hub */
+
 
 export function renderEssayHub(root) {
   const essays = getState().essays;
@@ -161,7 +161,7 @@ export function renderEssayHub(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Proposta */
+
 
 export function renderEssayPrompt(root, { params }) {
   const prompt = getEssayPrompt(params.slug);
@@ -220,7 +220,7 @@ export function renderEssayPrompt(root, { params }) {
         el('p', { class: 'small secondary' }, prompt.focus),
       ),
 
-      /* 1. Textos motivadores. */
+
       el(
         'section',
         { class: 'stack' },
@@ -235,14 +235,14 @@ export function renderEssayPrompt(root, { params }) {
         ),
       ),
 
-      /* 2. Comando. */
+
       card(
         { accent: 'green' },
         el('h2', {}, 'Proposta de redação'),
         el('p', {}, prompt.productionCommand),
       ),
 
-      /* 3. Planejamento. */
+
       el(
         'section',
         { class: 'stack' },
@@ -280,7 +280,7 @@ export function renderEssayPrompt(root, { params }) {
         }),
       ),
 
-      /* 4. Escrita. */
+
       el(
         'section',
         { class: 'stack' },
@@ -304,7 +304,7 @@ export function renderEssayPrompt(root, { params }) {
         ),
       ),
 
-      /* 5. Autoavaliação por critério. */
+
       el(
         'section',
         { class: 'stack' },
@@ -321,7 +321,7 @@ export function renderEssayPrompt(root, { params }) {
         ),
       ),
 
-      /* 6. Checklist final. */
+
       card(
         {},
         el('h2', {}, 'Checklist de fechamento'),
@@ -362,7 +362,7 @@ export function renderEssayPrompt(root, { params }) {
   );
 }
 
-/* ---------------------------------------------------------------- Auxiliares */
+
 
 function criterionRow(criterion, saved, persist) {
   const current = saved.selfCheck?.[criterion.key] ?? null;
@@ -412,10 +412,10 @@ function wordLabel(text) {
   return `${words} ${plural(words, 'palavra', 'palavras')}${reference}`;
 }
 
-/**
- * Devolutiva descritiva: aponta o que observou no texto e o que você mesmo marcou.
- * Em nenhum momento produz uma nota.
- */
+
+
+
+
 function feedbackBlock(text, selfCheck, prompt) {
   const words = countWords(text);
 
@@ -467,7 +467,7 @@ function feedbackBlock(text, selfCheck, prompt) {
   );
 }
 
-/** Maior sequência de palavras em comum — usado só para alertar sobre cópia. */
+
 function longestSharedRun(a, b) {
   const wordsA = a.toLowerCase().match(/\p{L}+/gu) ?? [];
   const wordsB = new Set();

@@ -1,24 +1,24 @@
-/**
- * Sincronização entre aparelhos — função serverless (Vercel).
- *
- * Este arquivo é deliberadamente burro. Ele guarda e devolve um bloco de texto
- * cifrado, indexado pelo hash de um código que ele nunca vê. Não sabe quem é o
- * estudante, não consegue ler o conteúdo e não tem o que vazar além de bytes
- * opacos.
- *
- * GET  /api/sync?codeHash=<64 hex>  → devolve o snapshot, ou 404
- * PUT  /api/sync                    → grava, com controle otimista de versão
- * DELETE /api/sync?codeHash=<...>   → apaga
- *
- * A credencial do banco vive em DATABASE_URL, variável de ambiente do projeto.
- * Ela nunca chega ao navegador: é justamente por isso que esta função existe.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 
-/** ~1,5 MB de texto cifrado. Um estado real fica em alguns KB; isto é teto de abuso. */
+
 const LIMITE_BYTES = 1_500_000;
 const HASH = /^[0-9a-f]{64}$/;
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
@@ -26,12 +26,12 @@ const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
 function json(res, status, corpo) {
   res.status(status);
   res.setHeader('content-type', 'application/json; charset=utf-8');
-  // Snapshot é dado de uma pessoa só: nunca em cache compartilhado.
+
   res.setHeader('cache-control', 'no-store');
   res.end(JSON.stringify(corpo));
 }
 
-/** Base64 válido e dentro do limite. Evita gravar lixo ou encher o banco. */
+
 function base64Valido(valor, maximo) {
   return typeof valor === 'string'
     && valor.length > 0
@@ -40,7 +40,7 @@ function base64Valido(valor, maximo) {
 }
 
 export default async function handler(req, res) {
-  // Mesma origem no Vercel (estático e API convivem), então não há CORS a abrir.
+
   res.setHeader('vary', 'origin');
 
   try {
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     res.setHeader('allow', 'GET, PUT, DELETE');
     return json(res, 405, { erro: 'Método não suportado.' });
   } catch (erro) {
-    // A mensagem real fica no log; o cliente recebe algo que não vaza estrutura.
+
     console.error('falha em /api/sync', erro);
     return json(res, 500, { erro: 'Falha interna ao sincronizar.' });
   }
@@ -93,8 +93,8 @@ async function gravar(req, res) {
 
   const bytes = ciphertext.length;
 
-  // revision null significa "sobrescreva mesmo assim", escolhido pelo estudante
-  // depois de um aviso na interface.
+
+
   if (revision === null || revision === undefined) {
     const linhas = await sql`
       INSERT INTO sync_snapshots (code_hash, ciphertext, iv, salt, bytes)
@@ -116,7 +116,7 @@ async function gravar(req, res) {
     return json(res, 400, { erro: 'revision inválida.' });
   }
 
-  // Primeira gravação deste código: só passa se ninguém tiver criado antes.
+
   if (revision === 0) {
     const linhas = await sql`
       INSERT INTO sync_snapshots (code_hash, ciphertext, iv, salt, bytes)
@@ -128,7 +128,7 @@ async function gravar(req, res) {
     return json(res, 200, { revision: Number(linhas[0].revision), updatedAt: linhas[0].updated_at });
   }
 
-  // Atualização normal: só avança se a revisão bater com a que o aparelho viu.
+
   const linhas = await sql`
     UPDATE sync_snapshots
        SET ciphertext = ${ciphertext},

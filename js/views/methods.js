@@ -1,8 +1,8 @@
-/**
- * Formas de estudar — biblioteca de métodos.
- * Nenhum método é apresentado como solução universal: todos declaram limitação e
- * quando NÃO usar. Um método sugerido sempre diz por que apareceu para você.
- */
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message } from '../ui/components.js';

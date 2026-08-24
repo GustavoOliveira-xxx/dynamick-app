@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script>
-      // Antes da primeira pintura: sem isto a página pisca no tema errado.
+
       try {
         var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
         var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
@@ -23,6 +23,9 @@
       content="Dynamic CK ajuda estudantes a se prepararem para o ENEM com uma jornada de estudos adaptável, questões variadas, explicações compreensíveis e revisões baseadas nos próprios erros."
     />
     <meta name="theme-color" content="#020504" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="author" content="Conscious Knowledge" />
 
     <meta property="og:title" content="Dynamic CK by Conscious Knowledge" />
@@ -35,6 +38,7 @@
 
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/base.css" />
@@ -43,7 +47,7 @@
   </head>
 
   <body>
-    <!-- A mesma tela de carregamento da área de estudo: uma identidade só. -->
+
     <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
       <div class="ck-boot__stage" aria-hidden="true">
         <span class="ck-boot__aura"></span>
@@ -75,7 +79,7 @@
 
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
-    <!-- Fundo dinâmico: intensidade ALTA na landing -->
+
     <div id="fundo" aria-hidden="true"></div>
 
     <div class="page">
@@ -88,7 +92,7 @@
       </header>
 
       <main id="conteudo-principal">
-        <!-- Hero -->
+
         <section class="shell hero">
           <div class="hero__text ck-enter">
             <span class="badge badge--teal">◈ Preparação para o ENEM 2027</span>
@@ -113,7 +117,7 @@
             </p>
           </div>
 
-          <!-- Cubo mágico interativo + demonstração visual da sessão de estudo -->
+
           <div class="hero__visual ck-enter">
             <div id="cubo-conhecimento" class="hero__cube"></div>
           <article class="card hero__demo" aria-label="Exemplo de sessão de estudo">
@@ -156,7 +160,7 @@
           </div>
         </section>
 
-        <!-- Três benefícios concretos -->
+
         <section class="shell section" aria-labelledby="beneficios">
           <h2 id="beneficios">O que muda na prática</h2>
           <div class="grid-3 section__grid">
@@ -189,7 +193,7 @@
           </div>
         </section>
 
-        <!-- O ciclo -->
+
         <section class="shell section" aria-labelledby="ciclo">
           <h2 id="ciclo">O ciclo que a plataforma sustenta</h2>
           <ol class="cycle">
@@ -204,7 +208,7 @@
           </ol>
         </section>
 
-        <!-- Honestidade explícita -->
+
         <section class="shell section" aria-labelledby="limites">
           <div class="card card--pad-lg">
             <h2 id="limites">O que a gente não promete</h2>
@@ -260,22 +264,23 @@
       document.getElementById('marca').append(dynamickLogo({ variant: 'full', signature: true }));
       document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
 
-      // O mesmo cubo da tela inicial, já mexível aqui.
+
       document.getElementById('cubo-conhecimento').append(rubikCube({ size: 'md' }));
 
-      // Intensidade alta e reativa ao cursor — só aqui e no início.
+
       mountBackground(document.getElementById('fundo'), {
         intensity: 'high',
         interactive: true,
         context: 'landing',
       });
 
-      // Sair da landing para a área de estudo mostra o carregamento na hora.
+
       for (const link of document.querySelectorAll('a[href*=".html#/"]')) {
         link.addEventListener('click', () => showLoaderForNavigation('Abrindo sua área de estudo'));
       }
 
       hideLoader();
     </script>
+    <script type="module" src="js/pwa.js"></script>
   </body>
 </html>

@@ -1,17 +1,17 @@
-/*
- * Dynamic CK — tokens visuais.
- * Fonte única de verdade para cor, tipografia, espaço, raio, sombra e movimento.
- * Nenhum valor visual literal deve existir fora deste arquivo.
- */
+
+
+
+
+
 
 :root {
-  /* ---- Fundo: noturno e profundo. Verde NUNCA é o fundo dominante. ---- */
+
   --ck-bg-void: #020504;
   --ck-bg-deep: #06100d;
   --ck-bg-panel: #0a1715;
   --ck-bg-raised: #0f201d;
 
-  /* ---- Acentos (ajustar às cores exatas das logos quando os arquivos chegarem) ---- */
+
   --ck-green: #2ee88a;
   --ck-green-glow: #5cffb0;
   --ck-green-deep: #0f6b46;
@@ -33,55 +33,55 @@
   --ck-face-r: #0a8f9c;
   --ck-face-l: #0a4f66;
 
-  /* ---- Texto ---- */
+
   --ck-text: #e8f5ef;
   --ck-text-2: #a9c4ba;
   --ck-text-3: #7d968d;
 
-  /* ---- Bordas ---- */
+
   --ck-line: rgb(46 232 138 / 14%);
   --ck-line-strong: rgb(46 232 138 / 32%);
 
-  /* ---- Semânticas ---- */
+
   --ck-danger: #ff6b7a;
   --ck-warning: #ffc861;
   --ck-success: #2ee88a;
   --ck-info: #63e6ff;
 
-  /* ---- Superfícies compostas ---- */
+
   --ck-glass: rgb(10 23 21 / 78%);
 
-  /* ---- Tipografia ---- */
+
   --ck-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --ck-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --ck-text-scale: 1;
 
-  /* ---- Raios ---- */
+
   --ck-r-sm: 6px;
   --ck-r-md: 10px;
   --ck-r-lg: 16px;
   --ck-r-xl: 22px;
   --ck-r-pill: 999px;
 
-  /* ---- Profundidade ---- */
+
   --ck-shadow: 0 10px 34px -18px rgb(0 0 0 / 85%);
   --ck-shadow-deep: 0 24px 60px -30px rgb(0 0 0 / 90%);
   --ck-glow: 0 0 0 1px rgb(46 232 138 / 34%), 0 12px 40px -16px rgb(46 232 138 / 34%);
   --ck-glow-soft: 0 0 26px -10px rgb(46 232 138 / 40%);
 
-  /* ---- Espaço ---- */
+
   --ck-gutter: 1.25rem;
   --ck-shell: 1240px;
 
-  /* ---- Movimento: curto, com curvas naturais ---- */
+
   --ck-dur-fast: 160ms;
   --ck-dur: 260ms;
   --ck-dur-slow: 420ms;
   --ck-ease: cubic-bezier(0.16, 0.84, 0.44, 1);
   --ck-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 
-  /* ---- Camadas ---- */
+
   --ck-z-bg: 0;
   --ck-z-content: 10;
   --ck-z-sticky: 20;
@@ -89,11 +89,11 @@
   --ck-z-toast: 50;
   --ck-z-transition: 60;
 
-  /* ---- Intensidade do fundo animado, por contexto ---- */
+
   --ck-visual-opacity: 1;
 }
 
-/* Tema claro — mesma hierarquia de papéis, cores invertidas */
+
 [data-theme="light"] {
   --ck-bg-void: #f2f7f4;
   --ck-bg-deep: #e8f0ec;
@@ -121,7 +121,7 @@
   --ck-glow-soft: 0 0 22px -12px rgb(15 125 77 / 34%);
 }
 
-/* Alto contraste */
+
 [data-contrast="high"] {
   --ck-text: #ffffff;
   --ck-text-2: #d6ece2;
@@ -136,11 +136,11 @@
   --ck-text-3: #2c463a;
 }
 
-/* Modo visual reduzido: desliga o fundo animado sem quebrar o layout */
+
 [data-visual="reduced"] {
   --ck-visual-opacity: 0;
 }
 
-/* Escala de texto */
+
 [data-text-scale="112"] { --ck-text-scale: 1.12; }
 [data-text-scale="125"] { --ck-text-scale: 1.25; }

@@ -1,10 +1,10 @@
-#!/usr/bin/env node
-/**
- * Executor de testes minimalista.
- *
- * Sem dependências: o projeto é HTML + CSS + JS, e a suíte roda com o Node que já
- * existe na máquina.  `node tests/index.mjs`
- */
+
+
+
+
+
+
+
 
 const ESC = '[';
 const GREEN = `${ESC}32m`;

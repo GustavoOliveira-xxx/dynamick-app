@@ -1,4 +1,4 @@
-/** praticar.html — escolha da sessão e preparação antes de começar. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderPractice, renderSessionTemplate, renderQuickSession } from '../views/practice.js';

@@ -8,7 +8,7 @@ import {
 import { PROFILES } from '../js/engine/profiles.js';
 import { ONBOARDING_STEPS, REQUIRED_STEPS } from '../js/data/questionnaire.js';
 
-/* Cenários obrigatórios de perfil. */
+
 
 const perdidoComPoucoTempo = {
   schoolYear: 'em2',

@@ -1,31 +1,31 @@
-/**
- * Cubo mágico 3D — a peça de identidade do Dynamic CK na tela inicial.
- *
- * É um cubo 3x3 de verdade, não um enfeite girando sozinho:
- *  - 26 peças posicionadas em 3D, cada uma com sua orientação própria;
- *  - arrastar no vazio gira o cubo inteiro, com inércia;
- *  - arrastar em cima de uma peça gira a CAMADA daquela peça, no sentido do
- *    arraste — o mesmo gesto que se faz em um cubo de plástico;
- *  - teclado faz tudo o que o mouse faz, porque hover e arraste não podem ser a
- *    única forma de interagir;
- *  - embaralhar e resolver são botões de verdade.
- *
- * Escolhas técnicas:
- *  - CSS 3D, sem WebGL e sem biblioteca. Some o risco de tela preta quando o
- *    WebGL falha, e o custo cabe em qualquer celular.
- *  - A orientação de cada peça é uma matriz 3x3 de inteiros. Girar uma camada é
- *    multiplicar essa matriz por uma rotação de 90°, o que evita o acúmulo de
- *    erro de ponto flutuante que apareceria somando ângulos.
- *  - As cores são as do cubo original. O produto entra no entorno — aura,
- *    órbitas e brilho — e não repintando o objeto.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { el } from '../core/dom.js';
 import { button } from './components.js';
 
-/* ---------------------------------------------------------------- Geometria */
 
-/** Faces e seus vetores normais no referencial do cubo. */
+
+
 const FACES = [
   { id: 'U', axis: 'y', sign: -1, normal: [0, -1, 0] },
   { id: 'D', axis: 'y', sign: 1, normal: [0, 1, 0] },
@@ -37,7 +37,7 @@ const FACES = [
 
 const AXIS_INDEX = { x: 0, y: 1, z: 2 };
 
-/** Multiplica duas matrizes 3x3 de inteiros. */
+
 function multiply(a, b) {
   const out = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (let row = 0; row < 3; row += 1) {
@@ -49,7 +49,7 @@ function multiply(a, b) {
   return out;
 }
 
-/** Rotação de 90° (ou -90°) em torno de um eixo, em inteiros exatos. */
+
 function rotationMatrix(axis, quarterTurns) {
   const turns = ((quarterTurns % 4) + 4) % 4;
   const cos = [1, 0, -1, 0][turns];
@@ -70,18 +70,18 @@ function applyMatrix(matrix, vector) {
 const IDENTITY = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 
 function matrix3d(m) {
-  // CSS usa coluna-maior. A matriz é só rotação: sem escala e sem translação.
+
   return `matrix3d(${m[0][0]},${m[1][0]},${m[2][0]},0,${m[0][1]},${m[1][1]},${m[2][1]},0,${m[0][2]},${m[1][2]},${m[2][2]},0,0,0,0,1)`;
 }
 
-/* ---------------------------------------------------------------- Peças */
+
 
 function createCubies() {
   const cubies = [];
   for (let x = -1; x <= 1; x += 1) {
     for (let y = -1; y <= 1; y += 1) {
       for (let z = -1; z <= 1; z += 1) {
-        if (x === 0 && y === 0 && z === 0) continue; // o miolo não aparece
+        if (x === 0 && y === 0 && z === 0) continue;
         cubies.push({ position: [x, y, z], orientation: IDENTITY, node: null });
       }
     }
@@ -89,10 +89,10 @@ function createCubies() {
   return cubies;
 }
 
-/**
- * Constrói o elemento de uma peça com seus seis adesivos.
- * Adesivo voltado para fora recebe cor; voltado para dentro fica preto.
- */
+
+
+
+
 function cubieElement(cubie, size) {
   const node = el('div', { class: 'ck-cube__cubie' });
   const half = size / 2;
@@ -114,7 +114,7 @@ function cubieElement(cubie, size) {
         .join(' '),
     });
 
-    // Cada adesivo é girado para a sua face e empurrado meia aresta para fora.
+
     const rotation =
       face.id === 'F' ? 'rotateY(0deg)'
         : face.id === 'B' ? 'rotateY(180deg)'
@@ -132,18 +132,18 @@ function cubieElement(cubie, size) {
   return node;
 }
 
-/* ---------------------------------------------------------------- Componente */
+
 
 const AXIS_KEYS = ['x', 'y', 'z'];
 
-/**
- * @param {{
- *   size?: 'sm'|'md'|'lg',
- *   interactive?: boolean,   controles e arraste (padrão true)
- *   autoSpin?: boolean,      giro lento quando ninguém está mexendo
- *   label?: string,
- * }} options
- */
+
+
+
+
+
+
+
+
 export function rubikCube(options = {}) {
   const {
     size = 'md',
@@ -179,9 +179,9 @@ export function rubikCube(options = {}) {
     body.append(cubie.node);
   }
 
-  /* ------------------------------------------------------------ Estado */
 
-  let view = { x: -24, y: -32 }; // ângulos da câmera, em graus
+
+  let view = { x: -24, y: -32 };
   let spinVelocity = { x: 0, y: autoSpin ? 0.16 : 0 };
   let dragging = null;
   let animating = false;
@@ -200,18 +200,18 @@ export function rubikCube(options = {}) {
     body.style.transform = `rotateX(${view.x}deg) rotateY(${view.y}deg)`;
   }
 
-  /* ------------------------------------------------------------ Giro de camada */
 
-  /**
-   * Gira uma camada.
-   * @param {'x'|'y'|'z'} axis
-   * @param {-1|0|1} layer  qual fatia do eixo
-   * @param {1|-1} direction  sentido, em quartos de volta
-   */
+
+
+
+
+
+
+
   function turn(axis, layer, direction, { animate = true, announce } = {}) {
     if (disposed) return Promise.resolve();
     if (animating) {
-      // Fila curta: gestos rápidos não podem se perder nem se atropelar.
+
       if (queue.length < 6) queue.push([axis, layer, direction, { animate, announce }]);
       return Promise.resolve();
     }
@@ -258,27 +258,27 @@ export function rubikCube(options = {}) {
     });
   }
 
-  /* ------------------------------------------------------------ Arraste */
 
-  /**
-   * Descobre qual camada girar a partir do adesivo tocado e da direção do
-   * arraste na tela. É a tradução do gesto do cubo físico para duas dimensões.
-   */
+
+
+
+
+
   function layerFromGesture(sticker, dx, dy) {
     const cubie = cubies.find((item) => item.node === sticker.parentElement);
     if (!cubie) return null;
 
-    // A normal do adesivo no mundo depende da orientação atual da peça.
+
     const localNormal = sticker.dataset.normal.split(',').map(Number);
     const normal = applyMatrix(cubie.orientation, localNormal).map(Math.round);
     const faceAxis = normal.findIndex((value) => value !== 0);
     if (faceAxis < 0) return null;
 
-    /*
-     * Projeta um vetor do cubo na tela, com a câmera atual.
-     * A ordem é a mesma do CSS aplicado ao corpo: rotateX(view.x) rotateY(view.y),
-     * e o eixo Y da tela cresce para BAIXO — igual ao deslocamento do ponteiro.
-     */
+
+
+
+
+
     const rx = (view.x * Math.PI) / 180;
     const ry = (view.y * Math.PI) / 180;
     function project([x, y, z]) {
@@ -287,12 +287,12 @@ export function rubikCube(options = {}) {
       return { x: x1, y: y * Math.cos(rx) - z1 * Math.sin(rx) };
     }
 
-    /*
-     * Girar em torno de um eixo u desloca um ponto p na direção de u × p.
-     * Entre os dois eixos perpendiculares à face tocada, vence aquele cujo
-     * deslocamento na tela mais se parece com o arraste do dedo; o sinal do
-     * produto escalar dá o sentido do giro.
-     */
+
+
+
+
+
+
     let best = null;
     for (const axis of [0, 1, 2].filter((value) => value !== faceAxis)) {
       const unit = [0, 0, 0];
@@ -306,8 +306,8 @@ export function rubikCube(options = {}) {
       if (!best || Math.abs(score) > Math.abs(best.score)) best = { axis, score };
     }
 
-    // Gesto perpendicular ao único movimento possível: melhor não girar nada
-    // do que girar a camada errada.
+
+
     if (!best || Math.abs(best.score) < 0.5) return null;
 
     return {
@@ -341,7 +341,7 @@ export function rubikCube(options = {}) {
     if (dragging.sticker && !dragging.resolved) {
       const totalX = event.clientX - dragging.startX;
       const totalY = event.clientY - dragging.startY;
-      if (Math.hypot(totalX, totalY) < 14) return; // ainda é um clique, não um gesto
+      if (Math.hypot(totalX, totalY) < 14) return;
 
       const move = layerFromGesture(dragging.sticker, totalX, totalY);
       dragging.resolved = true;
@@ -371,7 +371,7 @@ export function rubikCube(options = {}) {
     dragging = null;
   }
 
-  /* ------------------------------------------------------------ Teclado */
+
 
   const KEY_TURNS = {
     q: ['y', -1, -1, 'Camada de cima girada.'],
@@ -405,7 +405,7 @@ export function rubikCube(options = {}) {
     }
   }
 
-  /* ------------------------------------------------------------ Ações */
+
 
   function randomTurn() {
     const axis = AXIS_KEYS[Math.floor(Math.random() * 3)];
@@ -418,17 +418,17 @@ export function rubikCube(options = {}) {
     status.textContent = 'Embaralhando…';
     for (let index = 0; index < moves; index += 1) {
       const [axis, layer, direction] = randomTurn();
-      // eslint-disable-next-line no-await-in-loop
+
       await turn(axis, layer, direction, { animate: index > moves - 4 });
     }
     status.textContent = 'Embaralhado. Boa sorte.';
   }
 
-  /**
-   * Volta o cubo montado.
-   * Recolocar cada peça na posição de origem é mais confiável do que desfazer a
-   * sequência de giros: funciona mesmo se um gesto tiver sido interrompido.
-   */
+
+
+
+
+
   function reset() {
     queue = [];
     let index = 0;
@@ -446,7 +446,7 @@ export function rubikCube(options = {}) {
     status.textContent = 'Cubo montado de novo.';
   }
 
-  /* ------------------------------------------------------------ Animação */
+
 
   function tick() {
     if (disposed) return;
@@ -464,7 +464,7 @@ export function rubikCube(options = {}) {
     frame = requestAnimationFrame(tick);
   }
 
-  /* ------------------------------------------------------------ Montagem */
+
 
   paintCubies();
   paintView();
@@ -520,7 +520,7 @@ export function rubikCube(options = {}) {
     frame = requestAnimationFrame(tick);
   }
 
-  /** Encerra timers e ouvintes — chamado na limpeza da view. */
+
   root.dispose = () => {
     disposed = true;
     if (frame) cancelAnimationFrame(frame);

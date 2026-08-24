@@ -1,13 +1,13 @@
-/**
- * CAMADA DE MARCA SUBSTITUÍVEL.
- *
- * As logos oficiais ainda não estão no repositório. Enquanto isso, este módulo desenha
- * uma marca PROVISÓRIA em SVG — geometria abstrata, sem recriar o personagem nem o
- * lettering originais — marcada com data-brand-fallback="true".
- *
- * Para ligar as oficiais: coloque os arquivos em assets/brand/ (veja o README de lá) e
- * troque USE_OFFICIAL_ASSETS para true. Nenhuma tela precisa mudar.
- */
+
+
+
+
+
+
+
+
+
+
 
 import { el } from '../core/dom.js';
 
@@ -22,14 +22,14 @@ export const BRAND = {
     'Uma jornada de estudos que se adapta ao que você acerta, ao que você erra e ao tempo que você tem.',
 };
 
-/**
- * Um par de arquivos por marca: WebP para quem suporta (a maioria) e PNG como
- * garantia. Os dois saem do mesmo original, por assets/brand/gerar-web.py.
- *
- * `ratio` é a proporção real da arte. Ele existe para que o navegador reserve o
- * espaço certo antes da imagem chegar (sem salto de layout) e, principalmente,
- * para que a logo nunca seja esticada: distorcer a marca é proibido.
- */
+
+
+
+
+
+
+
+
 const ASSETS = {
   dynamick: {
     webp: 'assets/brand/logo-dynamic.webp',
@@ -43,10 +43,10 @@ const ASSETS = {
   },
 };
 
-/**
- * Monta <picture> com WebP e PNG.
- * A altura vem da proporção real do arquivo, nunca de um número fixo.
- */
+
+
+
+
 function brandPicture({ asset, alt, width, eager, className = 'brand-img' }) {
   const height = Math.round(width / asset.ratio);
 
@@ -67,11 +67,11 @@ function brandPicture({ asset, alt, width, eager, className = 'brand-img' }) {
   return picture;
 }
 
-/**
- * Largura de exibição da marca oficial, por variante. A altura sai da proporção.
- * A ilustração tem muito detalhe: abaixo de ~56px o emblema vira mancha, então o
- * cabeçalho compacto usa um valor maior do que o da marca provisória em SVG.
- */
+
+
+
+
+
 const OFFICIAL_WIDTHS = {
   full: 148,
   compact: 76,
@@ -96,7 +96,7 @@ function svg(tag, attrs) {
 
 let gradientCounter = 0;
 
-/** Símbolo provisório: escudo + núcleo luminoso + linhas orbitais + livro aberto. */
+
 function provisionalMark(size, monochrome, animated) {
   const id = `ck-grad-${(gradientCounter += 1)}`;
   const root = svg('svg', {
@@ -123,7 +123,7 @@ function provisionalMark(size, monochrome, animated) {
 
   const stroke = `url(#${id})`;
 
-  // Escudo / crista
+
   root.append(
     svg('path', {
       d: 'M24 2.5 43 10v16.5c0 8.6-7.4 16.2-19 19.9C12.4 42.7 5 35.1 5 26.5V10Z',
@@ -133,10 +133,10 @@ function provisionalMark(size, monochrome, animated) {
       'stroke-linejoin': 'round',
     }),
   );
-  // Núcleo luminoso
+
   root.append(svg('circle', { cx: 24, cy: 23, r: 5.4, fill: 'none', stroke, 'stroke-width': '1.6', opacity: '0.9' }));
   root.append(svg('circle', { cx: 24, cy: 23, r: 1.9, fill: stroke }));
-  // Linhas orbitais — conexão entre tópicos
+
   root.append(
     svg('ellipse', {
       cx: 24, cy: 23, rx: 12.5, ry: 5.2, fill: 'none', stroke,
@@ -149,7 +149,7 @@ function provisionalMark(size, monochrome, animated) {
       'stroke-width': '1.1', opacity: '0.32', transform: 'rotate(38 24 23)',
     }),
   );
-  // Base: livro aberto estilizado
+
   root.append(
     svg('path', {
       d: 'M15 36.5c3-1.6 6-1.6 9 0 3-1.6 6-1.6 9 0',
@@ -160,10 +160,10 @@ function provisionalMark(size, monochrome, animated) {
   return root;
 }
 
-/**
- * Marca do produto.
- * @param {{variant?: 'full'|'compact'|'symbol'|'mono', animated?: boolean, signature?: boolean}} options
- */
+
+
+
+
 export function dynamickLogo(options = {}) {
   const { variant = 'full', animated = true, signature = false } = options;
   const label = signature ? `${BRAND.product} ${BRAND.signature}` : BRAND.product;
@@ -203,7 +203,7 @@ export function dynamickLogo(options = {}) {
   return wrapper;
 }
 
-/** Marca institucional — tratamento deliberadamente mais discreto. */
+
 export function consciousKnowledgeLogo(options = {}) {
   const { variant = 'compact' } = options;
 

@@ -1,4 +1,4 @@
-/** Os seis perfis funcionais, com alvos por dimensão e personalização. */
+
 
 export const DIMENSION_WEIGHTS = {
   autonomy: 1,
@@ -9,14 +9,14 @@ export const DIMENSION_WEIGHTS = {
   needsShortSessions: 1.2,
 };
 
-/**
- * Premissa de um perfil: condição sem a qual ele não é SUGERIDO automaticamente.
- * O estudante continua podendo escolhê-lo manualmente na comparação — a premissa
- * limita a sugestão, nunca o acesso.
- *
- * Existe porque a plataforma não deve empurrar quem tem dois anos de preparação para
- * uma rotina de simulados e alta dificuldade só por ser autônomo e se sentir seguro.
- */
+
+
+
+
+
+
+
+
 export const PROFILE_PREMISES = {
   'treinador-de-desempenho': {
     reason:

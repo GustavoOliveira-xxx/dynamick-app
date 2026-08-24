@@ -1,17 +1,17 @@
-/**
- * Sincronização: código, cifragem e o contrato com o servidor.
- *
- * O que estes testes protegem:
- *  - o código tem entropia suficiente e aceita ser digitado de qualquer jeito;
- *  - o que sobe é ilegível sem o código;
- *  - código errado FALHA em vez de devolver lixo silenciosamente;
- *  - o controle de revisão impede que um aparelho apague o outro sem aviso.
- */
+
+
+
+
+
+
+
+
+
 
 import { describe, it, expect } from './run.mjs';
 
-// O módulo usa localStorage, fetch e crypto.subtle. No Node existe crypto;
-// os outros dois viram dublês, porque aqui só interessa a lógica pura.
+
+
 globalThis.localStorage ??= (() => {
   const mapa = new Map();
   return {
@@ -32,7 +32,7 @@ describe('código de sincronização', () => {
   it('tem 20 caracteres e entropia suficiente', () => {
     const limpo = normalizarCodigo(gerarCodigo());
     expect(limpo).toHaveLength(20);
-    // 32 símbolos por posição = 5 bits cada = 100 bits no total.
+
     expect(Math.round(20 * Math.log2(32))).toBe(100);
   });
 
@@ -92,7 +92,7 @@ describe('cifragem', () => {
     try {
       await _internals.decifrar(gerarCodigo(), pacote);
     } catch {
-      falhou = true; // AES-GCM autentica: chave errada não decifra, rejeita.
+      falhou = true;
     }
     expect(falhou).toBe(true);
   });
@@ -115,7 +115,7 @@ describe('cifragem', () => {
     const codigo = gerarCodigo();
     const a = await _internals.cifrar(codigo, segredo);
     const b = await _internals.cifrar(codigo, segredo);
-    // Sal e vetor de inicialização novos a cada envio.
+
     expect(a.ciphertext === b.ciphertext).toBe(false);
     expect(a.salt === b.salt).toBe(false);
     expect(a.iv === b.iv).toBe(false);

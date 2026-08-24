@@ -1,4 +1,4 @@
-/** perfil.html — perfil de estudo, configurações, relatório e meus dados. */
+
 
 import { startPage } from '../core/shell.js';
 import {
