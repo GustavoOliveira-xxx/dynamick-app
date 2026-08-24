@@ -1,9 +1,4 @@
-/**
- * Estrutura editorial comum às questões escritas fora dos arquivos de tópico.
- *
- * A leva de agosto de 2026 usa o padrão da assinatura; a terceira leva passa a
- * sua própria origem, para que o acervo continue auditável por onda de escrita.
- */
+
 
 const LABELS = ['A', 'B', 'C', 'D', 'E'];
 

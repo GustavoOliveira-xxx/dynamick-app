@@ -1,13 +1,13 @@
-/**
- * Resolução de questões e resultado.
- *
- * Garantias implementadas aqui:
- *  - a alternativa correta nunca aparece antes do envio;
- *  - a primeira resposta é preservada mesmo se o estudante trocar;
- *  - o cronômetro para ao responder e não continua depois;
- *  - fim do tempo envia UMA vez;
- *  - marcar, anotar e pausar não perdem o estado.
- */
+
+
+
+
+
+
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { navigate } from '../core/router.js';
@@ -40,6 +40,7 @@ import {
   toggleFlag,
 } from '../core/sessions.js';
 import { addErrorNote, mainRecommendation } from '../core/student.js';
+import { playAnswerTransition } from '../ui/answer-transition.js';
 
 export function renderSession(root, { params, query }) {
   const session = getSession(params.id);
@@ -69,7 +70,7 @@ export function renderSession(root, { params, query }) {
   return renderRunner(root, session);
 }
 
-/* ---------------------------------------------------------------- Preparação */
+
 
 function renderPreparation(root, session) {
   const questions = session.items.map((item) => getQuestion(item.questionSlug)).filter(Boolean);
@@ -136,7 +137,7 @@ function renderPreparation(root, session) {
   );
 }
 
-/* ---------------------------------------------------------------- Resolução */
+
 
 function renderRunner(root, session) {
   const prefs = getState().preferences;
@@ -147,6 +148,7 @@ function renderRunner(root, session) {
   let totalElapsed = Math.floor((Date.now() - new Date(session.startedAt).getTime()) / 1000);
   let timeExpired = false;
   let submitting = false;
+  let transitionBusy = false;
 
   const timerNode = el('span', { class: 'timer' });
   const limitNode = el('span', {});
@@ -167,7 +169,7 @@ function renderRunner(root, session) {
   function tick() {
     totalElapsed = Math.floor((Date.now() - new Date(session.startedAt).getTime()) / 1000);
 
-    // O cronômetro da questão PARA quando ela é respondida.
+
     if (!isAnswered()) {
       elapsed = Math.floor((Date.now() - questionStart) / 1000);
       timerNode.textContent = formatSeconds(elapsed);
@@ -178,7 +180,7 @@ function renderRunner(root, session) {
       const remaining = Math.max(0, session.timeLimitSeconds - totalElapsed);
       render(limitNode, badge(`Restam ${formatSeconds(remaining)}`, remaining < 60 ? 'warning' : 'neutral'));
 
-      // Fim do tempo: envia UMA vez. O guard impede o envio duplicado.
+
       if (remaining === 0 && !timeExpired) {
         timeExpired = true;
         window.clearInterval(ticker);
@@ -228,6 +230,7 @@ function renderRunner(root, session) {
 
     let selected = attempt?.answer ?? null;
     let confidence = attempt?.confidence ?? '';
+    let questionCard = null;
 
     const optionsRegion = el('div', { class: 'question__options' });
     const feedbackRegion = el('div', {});
@@ -245,7 +248,7 @@ function renderRunner(root, session) {
             { class: 'stack stack--sm' },
             question.options.map((option) => {
               const isSelected = selected === option.label;
-              // A correção só é revelada DEPOIS de responder, e só em modo aprendizagem.
+
               const revealed = answered && learning;
               const showCorrect = revealed && option.isCorrect;
               const showWrong = revealed && isSelected && !option.isCorrect;
@@ -323,8 +326,11 @@ function renderRunner(root, session) {
             label: learning ? 'Responder' : 'Registrar e avançar',
             size: 'lg',
             disabled: !selected,
-            onClick: () => {
-              if (!selected) return;
+            onClick: async (event) => {
+              if (!selected || transitionBusy) return;
+              transitionBusy = true;
+              event.currentTarget.disabled = true;
+              event.currentTarget.setAttribute('aria-busy', 'true');
               answerQuestion({
                 sessionId: session.id,
                 questionSlug: question.slug,
@@ -332,9 +338,16 @@ function renderRunner(root, session) {
                 confidence: confidence || null,
                 timeSpentMs: elapsed * 1000,
               });
-              // Recarrega o estado da sessão para refletir a resposta.
               Object.assign(session, getSession(session.id));
-              paint();
+              if (learning) {
+                transitionBusy = false;
+                paint();
+                return;
+              }
+              await playAnswerTransition(questionCard, { hasNext: !isLast });
+              transitionBusy = false;
+              if (!isLast) goTo(index + 1);
+              else paint();
             },
           }),
         );
@@ -374,6 +387,22 @@ function renderRunner(root, session) {
       }));
     }
 
+    questionCard = card(
+      { pad: 'lg', tag: 'article', class: 'question-card' },
+      el(
+        'div',
+        { class: 'row' },
+        badge(question.topicName, 'cyan'),
+        badge(DIFFICULTY_LABELS[question.difficulty]),
+        badge(question.sourceLabel, 'green'),
+        item.flagged ? badge('Marcada para revisar', 'warning') : null,
+      ),
+      question.support ? el('p', { class: 'question__support' }, question.support) : null,
+      el('div', { class: 'question__stem reading' }, question.stem),
+      optionsRegion,
+      actionsRegion,
+    );
+
     render(
       container,
 
@@ -402,20 +431,7 @@ function renderRunner(root, session) {
 
       el('h1', { class: 'sr-only' }, `${session.title} — questão ${index + 1}`),
 
-      card(
-        { pad: 'lg', tag: 'article' },
-        el(
-          'div',
-          { class: 'row' },
-          badge(question.topicName, 'cyan'),
-          badge(DIFFICULTY_LABELS[question.difficulty]),
-          item.flagged ? badge('Marcada para revisar', 'warning') : null,
-        ),
-        question.support ? el('p', { class: 'question__support' }, question.support) : null,
-        el('div', { class: 'question__stem reading' }, question.stem),
-        optionsRegion,
-        actionsRegion,
-      ),
+      questionCard,
 
       feedbackRegion,
 
@@ -515,11 +531,11 @@ function renderRunner(root, session) {
   paint();
   tick();
 
-  // Limpeza ao sair da tela: sem isso o cronômetro continuaria rodando.
+
   return () => window.clearInterval(ticker);
 }
 
-/* ---------------------------------------------------------------- Correção */
+
 
 function correctionCard(session, question, attempt, onChange) {
   const correct = question.options.find((option) => option.isCorrect);
@@ -638,6 +654,7 @@ function correctionCard(session, question, attempt, onChange) {
       isCorrect ? badge('Resposta correta', 'green', '✓') : badge('Vamos entender essa', 'danger', '•'),
       attempt.changedAnswer ? badge('Você mudou de alternativa', 'warning') : null,
       badge(question.topicName, 'cyan'),
+      badge(question.sourceLabel, 'green'),
       question.skillName ? badge(question.skillName, 'teal') : null,
     ),
 
@@ -693,7 +710,7 @@ function correctionCard(session, question, attempt, onChange) {
 
     reasonRegion,
 
-    // Ações curtas depois da explicação
+
     el(
       'div',
       { class: 'correction__actions' },
@@ -723,7 +740,7 @@ function correctionCard(session, question, attempt, onChange) {
   );
 }
 
-/** Denúncia de problema na questão, feita pelo estudante. */
+
 function reportButton(questionSlug) {
   const wrapper = el('div', {});
   let open = false;
@@ -814,7 +831,7 @@ function reportButton(questionSlug) {
   return wrapper;
 }
 
-/* ---------------------------------------------------------------- Resultado */
+
 
 export function renderSessionResult(root, { params }) {
   const session = getSession(params.id);
@@ -869,7 +886,7 @@ export function renderSessionResult(root, { params }) {
         el('p', { class: 'small secondary', style: { marginTop: '0.75rem' } },
           `${summary.correct} acerto(s) e ${summary.wrong} erro(s).`),
 
-        // A diferenciação exigida no encerramento da sessão.
+
         summary.correct > 0
           ? el(
               'ul',

@@ -1,4 +1,4 @@
-/** metodos.html — biblioteca de formas de estudar. */
+
 
 import { startPage } from '../core/shell.js';
 import { renderMethods } from '../views/methods.js';

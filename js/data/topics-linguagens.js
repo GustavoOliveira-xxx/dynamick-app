@@ -1,7 +1,7 @@
-/**
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhuma questão foi copiada de prova oficial, livro ou plataforma de terceiros.
- */
+
+
+
+
 
 export const LINGUAGENS_TOPICS = [
   {

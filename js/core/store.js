@@ -1,35 +1,35 @@
-/**
- * Persistência.
- *
- * CAMADA ISOLADA DE PROPÓSITO: toda leitura e escrita de dados do estudante passa por
- * aqui. Hoje o destino é o localStorage do navegador. Trocar por um banco de dados
- * significa reimplementar apenas este arquivo — nenhuma view muda.
- *
- * Consequências de guardar no navegador (documentadas em README.md):
- *  - funciona offline e sem cadastro;
- *  - os dados NÃO acompanham o usuário entre aparelhos ou navegadores;
- *  - limpar os dados do site apaga o progresso;
- *  - não há curadoria compartilhada entre usuários.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const BASE_KEY = 'dynamick:v1';
 const BACKUP_KEY = 'dynamick:v1:backup';
 
-/*
- * Espaço da conta ativa.
- *
- * Sem conta, o estado mora em 'dynamick:v1' — é o formato antigo e continua
- * válido para quem já usava a plataforma. Com conta, cada uma tem o seu
- * 'dynamick:v1:<id>', o que permite dois estudantes no mesmo navegador sem que
- * um veja (ou apague) o progresso do outro.
- */
+
+
+
+
+
+
+
+
 let namespace = null;
 
 function storageKey() {
   return namespace ? `${BASE_KEY}:${namespace}` : BASE_KEY;
 }
 
-/** Passa a ler e gravar no espaço desta conta. Descarta o estado em memória. */
+
 export function setNamespace(id) {
   const next = id || null;
   if (next === namespace) return;
@@ -45,7 +45,7 @@ export function currentNamespace() {
   return namespace;
 }
 
-/** Existe progresso salvo fora de qualquer conta? */
+
 export function hasLegacyState() {
   if (!storageAvailable) return false;
   try {
@@ -55,11 +55,11 @@ export function hasLegacyState() {
   }
 }
 
-/**
- * Move o estado de um espaço para outro, sem duplicar.
- * Usado quando a primeira conta é criada (o progresso solto passa a ser dela)
- * e quando um convidado vira conta.
- */
+
+
+
+
+
 export function adoptLegacyState(targetId, sourceId = null) {
   if (!storageAvailable || !targetId) return false;
   const from = sourceId ? `${BASE_KEY}:${sourceId}` : BASE_KEY;
@@ -68,7 +68,7 @@ export function adoptLegacyState(targetId, sourceId = null) {
   try {
     const raw = window.localStorage.getItem(from);
     if (!raw) return false;
-    // Nunca sobrescreve um espaço que já tem progresso.
+
     if (window.localStorage.getItem(to)) return false;
     window.localStorage.setItem(to, raw);
     window.localStorage.removeItem(from);
@@ -79,7 +79,7 @@ export function adoptLegacyState(targetId, sourceId = null) {
   }
 }
 
-/** Estrutura inicial. Toda chave nova precisa de valor padrão aqui. */
+
 function emptyState() {
   return {
     version: 1,
@@ -87,7 +87,7 @@ function emptyState() {
     updatedAt: new Date().toISOString(),
     student: {
       name: '',
-      onboardingStatus: 'not_started', // not_started | in_progress | completed | skipped
+      onboardingStatus: 'not_started',
       onboardingStep: null,
       completedSteps: [],
       skippedSteps: [],
@@ -98,7 +98,7 @@ function emptyState() {
       confidence: 'low',
       provisional: true,
       confirmedAt: null,
-      diagnosticStatus: 'pending', // pending | skipped | done
+      diagnosticStatus: 'pending',
       dimensions: { declared: {}, observed: {} },
       daysPerWeek: 3,
       sessionMinutes: 20,
@@ -110,33 +110,33 @@ function emptyState() {
       reducedMotion: 'auto',
       highContrast: false,
       visualIntensity: 'full',
-      correctionMode: 'learning', // learning | exam
+      correctionMode: 'learning',
       showTimer: true,
       confidencePrompt: true,
       remindersEnabled: false,
       reminderDays: [],
       reminderTime: '',
     },
-    /** Histórico de mudanças de perfil, com justificativa legível. */
+
     profileHistory: [],
     profileConfirmations: [],
-    /** Sessões de estudo, por id. */
+
     sessions: {},
-    /** Tentativas, por id. */
+
     attempts: {},
-    /** Domínio por tópico: { [topicSlug]: {...} } */
+
     mastery: {},
-    /** Fila de revisão: { [id]: {...} } */
+
     review: {},
-    /** Caderno de erros: { [id]: {...} } */
+
     notes: {},
-    /** Plano semanal: { weekStart: ISO, blocks: [] } */
+
     plan: null,
-    /** Execuções de simulado, por id. */
+
     simulationRuns: {},
-    /** Redações, por slug do tema. */
+
     essays: {},
-    /** Denúncias de conteúdo abertas pelo estudante. */
+
     reports: [],
   };
 }
@@ -157,7 +157,7 @@ function isStorageAvailable() {
 
 export const storageAvailable = isStorageAvailable();
 
-/** Preenche chaves ausentes ao evoluir a estrutura, sem perder o que já existe. */
+
 function migrate(loaded) {
   const base = emptyState();
   const merged = { ...base, ...loaded };
@@ -181,7 +181,7 @@ export function load() {
   if (state) return state;
 
   if (!storageAvailable) {
-    // Sem localStorage a aplicação continua funcionando — só não persiste.
+
     state = emptyState();
     return state;
   }
@@ -190,16 +190,16 @@ export function load() {
     const raw = window.localStorage.getItem(storageKey());
     state = raw ? migrate(JSON.parse(raw)) : emptyState();
   } catch (error) {
-    /*
-     * Dado corrompido não pode derrubar o app nem sumir em silêncio: guardamos o
-     * conteúdo bruto em uma chave de backup para não perder nada e seguimos limpos.
-     */
+
+
+
+
     console.warn('Estado local ilegível; iniciando do zero. Backup em', BACKUP_KEY, error);
     try {
       const raw = window.localStorage.getItem(storageKey());
       if (raw) window.localStorage.setItem(`${BACKUP_KEY}:${namespace ?? 'sem-conta'}`, raw);
     } catch {
-      /* backup é melhor-esforço */
+
     }
     state = emptyState();
   }
@@ -215,23 +215,23 @@ function persist() {
     state.updatedAt = new Date().toISOString();
     window.localStorage.setItem(storageKey(), JSON.stringify(state));
   } catch (error) {
-    // Cota estourada é o caso realista aqui. Avisamos em vez de falhar calado.
+
     console.error('Não foi possível salvar o progresso localmente.', error);
     notifyError?.('Não conseguimos salvar seu progresso neste navegador. Verifique o espaço disponível.');
   }
 }
 
 let notifyError = null;
-/** Permite que a interface mostre falhas de gravação ao usuário. */
+
 export function onStorageError(handler) {
   notifyError = handler;
 }
 
-/**
- * Altera o estado.
- * @param {(state: object) => void} mutator
- * @param {{immediate?: boolean}} options  `immediate` grava sem debounce
- */
+
+
+
+
+
 export function update(mutator, options = {}) {
   const current = load();
   mutator(current);
@@ -248,7 +248,7 @@ export function update(mutator, options = {}) {
   return current;
 }
 
-/** Assina mudanças de estado. Devolve a função de cancelamento. */
+
 export function subscribe(listener) {
   listeners.add(listener);
   return () => listeners.delete(listener);
@@ -258,12 +258,12 @@ export function getState() {
   return load();
 }
 
-/** Exportação completa dos dados do estudante (JSON legível). */
+
 export function exportData() {
   return JSON.stringify(load(), null, 2);
 }
 
-/** Importa um arquivo exportado antes. Valida o mínimo antes de aceitar. */
+
 export function importData(json) {
   const parsed = JSON.parse(json);
   if (typeof parsed !== 'object' || parsed === null) throw new Error('Arquivo inválido.');
@@ -276,7 +276,7 @@ export function importData(json) {
   return state;
 }
 
-/** Apaga tudo. Usado pela exclusão de dados. */
+
 export function clearAll() {
   state = emptyState();
   if (storageAvailable) {
@@ -284,17 +284,17 @@ export function clearAll() {
       window.localStorage.removeItem(storageKey());
       window.localStorage.removeItem(`${BACKUP_KEY}:${namespace ?? 'sem-conta'}`);
     } catch {
-      /* ignorado: o estado em memória já foi limpo */
+
     }
   }
   for (const listener of listeners) listener(state);
   return state;
 }
 
-/**
- * Sincroniza entre abas do mesmo navegador.
- * Sem isto, duas abas abertas sobrescreveriam o progresso uma da outra.
- */
+
+
+
+
 export function watchOtherTabs(onExternalChange) {
   if (!storageAvailable) return () => {};
 
@@ -305,7 +305,7 @@ export function watchOtherTabs(onExternalChange) {
       for (const listener of listeners) listener(state);
       onExternalChange?.(state);
     } catch {
-      /* mudança externa ilegível é ignorada */
+
     }
   }
 

@@ -1,7 +1,7 @@
-/**
- * Praticar — sessões prontas, prática rápida e sessão a partir de um tópico.
- * Nenhum caminho aqui esconde por que a atividade foi sugerida.
- */
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, seedNotice } from '../ui/components.js';
@@ -25,8 +25,9 @@ import {
 import { createSession, resumableSession, selectReviewQuestions } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
 import { startSession } from './dashboard.js';
+import { brain3d } from '../ui/brain-3d.js';
 
-/* ---------------------------------------------------------------- Lista */
+
 
 export function renderPractice(root) {
   const profile = activeProfile();
@@ -35,6 +36,7 @@ export function renderPractice(root) {
   const alternatives = alternativeRecommendations(4);
   const resumable = resumableSession();
   const due = pendingReviews();
+  const brain = brain3d({ size: 'md' });
 
   const templates = [...SESSION_TEMPLATES].sort((a, b) => a.order - b.order);
 
@@ -46,14 +48,25 @@ export function renderPractice(root) {
 
       el(
         'header',
-        { class: 'view-header' },
-        el('h1', {}, 'Praticar'),
+        { class: 'view-header practice-hero' },
         el(
-          'p',
-          { class: 'small secondary' },
-          'Sessões de ',
-          formatMinutes(Math.min(profile.personalization.baseMinutes, s.sessionMinutes)),
-          '. Você pode pausar e voltar depois — nada se perde.',
+          'div',
+          { class: 'practice-hero__text' },
+          el('p', { class: 'eyebrow' }, 'Laboratório de prática'),
+          el('h1', {}, 'Praticar'),
+          el(
+            'p',
+            { class: 'small secondary' },
+            'Sessões de ',
+            formatMinutes(Math.min(profile.personalization.baseMinutes, s.sessionMinutes)),
+            '. Você pode pausar e voltar depois — nada se perde.',
+          ),
+        ),
+        el(
+          'div',
+          { class: 'practice-hero__brain' },
+          brain,
+          el('p', { class: 'xsmall muted' }, 'Conexões ficam mais fortes quando você recupera uma ideia sem olhar.'),
         ),
       ),
 
@@ -70,7 +83,7 @@ export function renderPractice(root) {
           )
         : null,
 
-      /* Recomendação principal, com a justificativa legível. */
+
       recommendation
         ? card(
             { accent: 'green' },
@@ -108,7 +121,7 @@ export function renderPractice(root) {
             actionHref: '#/conteudos',
           }),
 
-      /* Caminhos rápidos. */
+
       el(
         'section',
         { class: 'stack' },
@@ -155,7 +168,7 @@ export function renderPractice(root) {
         ),
       ),
 
-      /* Sessões prontas. */
+
       el(
         'section',
         { class: 'stack' },
@@ -205,7 +218,7 @@ export function renderPractice(root) {
         ),
       ),
 
-      /* Outras opções — presentes, mas sem competir com a principal. */
+
       alternatives.length > 0
         ? el(
             'section',
@@ -239,9 +252,11 @@ export function renderPractice(root) {
       seedNotice(true),
     ),
   );
+
+  return () => brain.dispose?.();
 }
 
-/* ---------------------------------------------------------------- Rápida */
+
 
 export function renderQuickSession(root) {
   const recommendation = mainRecommendation();
@@ -333,7 +348,7 @@ export function renderQuickSession(root) {
   );
 }
 
-/* ---------------------------------------------------------------- Sessão pronta */
+
 
 export function renderSessionTemplate(root, { params }) {
   const template = getSessionTemplate(params.slug);
@@ -353,7 +368,7 @@ export function renderSessionTemplate(root, { params }) {
 
   const resolved = resolveTemplate(template);
 
-  // O diagnóstico tem tela própria — não duplicamos o fluxo aqui.
+
   if (resolved.redirectTo) {
     navigate(resolved.redirectTo.replace('#', ''), { replace: true });
     return;
@@ -460,21 +475,21 @@ export function renderSessionTemplate(root, { params }) {
   );
 }
 
-/* ---------------------------------------------------------------- Resolução da sessão pronta */
 
-/**
- * Cada sessão pronta declara COMO escolher seus itens. Cinco delas fixam tópicos;
- * as outras montam a lista na hora, a partir da fila de revisão, da recomendação
- * ou de uma distribuição entre áreas.
- *
- * Retorna sempre a lista real de questões, os tópicos envolvidos e — quando o
- * material não dá conta do pedido — um aviso legível em vez de repetir item.
- */
+
+
+
+
+
+
+
+
+
 function resolveTemplate(template) {
   const rule = template.itemRule;
   const vazio = { questionSlugs: [], topicSlugs: [], note: null, warning: null };
 
-  /* Tópicos fixos: o caso simples. */
+
   if (rule.topicSlugs?.length) {
     const pool = rule.topicSlugs.flatMap((slug) => questionsForTopic(slug, { excludeRecovery: true }));
     return {
@@ -485,7 +500,7 @@ function resolveTemplate(template) {
     };
   }
 
-  /* Fila de revisão: os itens vencidos, mais um inédito do mesmo tópico. */
+
   if (rule.source === 'review_queue') {
     const due = pendingReviews();
     if (due.length === 0) {
@@ -511,7 +526,7 @@ function resolveTemplate(template) {
     };
   }
 
-  /* Recomendação, estratégia e mistura de áreas partem do que a plataforma indicaria agora. */
+
   if (rule.source === 'recommendation' || rule.source === 'strategy') {
     const recommendation = mainRecommendation();
     if (!recommendation) {
@@ -522,7 +537,7 @@ function resolveTemplate(template) {
     }
 
     if (rule.mixAreas) {
-      // Uma questão por área, em rodízio, até completar a contagem pedida.
+
       const porArea = new Map();
       for (const question of QUESTIONS) {
         if (question.isRecovery) continue;
@@ -560,7 +575,7 @@ function resolveTemplate(template) {
     };
   }
 
-  /* Intercalada: assuntos diferentes se alternando, nunca em bloco. */
+
   if (rule.source === 'interleaved') {
     const porMateria = new Map();
     for (const topic of TOPICS) {
@@ -596,7 +611,7 @@ function resolveTemplate(template) {
     };
   }
 
-  /* Diagnóstico tem tela própria: a sessão pronta só encaminha para lá. */
+
   if (rule.source === 'diagnostic') {
     return { ...vazio, redirectTo: '#/diagnostico', note: 'Esta sessão é o diagnóstico leve, que tem tela própria.' };
   }

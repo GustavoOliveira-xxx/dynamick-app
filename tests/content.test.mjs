@@ -4,10 +4,10 @@ import {
   SESSION_TEMPLATES, SIMULATIONS, catalogHealth, contentTree, getTopic,
 } from '../js/data/content.js';
 
-/**
- * Integridade do conteúdo autoral.
- * Estes testes existem para que uma questão quebrada NUNCA chegue ao estudante.
- */
+
+
+
+
 
 describe('quantidades mínimas do pacote inicial', () => {
   const health = catalogHealth();
@@ -17,7 +17,7 @@ describe('quantidades mínimas do pacote inicial', () => {
   it('pelo menos 12 tópicos completos', () => expect(TOPICS.length).toBeGreaterThanOrEqual(12));
 
   it('toda matéria cadastrada tem pelo menos um tópico', () => {
-    // Uma matéria no mapa sem nenhum tópico é uma porta que não abre.
+
     const vazias = SUBJECTS.filter(
       (subject) => !TOPICS.some((topic) => topic.subjectSlug === subject.slug),
     );
@@ -45,13 +45,29 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(incompletos.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('cada tópico da segunda leva mantém sua questão de recuperação', () => {
+  it('cada tópico da segunda leva preserva 5 questões principais e 1 de recuperação da leva', () => {
     const daLeva2 = TOPICS.filter((topic) =>
       topic.questions.some((q) => q.origin === 'AUTORAL_LEVA_2'),
     );
-    const fora = daLeva2.filter(
-      (topic) => topic.questions.filter((q) => q.isRecovery).length !== 1,
+    const fora = daLeva2.filter((topic) => {
+      const principais = topic.questions.filter(
+        (q) => q.origin === 'AUTORAL_LEVA_2' && !q.isRecovery,
+      ).length;
+      const recuperacao = topic.questions.filter(
+        (q) => q.origin === 'AUTORAL_LEVA_2' && q.isRecovery,
+      ).length;
+      return principais !== 5 || recuperacao !== 1;
+    });
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
+  });
+  it('pelo menos 24 questões de recuperação', () =>
+    expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));
+
+  it('cada um dos 39 tópicos recebeu exatamente 5 novas questões de reforço', () => {
+    const fora = TOPICS.filter(
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_REFORCO_2026_08').length !== 5,
     );
+    expect(TOPICS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
@@ -60,20 +76,23 @@ describe('quantidades mínimas do pacote inicial', () => {
    * exceção. Este é o teste que trava a promessa — se um assunto novo entrar
    * no acervo sem receber as suas cinco, a suíte acusa.
    */
-  it('todo tópico recebeu as cinco questões da terceira leva', () => {
+  it('cada um dos 39 tópicos recebeu exatamente 5 questões da terceira leva', () => {
     const fora = TOPICS.filter(
-      (topic) =>
-        topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_3_2026_08').length !== 5,
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_3_2026_08').length !== 5,
     );
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('nenhum tópico tem menos questões principais que outro por descuido', () => {
+  it('nenhum assunto é menos servido que outro', () => {
     const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
-    expect(Math.min(...principais)).toBeGreaterThanOrEqual(10);
+    expect(Math.min(...principais)).toBeGreaterThanOrEqual(15);
   });
-  it('pelo menos 24 questões de recuperação', () =>
-    expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));
+
+  it('o acervo totaliza 645 questões principais e 51 de recuperação', () => {
+    expect(health.totals.questions).toBe(696);
+    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(645);
+    expect(health.totals.recoveryQuestions).toBe(51);
+  });
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));
   it('4 simulados por área + 1 diagnóstico', () => expect(SIMULATIONS.length).toBeGreaterThanOrEqual(5));
   it('8 temas de redação', () => expect(ESSAY_PROMPTS).toHaveLength(8));
@@ -101,6 +120,17 @@ describe('integridade das questões', () => {
   it('toda questão declara origem e licença', () => {
     const sem = QUESTIONS.filter((q) => !q.origin || !q.license);
     expect(sem.map((q) => q.slug)).toEqual([]);
+  });
+
+  it('questões sem fonte oficial são identificadas honestamente como autorais', () => {
+    const rotuladasComoOficiaisSemFonte = QUESTIONS.filter(
+      (q) => q.sourceLabel.startsWith('(ENEM ') && (!q.sourceYear || !q.sourceUrl),
+    );
+    const autoraisSemRotulo = QUESTIONS.filter(
+      (q) => !q.sourceYear && q.sourceLabel !== '(Autoral · nível ENEM)',
+    );
+    expect(rotuladasComoOficiaisSemFonte.map((q) => q.slug)).toEqual([]);
+    expect(autoraisSemRotulo.map((q) => q.slug)).toEqual([]);
   });
 
   it('toda questão tem tópico e habilidade classificados', () => {

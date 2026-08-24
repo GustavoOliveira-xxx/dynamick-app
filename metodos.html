@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <script>
-      // Antes da primeira pintura: sem isto a página pisca no tema errado.
-      // A conta ativa decide de qual espaço as preferências vêm.
+
+
       try {
         var s = JSON.parse(localStorage.getItem("dynamick:session:v1") || "null");
         var k = s && s.accountId ? "dynamick:v1:" + s.accountId : "dynamick:v1";
@@ -21,9 +21,13 @@
     <title>Formas de estudar · Dynamic CK</title>
     <meta name="description" content="Métodos de estudo curtos, com quando usar e quando não usar." />
     <meta name="theme-color" content="#020504" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="robots" content="noindex" />
     <link rel="icon" href="assets/brand/favicon.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="assets/brand/favicon.png" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/loader.css" />
     <link rel="stylesheet" href="css/base.css" />
@@ -33,11 +37,11 @@
   </head>
 
   <body data-page="metodos">
-    <!--
-      Tela de carregamento escrita no HTML de propósito: ela precisa aparecer na
-      primeira pintura, antes de qualquer módulo ser baixado. O mesmo desenho é
-      reconstruído por js/ui/loader.js nas transições internas.
-    -->
+
+
+
+
+
     <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
       <div class="ck-boot__stage" aria-hidden="true">
         <span class="ck-boot__aura"></span>
@@ -102,5 +106,6 @@
     </noscript>
 
     <script type="module" src="js/pages/metodos.js"></script>
+    <script type="module" src="js/pwa.js"></script>
   </body>
 </html>

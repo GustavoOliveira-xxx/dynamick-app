@@ -1,13 +1,13 @@
-/**
- * Conteúdo autoral de desenvolvimento — Conscious Knowledge.
- * Nenhuma questão foi copiada de prova oficial, livro ou plataforma de terceiros.
- */
 
-/**
- * Oito propostas autorais de redação (§11.8).
- * NÃO são previsões de tema de prova — são recortes para treino, e a interface diz isso.
- * Os textos motivadores são autorais, escritos para este material.
- */
+
+
+
+
+
+
+
+
+
 export const ESSAY_PROMPTS = [
   {
     slug: 'acesso-digital-e-direitos',

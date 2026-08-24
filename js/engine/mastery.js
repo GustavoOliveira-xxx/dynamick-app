@@ -1,16 +1,16 @@
-/**
- * Domínio de tópico.
- *
- * Duas regras inegociáveis:
- *  1. Nunca declarar domínio com base em uma única questão.
- *  2. "Consolidado" exige evidência em questões DIFERENTES e em mais de uma sessão.
- */
+
+
+
+
+
+
+
 
 export const CONSOLIDATION_RULES = {
   minDistinctQuestions: 4,
   minDistinctSessions: 2,
   minAccuracy: 0.8,
-  /** Depois disso, mesmo um tópico consolidado volta para revisão. */
+
   forgettingDays: 30,
 };
 
@@ -24,7 +24,7 @@ export function computeMasteryState(input) {
     return input.viewedContent ? 'explored' : 'not_started';
   }
 
-  // Uma ou duas questões nunca bastam para afirmar nada além de "explorado".
+
   if (input.distinctQuestions < 3) return 'explored';
 
   const rate = accuracy(input);
@@ -47,7 +47,7 @@ export function computeMasteryState(input) {
   return consolidated ? 'consolidated' : 'practicing';
 }
 
-/** Estimativa 0..100 — indicador visual, nunca nota. */
+
 export function computeMasteryScore(input) {
   if (input.attemptCount === 0) return input.viewedContent ? 10 : 0;
 

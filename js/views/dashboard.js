@@ -1,7 +1,7 @@
-/**
- * Início — a tela principal de retorno.
- * Uma recomendação principal. Outras opções existem, mas não competem visualmente.
- */
+
+
+
+
 
 import { el, render } from '../core/dom.js';
 import { badge, card, button, linkButton, emptyState, message, progress } from '../ui/components.js';
@@ -23,7 +23,7 @@ import { rubikCube } from '../ui/rubik-cube.js';
 
 export function renderDashboard(root) {
   const s = student();
-  // O cubo é a peça de identidade do início: está aqui toda vez, e é mexível.
+
   const cube = rubikCube({ size: 'md' });
   const profile = activeProfile();
   const direction = profile.personalization.dashboardDirection;
@@ -92,7 +92,7 @@ export function renderDashboard(root) {
           )
         : null,
 
-      // Sessão interrompida tem prioridade sobre qualquer recomendação nova.
+
       resumable
         ? card(
             { pad: 'lg' },
@@ -115,7 +115,7 @@ export function renderDashboard(root) {
           )
         : null,
 
-      // Recomendação principal — uma só.
+
       recommendation
         ? card(
             { pad: 'lg' },
@@ -132,7 +132,7 @@ export function renderDashboard(root) {
               recommendation.topicName,
             ),
             el('p', { class: 'small muted' }, `${recommendation.questionCount} questões`),
-            // Justificativa legível — sempre presente.
+
             el(
               'p',
               { class: 'reading secondary', style: { marginTop: '1rem' } },
@@ -162,7 +162,7 @@ export function renderDashboard(root) {
             actionHref: '#/conteudos',
           }),
 
-      // As três entradas
+
       el(
         'section',
         { 'aria-labelledby': 'entradas' },
@@ -242,7 +242,7 @@ export function renderDashboard(root) {
           )
         : null,
 
-      // Alternativas — discretas, não competem com a principal.
+
       alternatives.length > 0
         ? el(
             'section',
@@ -272,12 +272,12 @@ export function renderDashboard(root) {
     ),
   );
 
-  // O roteador chama isto ao sair da tela: sem esta linha o cubo continuaria
-  // animando em segundo plano e segurando ouvintes de ponteiro.
+
+
   return () => cube.dispose?.();
 }
 
-/** Inicia a sessão. O botão fica desabilitado enquanto trabalha — sem clique duplo. */
+
 export function startSession(triggerButton, topicSlug, kind) {
   import('../ui/components.js').then(({ setButtonLoading }) => {
     setButtonLoading(triggerButton, true, 'Preparando sua sessão…');
