@@ -54,23 +54,89 @@
   z-index: 2;
   display: grid;
   place-items: center;
+  /*
+     Uma escala só para a peça inteira. A transição entre telas reaproveita
+     este palco num tamanho menor: sem --k, o cubo continuaria do tamanho
+     original dentro de uma moldura reduzida.
+  */
+  --k: 1;
   width: clamp(13rem, 30vw, 16rem);
   height: clamp(13rem, 30vw, 16rem);
+  perspective: calc(900px * var(--k));
   transform-style: preserve-3d;
   animation: ck-boot-stage 4.4s ease-in-out infinite;
 }
 
-.ck-boot__stage::before {
-  content: "";
+/* Clarão que cresce quando a marca aparece no meio das peças. */
+.ck-boot__aura {
   position: absolute;
-  inset: 2%;
-  border: 1px solid rgb(92 255 176 / 24%);
-  clip-path: polygon(25% 4%, 75% 4%, 97% 28%, 97% 72%, 75% 96%, 25% 96%, 3% 72%, 3% 28%);
-  background:
-    conic-gradient(from 45deg, transparent 0 7%, rgb(46 232 138 / 38%) 8% 9%, transparent 10% 24%, rgb(99 230 255 / 30%) 25% 26%, transparent 27% 49%, rgb(184 243 106 / 34%) 50% 51%, transparent 52% 74%, rgb(53 214 192 / 36%) 75% 76%, transparent 77%);
-  filter: drop-shadow(0 0 16px rgb(46 232 138 / 28%));
-  animation: ck-boot-vault 5.2s linear infinite;
+  width: calc(210px * var(--k));
+  height: calc(210px * var(--k));
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(46 232 138 / 26%), transparent 62%);
+  filter: blur(15px);
+  animation: ck-boot-aura 5.4s ease-in-out infinite;
 }
+
+.ck-boot__cube {
+  position: absolute;
+  z-index: 3;
+  width: calc(104px * var(--k));
+  height: calc(104px * var(--k));
+  transform-style: preserve-3d;
+  animation: ck-boot-turn 11s linear infinite;
+}
+
+/*
+   As oito peças. Cada uma carrega sua posição em --x/--y/--z, e a mesma
+   animação as afasta e as traz de volta: um keyframe só para as oito.
+*/
+.ck-boot__cubie {
+  --x: 0;
+  --y: 0;
+  --z: 0;
+  position: absolute;
+  top: calc(28px * var(--k));
+  left: calc(28px * var(--k));
+  width: calc(48px * var(--k));
+  height: calc(48px * var(--k));
+  transform-style: preserve-3d;
+  animation: ck-boot-open 5.4s cubic-bezier(0.34, 1.1, 0.4, 1) infinite;
+}
+
+.ck-boot__cubie:nth-child(1) { --x: -1; --y: -1; --z: -1; animation-delay: 0ms; }
+.ck-boot__cubie:nth-child(2) { --x: -1; --y: -1; --z: 1; animation-delay: 55ms; }
+.ck-boot__cubie:nth-child(3) { --x: -1; --y: 1; --z: -1; animation-delay: 110ms; }
+.ck-boot__cubie:nth-child(4) { --x: -1; --y: 1; --z: 1; animation-delay: 165ms; }
+.ck-boot__cubie:nth-child(5) { --x: 1; --y: -1; --z: -1; animation-delay: 220ms; }
+.ck-boot__cubie:nth-child(6) { --x: 1; --y: -1; --z: 1; animation-delay: 275ms; }
+.ck-boot__cubie:nth-child(7) { --x: 1; --y: 1; --z: -1; animation-delay: 330ms; }
+.ck-boot__cubie:nth-child(8) { --x: 1; --y: 1; --z: 1; animation-delay: 385ms; }
+
+/*
+   O apagar mora nas faces, nunca na peça: animar opacidade em um elemento com
+   transform-style: preserve-3d faz o Chromium achatar os filhos 3D dele, e o
+   cubo vira um recorte chapado.
+*/
+.ck-boot__cubie i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(0 0 0 / 55%);
+  border-radius: calc(6px * var(--k));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
+  /* Sem esconder o verso, as seis faces translúcidas se somam e a peça
+     vira um borrão marrom em vez de mostrar as três que se vê. */
+  backface-visibility: hidden;
+  animation: ck-boot-fade 5.4s cubic-bezier(0.34, 1.1, 0.4, 1) infinite;
+  animation-delay: inherit;
+}
+
+.ck-boot__cubie i:nth-child(1) { transform: translateZ(calc(24px * var(--k))); background: var(--ck-face-f, #4defab); }
+.ck-boot__cubie i:nth-child(2) { transform: rotateY(180deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-b, #12c98f); }
+.ck-boot__cubie i:nth-child(3) { transform: rotateY(90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-r, #0a8f9c); }
+.ck-boot__cubie i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-l, #0a4f66); }
+.ck-boot__cubie i:nth-child(5) { transform: rotateX(90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-u, #effdff); }
+.ck-boot__cubie i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-d, #a5ffd0); }
 
 .ck-boot__stage::after {
   content: "";
@@ -84,92 +150,22 @@
   animation: ck-boot-radar 2.2s linear infinite;
 }
 
-.ck-boot__halo {
-  position: absolute;
-  inset: 9%;
-  border-radius: 50%;
-  background:
-    conic-gradient(from 0deg, transparent 0 10%, #2ee88a 12%, transparent 17% 33%, #63e6ff 35%, transparent 40% 59%, #b8f36a 61%, transparent 66% 83%, #35d6c0 85%, transparent 90%),
-    radial-gradient(circle, rgb(92 255 176 / 14%), transparent 65%);
-  filter: blur(10px);
-  opacity: 0.86;
-  transform: translateZ(-30px);
-  animation: ck-boot-halo 2.8s linear infinite;
-}
-
-.ck-boot__ring {
-  position: absolute;
-  inset: 3%;
-  width: 94%;
-  height: 94%;
-  overflow: visible;
-  transform: translateZ(8px) rotate(-90deg);
-}
-
-.ck-boot__ring circle { fill: none; stroke-linecap: round; }
-.ck-boot__ring-track { stroke: rgb(46 232 138 / 10%); stroke-width: 1; stroke-dasharray: 3 8; }
-.ck-boot__ring-signal {
-  stroke: var(--ck-green-glow, #5cffb0);
-  stroke-width: 2.6;
-  stroke-dasharray: 34 28 4 487;
-  filter: drop-shadow(0 0 7px rgb(92 255 176 / 92%));
-  animation: ck-boot-ring 1.35s cubic-bezier(0.45, 0, 0.35, 1) infinite;
-}
-
 .ck-boot__logo {
   position: relative;
   z-index: 4;
-  overflow: hidden;
   display: grid;
   place-items: center;
-  width: clamp(7.8rem, 18vw, 9.6rem);
-  height: clamp(7.4rem, 17vw, 9.1rem);
-  border: 1px solid rgb(92 255 176 / 14%);
-  border-radius: 28% 32% 28% 32%;
-  background: radial-gradient(circle, rgb(14 54 43 / 82%), rgb(1 8 6 / 45%) 72%);
-  box-shadow:
-    inset 0 0 32px rgb(46 232 138 / 12%),
-    0 20px 48px rgb(0 0 0 / 55%),
-    0 0 42px rgb(46 232 138 / 16%);
-  transform-style: preserve-3d;
-  animation: ck-boot-emblem 2.6s cubic-bezier(0.16, 0.84, 0.44, 1) infinite;
+  width: calc(150px * var(--k));
+  height: calc(150px * var(--k));
+  animation: ck-boot-mark 5.4s cubic-bezier(0.2, 0.9, 0.3, 1) infinite;
 }
 
-.ck-boot__logo::before,
-.ck-boot__logo::after {
-  content: "";
-  position: absolute;
-  inset: 8%;
-  z-index: -1;
-  background: url('../assets/brand/logo-dynamic.webp') center / contain no-repeat;
-  opacity: 0.36;
-  filter: saturate(1.3) drop-shadow(0 0 10px rgb(46 232 138 / 45%));
-}
-
-.ck-boot__logo::before {
-  clip-path: polygon(0 0, 100% 0, 100% 42%, 0 58%);
-  animation: ck-boot-shard-a 2.6s var(--ck-ease, ease) infinite;
-}
-
-.ck-boot__logo::after {
-  clip-path: polygon(0 58%, 100% 42%, 100% 100%, 0 100%);
-  animation: ck-boot-shard-b 2.6s var(--ck-ease, ease) infinite;
-}
-
-.ck-boot__logo picture { display: block; width: 88%; }
+.ck-boot__logo picture { display: block; width: 100%; }
 .ck-boot__logo img {
   display: block;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 7px 20px rgb(0 0 0 / 68%));
-}
-
-.ck-boot__sweep {
-  position: absolute;
-  inset: -50%;
-  background: linear-gradient(102deg, transparent 43%, rgb(184 243 106 / 55%) 49%, white 51%, transparent 58%);
-  mix-blend-mode: screen;
-  animation: ck-boot-sweep 1.9s cubic-bezier(0.5, 0, 0.4, 1) infinite;
+  filter: drop-shadow(0 0 18px rgb(46 232 138 / 50%));
 }
 
 .ck-boot__word {
@@ -243,18 +239,60 @@
 @keyframes ck-boot-grid { to { background-position: 0 76px, 76px 0; } }
 @keyframes ck-boot-scan-field { 0%, 100% { transform: translateX(-18%); opacity: 0.45; } 50% { transform: translateX(18%); opacity: 1; } }
 @keyframes ck-boot-stage { 0%, 100% { transform: rotateX(1deg) rotateY(-3deg) translateY(0); } 50% { transform: rotateX(-2deg) rotateY(4deg) translateY(-7px); } }
-@keyframes ck-boot-vault { to { transform: rotate(360deg); } }
 @keyframes ck-boot-radar { to { transform: rotate(-360deg); } }
-@keyframes ck-boot-halo { to { transform: translateZ(-30px) rotate(360deg); } }
-@keyframes ck-boot-ring { to { stroke-dashoffset: -553; } }
-@keyframes ck-boot-emblem {
-  0%, 100% { transform: translateZ(24px) rotateY(-4deg) scale(0.98); }
-  42% { transform: translateZ(42px) rotateY(4deg) scale(1.035); }
-  62% { transform: translateZ(38px) rotateY(0) scale(1); }
+@keyframes ck-boot-turn {
+  from { transform: rotateX(-22deg) rotateY(0deg); }
+  to { transform: rotateX(-22deg) rotateY(360deg); }
 }
-@keyframes ck-boot-shard-a { 0%, 100% { transform: translate3d(-12px, -8px, -16px); } 45%, 65% { transform: translate3d(0, 0, 20px); } }
-@keyframes ck-boot-shard-b { 0%, 100% { transform: translate3d(13px, 9px, -18px); } 45%, 65% { transform: translate3d(0, 0, 18px); } }
-@keyframes ck-boot-sweep { 0%, 10% { transform: translate3d(-90%, 0, 0); } 58%, 100% { transform: translate3d(90%, 0, 0); } }
+
+/*
+   O palco é mais largo do que alto, e embaixo dele ainda vêm lettering, texto e
+   barra: por isso as peças se afastam bem mais na horizontal do que na vertical.
+*/
+@keyframes ck-boot-open {
+  0%, 16% {
+    transform: translate3d(
+      calc(var(--x) * 25px * var(--k)),
+      calc(var(--y) * 25px * var(--k)),
+      calc(var(--z) * 25px * var(--k))
+    );
+  }
+  46%, 70% {
+    transform:
+      translate3d(
+        calc(var(--x) * 78px * var(--k)),
+        calc(var(--y) * 44px * var(--k)),
+        calc(var(--z) * 62px * var(--k))
+      )
+      rotate3d(1, 1, 0.4, 44deg);
+  }
+  96%, 100% {
+    transform: translate3d(
+      calc(var(--x) * 25px * var(--k)),
+      calc(var(--y) * 25px * var(--k)),
+      calc(var(--z) * 25px * var(--k))
+    );
+  }
+}
+
+@keyframes ck-boot-fade {
+  0%, 22% { opacity: 1; }
+  48%, 70% { opacity: 0.5; }
+  92%, 100% { opacity: 1; }
+}
+
+@keyframes ck-boot-mark {
+  0%, 24% { opacity: 0; transform: scale(0.55); }
+  48%, 70% { opacity: 1; transform: scale(1); }
+  88%, 100% { opacity: 0; transform: scale(0.55); }
+}
+
+@keyframes ck-boot-aura {
+  0%, 26% { opacity: 0; }
+  50%, 68% { opacity: 1; }
+  86%, 100% { opacity: 0; }
+}
+
 @keyframes ck-boot-letter { 0%, 66%, 100% { transform: translateY(0); opacity: 0.68; } 32% { transform: translateY(-6px); opacity: 1; } }
 @keyframes ck-boot-packets { from { transform: translateX(-120%); } to { transform: translateX(540%); } }
 
@@ -268,17 +306,16 @@
   :root:not([data-motion="full"]) .ck-boot *,
   :root:not([data-motion="full"]) .ck-boot::before,
   :root:not([data-motion="full"]) .ck-boot::after { animation: none !important; }
-  :root:not([data-motion="full"]) .ck-boot__sweep,
-  :root:not([data-motion="full"]) .ck-boot__logo::before,
-  :root:not([data-motion="full"]) .ck-boot__logo::after { display: none; }
+  /* Congelar a marca no meio da entrada a deixaria invisível: aqui ela para visível. */
+  :root:not([data-motion="full"]) .ck-boot__logo { opacity: 1; transform: none; }
+  :root:not([data-motion="full"]) .ck-boot__aura { opacity: 0.5; }
 }
 
 [data-motion="reduced"] .ck-boot *,
 [data-motion="reduced"] .ck-boot::before,
 [data-motion="reduced"] .ck-boot::after { animation: none !important; }
-[data-motion="reduced"] .ck-boot__sweep,
-[data-motion="reduced"] .ck-boot__logo::before,
-[data-motion="reduced"] .ck-boot__logo::after { display: none; }
+[data-motion="reduced"] .ck-boot__logo { opacity: 1; transform: none; }
+[data-motion="reduced"] .ck-boot__aura { opacity: 0.5; }
 
 :root[data-theme="light"] .ck-boot {
   background:

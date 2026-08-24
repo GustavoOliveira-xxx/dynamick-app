@@ -701,12 +701,13 @@ legend { padding: 0; }
 }
 
 
-.ck-cube__sticker--U { --face: #f4f6f4; }
-.ck-cube__sticker--D { --face: #f7d64a; }
-.ck-cube__sticker--F { --face: #24b455; }
-.ck-cube__sticker--B { --face: #2f6ed6; }
-.ck-cube__sticker--R { --face: #d8342a; }
-.ck-cube__sticker--L { --face: #f08326; }
+/* Faces na paleta da marca (tokens.css), não nas cores de fábrica do cubo. */
+.ck-cube__sticker--U { --face: var(--ck-face-u, #effdff); }
+.ck-cube__sticker--D { --face: var(--ck-face-d, #a5ffd0); }
+.ck-cube__sticker--F { --face: var(--ck-face-f, #4defab); }
+.ck-cube__sticker--B { --face: var(--ck-face-b, #12c98f); }
+.ck-cube__sticker--R { --face: var(--ck-face-r, #0a8f9c); }
+.ck-cube__sticker--L { --face: var(--ck-face-l, #0a4f66); }
 
 
 .ck-cube__sticker--core::after {
@@ -819,11 +820,11 @@ legend { padding: 0; }
   filter: drop-shadow(0 0 6px var(--ck-green));
   animation: transition-signal 780ms var(--ck-ease) infinite;
 }
-.route-transition .ck-boot__stage { width: 132px; height: 132px; }
-.route-transition .ck-boot__logo { width: 80px; height: 80px; }
+/* Uma escala só: o cubo, as peças e a logo encolhem juntos. */
+.route-transition .ck-boot__stage { --k: 0.58; width: 132px; height: 132px; }
 .route-transition .ck-boot__word { margin-top: 0.35rem; font-size: 0.95rem; }
-.route-transition--reduced .ck-boot__halo,
-.route-transition--reduced .ck-boot__sweep { display: none; }
+.route-transition--reduced .ck-boot__logo { opacity: 1; transform: none; }
+.route-transition--reduced .ck-boot__aura { opacity: 0.5; }
 .route-transition--reduced .route-transition__track { display: none; }
 @keyframes transition-field { to { transform: rotate(360deg); } }
 @keyframes transition-signal {

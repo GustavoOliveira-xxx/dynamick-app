@@ -19,6 +19,20 @@
   --ck-cyan: #63e6ff;
   --ck-lime: #b8f36a;
 
+  /*
+   * Faces do cubo mágico — amostradas da própria arte da logo.
+   * A arte vive entre o ciano e o verde-menta, então as seis faces se separam
+   * por luminosidade, não por matiz: do gelo ao azul-petróleo, em degraus de
+   * dez a quinze pontos. É o que mantém o cubo legível (e resolvível) sem
+   * trazer para dentro dele uma cor que a marca não tem.
+   */
+  --ck-face-u: #effdff;
+  --ck-face-d: #a5ffd0;
+  --ck-face-f: #4defab;
+  --ck-face-b: #12c98f;
+  --ck-face-r: #0a8f9c;
+  --ck-face-l: #0a4f66;
+
 
   --ck-text: #e8f5ef;
   --ck-text-2: #a9c4ba;
