@@ -11,6 +11,10 @@
  * A regra de ouro é não mentir: a tela some quando a próxima tela está montada,
  * não depois de um tempo fixo. O `minMs` existe só para evitar o piscar de 40ms,
  * que lê como falha de renderização, não como carregamento.
+ *
+ * A peça é o cubo mágico se abrindo com a logo dentro. Aqui só se constrói a
+ * marcação: posição das oito peças, cor das faces e tempo moram em css/loader.css,
+ * para que a versão escrita no HTML e esta sejam de fato a mesma tela.
  */
 
 import { el } from '../core/dom.js';
@@ -27,22 +31,17 @@ let shownAt = 0;
 let hideTimer = null;
 
 /**
- * O palco da marca: halo cônico, anel de energia, a arte da logo e a varredura
- * de luz. É a mesma peça usada na tela de carregamento inicial e na transição
- * entre telas — uma identidade só de "estamos preparando algo".
+ * O palco da marca: o cubo gira montado, as oito peças se afastam e a logo
+ * estava dentro o tempo todo; depois elas voltam e o cubo fecha. É a mesma peça
+ * da tela de carregamento inicial e da transição entre telas — uma identidade
+ * só de "estamos preparando algo".
  */
 export function brandStage() {
-  const ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  ring.setAttribute('class', 'ck-boot__ring');
-  ring.setAttribute('viewBox', '0 0 190 190');
-  ring.setAttribute('aria-hidden', 'true');
-  for (const [cls, radius] of [['ck-boot__ring-track', 88], ['ck-boot__ring-signal', 88]]) {
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('class', cls);
-    circle.setAttribute('cx', '95');
-    circle.setAttribute('cy', '95');
-    circle.setAttribute('r', String(radius));
-    ring.append(circle);
+  const cube = el('div', { class: 'ck-boot__cube' });
+  for (let peca = 0; peca < 8; peca += 1) {
+    cube.append(
+      el('div', { class: 'ck-boot__cubie' }, Array.from({ length: 6 }, () => el('i'))),
+    );
   }
 
   const picture = el('picture');
@@ -61,9 +60,9 @@ export function brandStage() {
   return el(
     'div',
     { class: 'ck-boot__stage', 'aria-hidden': 'true' },
-    el('span', { class: 'ck-boot__halo' }),
-    ring,
-    el('div', { class: 'ck-boot__logo' }, picture, el('span', { class: 'ck-boot__sweep' })),
+    el('span', { class: 'ck-boot__aura' }),
+    cube,
+    el('div', { class: 'ck-boot__logo' }, picture),
   );
 }
 
@@ -84,7 +83,7 @@ export function loaderMarkup({ label = 'Carregando', id = ELEMENT_ID } = {}) {
     brandStage(),
     brandWord(),
     el('p', { class: 'ck-boot__label' }, label),
-    el('p', { class: 'ck-boot__signature', 'aria-hidden': 'true' }, 'by Conscious Knowledge'),
+    el('p', { class: 'ck-boot__signature', 'aria-hidden': 'true' }, 'Powered by Conscious Knowledge'),
     el('div', { class: 'ck-boot__bar', 'aria-hidden': 'true' }, el('span')),
   );
 }

@@ -1,6 +1,42 @@
 # Bugs encontrados durante os incrementos
 
-Atualizado em 23 de agosto de 2026.
+Atualizado em 24 de agosto de 2026.
+
+## Terceiro incremento — cubo no carregamento e acervo por assunto
+
+### CK-009 — Animar opacidade na peça 3D achatava o cubo inteiro
+
+- Status: corrigido.
+- Reprodução: montar a tela de carregamento com as oito peças em `transform-style: preserve-3d` e animar `opacity` na própria peça durante a abertura. O cubo renderiza como recortes chapados, sem profundidade, em vez de blocos.
+- Impacto: alto na peça nova — o efeito inteiro depende de as peças lerem como sólidos.
+- Causa: no Chromium, animar `opacity` em um elemento que estabelece contexto 3D força a criação de um grupo achatado, e os filhos 3D perdem a profundidade.
+- Correção: a peça só recebe animação de `transform`. A opacidade foi para as faces folha (`.ck-boot__cubie i`), com `animation-delay: inherit` para manter o mesmo compasso.
+- Prevenção: registrado em comentário no próprio `css/loader.css`, ao lado da regra.
+
+### CK-010 — Faces translúcidas se somavam e a peça virava um borrão
+
+- Status: corrigido.
+- Reprodução: com o fade nas faces e sem `backface-visibility`, cada peça mostra as seis faces sobrepostas quando fica translúcida. As cores se misturam e o resultado é um bloco marrom, sem relação com a paleta.
+- Impacto: médio — as peças ficavam ilegíveis justamente no momento em que a marca aparece.
+- Causa: sem descarte de verso, as três faces voltadas para dentro continuam sendo compostas sobre as três visíveis.
+- Correção: `backface-visibility: hidden` nas faces. Sobram as três que se vê, e as cores voltam a ler.
+
+### CK-011 — O palco reduzido da transição não encolhia o cubo
+
+- Status: corrigido.
+- Reprodução: a transição entre rotas define um palco menor. Com as medidas do cubo em pixels fixos, ele continuava do tamanho original dentro da moldura reduzida e estourava para fora.
+- Impacto: baixo, mas visível a cada troca de tela.
+- Causa: a versão anterior da tela ajustava dois tamanhos soltos (`.ck-boot__stage` e `.ck-boot__logo`); o cubo, que é composto por muitas medidas, não tinha como acompanhar.
+- Correção: uma escala única, `--k`, da qual derivam palco, peças, distância de abertura, perspectiva e logo. A transição declara `--k: 0.58` e o resto acompanha.
+
+### CK-012 — Assuntos desigualmente servidos no acervo
+
+- Status: corrigido.
+- Reprodução: `js/data/content.js` somava a expansão de agosto apenas aos 12 tópicos do MVP. Os outros 27 ficavam com cinco questões principais contra dez.
+- Impacto: médio. O motor de recomendação escolhe entre tópicos praticáveis; assuntos com metade do material se esgotam antes e voltam menos à rotina do estudante.
+- Causa: a expansão anterior foi escrita para os tópicos existentes na época e não acompanhou a entrada da segunda leva.
+- Correção: terceira leva com cinco questões para **cada** tópico, sem exceção, e um teste que exige exatamente cinco por tópico.
+- Prevenção: `tests/content.test.mjs` acusa qualquer tópico que entre no acervo sem receber as suas cinco.
 
 ## Segundo incremento — conta, páginas, carregamento e acervo
 

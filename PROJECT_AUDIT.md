@@ -1,6 +1,6 @@
 # Auditoria do projeto — Dynamic CK
 
-Atualizada em 23 de agosto de 2026 (segundo incremento).
+Atualizada em 24 de agosto de 2026 (terceiro incremento).
 
 ## Resumo executivo
 
@@ -53,9 +53,44 @@ Este incremento atua em quatro frentes pedidas pelo proprietário do projeto, se
 - Acervo: 39 tópicos e 306 questões, com todas as 11 matérias cobertas — inclusive Literatura, História e Filosofia, que estavam sem nenhum tópico.
 - `js/data/topic-factory.js` garante a estrutura editorial da segunda leva por construção.
 
+## Terceiro incremento — carregamento, paleta do cubo e acervo por assunto
+
+### Tela de carregamento
+
+A peça central deixou de ser a logo com halo e anel e passou a ser **o cubo mágico se abrindo**: ele gira montado, as oito peças se afastam e a marca estava dentro o tempo todo; depois elas voltam e o cubo fecha.
+
+Duas decisões técnicas sustentam isso e valem registro, porque as duas foram descobertas na tela e não no papel:
+
+- **O apagar mora nas faces, nunca na peça.** Animar `opacity` em um elemento com `transform-style: preserve-3d` faz o Chromium achatar os filhos 3D dele — o cubo vira um recorte chapado. A opacidade foi para as faces folha, com o mesmo atraso da peça.
+- **As faces escondem o verso.** Sem `backface-visibility: hidden`, as seis faces translúcidas de cada peça se somam e a peça vira um borrão marrom em vez de mostrar as três que se vê.
+
+Toda a geometria vive em `css/loader.css` e deriva de uma escala única, `--k`. A transição entre rotas declara `--k: 0.58` e reaproveita a mesma peça reduzida, em vez de manter dois conjuntos de medidas.
+
+### Paleta do cubo
+
+As seis faces foram amostradas da arte oficial da marca, que ocupa a faixa entre o ciano e o verde-menta. Como não há seis matizes distintos ali, a separação é por luminosidade: `#effdff`, `#a5ffd0`, `#4defab`, `#12c98f`, `#0a8f9c` e `#0a4f66`. Os valores são tokens em `css/tokens.css` e servem ao cubo do carregamento e ao cubo interativo da tela inicial. O cubo embaralhado permanece legível, que é a condição para ele continuar sendo um cubo e não um enfeite.
+
+### Acervo: cinco questões por assunto, em todos eles
+
+O acervo tinha assuntos mais servidos que outros — 12 tópicos com dez questões principais e 27 com cinco. A terceira leva corrige isso pela regra mais simples possível: **cinco questões novas para cada tópico, sem exceção**. São 195 questões autorais, e o total foi de 306 para 501.
+
+A regra está travada por teste: `tests/content.test.mjs` exige exatamente cinco questões de origem `AUTORAL_LEVA_3_2026_08` em cada tópico. Um assunto novo que entre no acervo sem as suas cinco derruba a suíte.
+
+### PDFs de provas anteriores — avaliado e não executado
+
+O pedido era verificar a viabilidade e não fazer se ela não existisse. Não existe, por quatro razões independentes:
+
+1. **Teto de armazenamento.** O projeto `dynamic-ck` no Neon tem `branch_logical_size_limit` de **512 MB**, com cerca de 32 MB já em uso. Um único ano de aplicação do ENEM, com os dois dias e as versões oficiais por cor, ocupa entre 60 e 100 MB em PDF. Menos de cinco anos de provas encheriam o branch — e o histórico de seis horas de WAL multiplica cada regravação.
+2. **A aplicação não lê conteúdo do banco.** O acervo é servido por módulos ES estáticos. O Postgres atende apenas à sincronização cifrada, em `api/sync.js` e `api/limpeza.js`. Guardar PDFs em `bytea` e servi-los por função serverless não teria como chegar à tela: sem requisição por faixa, sem cache de borda e com limite de tempo e de tamanho por invocação.
+3. **Contrato editorial.** O acervo declara, em cada item e na tela pública de saúde do conteúdo, que nenhuma questão foi copiada de prova oficial. Hospedar os PDFs oficiais muda essa posição e é uma decisão de licenciamento do dono do projeto, não uma escolha de implementação.
+4. **Acesso à rede.** A política de rede deste ambiente recusa a conexão com `download.inep.gov.br` e `www.gov.br` (403 no CONNECT). Nem para verificar tamanho real de arquivo seria possível.
+
+**Alternativa recomendada, se o assunto voltar:** apontar para a página oficial do INEP a partir da tela de simulados, sem hospedar arquivo. Custo zero de armazenamento, sem questão de licenciamento e sempre na versão vigente.
+
 ## Estado do conteúdo
 
-- 4 áreas, 11 disciplinas, **39 tópicos completos**, **306 questões** (255 principais e 51 de recuperação) e 234 blocos de conteúdo.
+- 4 áreas, 11 disciplinas, **39 tópicos completos**, **501 questões** (450 principais e 51 de recuperação) e 234 blocos de conteúdo.
+- Todo tópico tem exatamente dez questões principais e uma de recuperação. Nenhum assunto é mais servido que outro.
 - Toda matéria cadastrada tem pelo menos um tópico e pelo menos cinco questões — verificado por teste.
 - Cada tópico tem os cinco formatos cognitivos entre as questões principais, dois níveis de dificuldade ou mais, gabarito único, explicação e justificativa por alternativa.
 - O acervo declara origem e licença em cada item e não copia enunciados oficiais.
