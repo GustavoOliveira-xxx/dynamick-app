@@ -45,16 +45,32 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(incompletos.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('cada tópico da segunda leva tem 5 questões principais e 1 de recuperação', () => {
+  it('cada tópico da segunda leva mantém sua questão de recuperação', () => {
     const daLeva2 = TOPICS.filter((topic) =>
       topic.questions.some((q) => q.origin === 'AUTORAL_LEVA_2'),
     );
-    const fora = daLeva2.filter((topic) => {
-      const principais = topic.questions.filter((q) => !q.isRecovery).length;
-      const recuperacao = topic.questions.filter((q) => q.isRecovery).length;
-      return principais !== 5 || recuperacao !== 1;
-    });
+    const fora = daLeva2.filter(
+      (topic) => topic.questions.filter((q) => q.isRecovery).length !== 1,
+    );
     expect(fora.map((topic) => topic.slug)).toEqual([]);
+  });
+
+  /*
+   * A regra da terceira leva: cinco questões novas para CADA tópico, sem
+   * exceção. Este é o teste que trava a promessa — se um assunto novo entrar
+   * no acervo sem receber as suas cinco, a suíte acusa.
+   */
+  it('todo tópico recebeu as cinco questões da terceira leva', () => {
+    const fora = TOPICS.filter(
+      (topic) =>
+        topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_3_2026_08').length !== 5,
+    );
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
+  });
+
+  it('nenhum tópico tem menos questões principais que outro por descuido', () => {
+    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
+    expect(Math.min(...principais)).toBeGreaterThanOrEqual(10);
   });
   it('pelo menos 24 questões de recuperação', () =>
     expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));

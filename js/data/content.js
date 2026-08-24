@@ -20,6 +20,7 @@ import { STUDY_METHODS } from './study-methods.js';
 import { SESSION_TEMPLATES, SIMULATIONS } from './sessions.js';
 import { ESSAY_PROMPTS } from './essay-prompts.js';
 import { QUESTION_EXPANSION } from './questions-expansion.js';
+import { QUESTOES_LEVA_3 } from './questions-leva3.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, SIMULATIONS, ESSAY_PROMPTS };
@@ -47,7 +48,14 @@ const BASE_TOPICS = [
   ...REDACAO_TOPICS_LEVA_2,
 ];
 
-const expansionByTopic = QUESTION_EXPANSION.reduce((index, question) => {
+/*
+ * Duas ondas de questões adicionais entram aqui, e não nos arquivos de tópico.
+ *
+ * A primeira acrescentou cinco questões aos 12 tópicos completos do MVP. A
+ * segunda — leva 3 — acrescenta cinco a TODOS os tópicos, sem exceção, para que
+ * o acervo pare de ter assuntos mais servidos que outros.
+ */
+const expansionByTopic = [...QUESTION_EXPANSION, ...QUESTOES_LEVA_3].reduce((index, question) => {
   if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
   index.get(question.topicSlug).push(question);
   return index;

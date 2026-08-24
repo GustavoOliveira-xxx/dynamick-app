@@ -6,9 +6,10 @@
  * estão sendo baixados. Por isso as cores têm valor literal de reserva — se
  * tokens.css ainda não chegou, a tela continua legível.
  *
- * A peça central é a própria logo do produto em movimento: halo cônico girando,
- * varredura de luz atravessando a arte, anel de energia se formando e o lettering
- * "DynamiCK" subindo letra a letra.
+ * A peça central é o cubo mágico se abrindo: ele gira montado, as oito peças
+ * voam para fora e a logo estava dentro o tempo todo; depois as peças voltam e
+ * o cubo fecha. As faces usam a paleta amostrada da própria arte (tokens.css),
+ * com literais de reserva para o caso de tokens.css ainda não ter chegado.
  */
 
 .ck-boot {
@@ -51,103 +52,108 @@
 
 .ck-boot[hidden] { display: none; }
 
-/* ---------------------------------------------------------------- Palco da logo */
+/* ---------------------------------------------------------------- Palco: o cubo se abre */
 
 .ck-boot__stage {
   position: relative;
   display: grid;
   place-items: center;
-  width: 190px;
-  height: 190px;
+  /*
+   * Uma escala só para a peça inteira. A transição entre telas reaproveita este
+   * palco num tamanho menor: sem --k, o cubo continuaria do tamanho do original
+   * dentro de uma moldura reduzida.
+   */
+  --k: 1;
+  width: calc(230px * var(--k));
+  height: calc(230px * var(--k));
+  perspective: calc(900px * var(--k));
 }
 
-/* Halo cônico: as cores da marca girando atrás da arte. */
-.ck-boot__halo {
+/* Clarão que cresce quando a marca aparece no meio das peças. */
+.ck-boot__aura {
   position: absolute;
-  inset: 6%;
+  width: calc(210px * var(--k));
+  height: calc(210px * var(--k));
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    var(--ck-green, #2ee88a) 55deg,
-    var(--ck-teal, #35d6c0) 130deg,
-    var(--ck-cyan, #63e6ff) 190deg,
-    var(--ck-lime, #b8f36a) 250deg,
-    transparent 330deg
-  );
-  filter: blur(18px);
-  opacity: 0.55;
-  animation: ck-boot-spin 3.6s linear infinite;
+  background: radial-gradient(circle, rgb(46 232 138 / 26%), transparent 62%);
+  filter: blur(15px);
+  animation: ck-boot-aura 5.4s ease-in-out infinite;
 }
 
-.ck-boot__halo::after {
-  content: "";
+.ck-boot__cube {
   position: absolute;
-  inset: 18%;
-  border-radius: 50%;
-  background: var(--ck-bg-void, #020504);
-  filter: blur(12px);
+  width: calc(104px * var(--k));
+  height: calc(104px * var(--k));
+  transform-style: preserve-3d;
+  animation: ck-boot-turn 11s linear infinite;
 }
 
-/* Anel de energia: traço que se forma e se desfaz em volta da marca. */
-.ck-boot__ring {
+/*
+ * As oito peças. Cada uma carrega sua posição em --x/--y/--z, e a mesma
+ * animação as afasta e as traz de volta: um keyframe só para as oito.
+ */
+.ck-boot__cubie {
+  --x: 0;
+  --y: 0;
+  --z: 0;
+  position: absolute;
+  top: calc(28px * var(--k));
+  left: calc(28px * var(--k));
+  width: calc(48px * var(--k));
+  height: calc(48px * var(--k));
+  transform-style: preserve-3d;
+  animation: ck-boot-open 5.4s cubic-bezier(0.34, 1.1, 0.4, 1) infinite;
+}
+
+.ck-boot__cubie:nth-child(1) { --x: -1; --y: -1; --z: -1; animation-delay: 0ms; }
+.ck-boot__cubie:nth-child(2) { --x: -1; --y: -1; --z: 1; animation-delay: 55ms; }
+.ck-boot__cubie:nth-child(3) { --x: -1; --y: 1; --z: -1; animation-delay: 110ms; }
+.ck-boot__cubie:nth-child(4) { --x: -1; --y: 1; --z: 1; animation-delay: 165ms; }
+.ck-boot__cubie:nth-child(5) { --x: 1; --y: -1; --z: -1; animation-delay: 220ms; }
+.ck-boot__cubie:nth-child(6) { --x: 1; --y: -1; --z: 1; animation-delay: 275ms; }
+.ck-boot__cubie:nth-child(7) { --x: 1; --y: 1; --z: -1; animation-delay: 330ms; }
+.ck-boot__cubie:nth-child(8) { --x: 1; --y: 1; --z: 1; animation-delay: 385ms; }
+
+/*
+ * O apagar mora nas faces, nunca na peça: animar opacidade em um elemento com
+ * transform-style: preserve-3d faz o Chromium achatar os filhos 3D dele, e o
+ * cubo vira um recorte chapado.
+ */
+.ck-boot__cubie i {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
+  border: 1px solid rgb(0 0 0 / 55%);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
+  /* Sem esconder o verso, as seis faces translúcidas se somam e a peça
+     vira um borrão marrom em vez de mostrar as três que se vê. */
+  backface-visibility: hidden;
+  animation: ck-boot-fade 5.4s cubic-bezier(0.34, 1.1, 0.4, 1) infinite;
+  animation-delay: inherit;
 }
 
-.ck-boot__ring circle {
-  fill: none;
-  stroke-linecap: round;
-}
+.ck-boot__cubie i:nth-child(1) { transform: translateZ(calc(24px * var(--k))); background: var(--ck-face-f, #4defab); }
+.ck-boot__cubie i:nth-child(2) { transform: rotateY(180deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-b, #12c98f); }
+.ck-boot__cubie i:nth-child(3) { transform: rotateY(90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-r, #0a8f9c); }
+.ck-boot__cubie i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-l, #0a4f66); }
+.ck-boot__cubie i:nth-child(5) { transform: rotateX(90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-u, #effdff); }
+.ck-boot__cubie i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(24px * var(--k))); background: var(--ck-face-d, #a5ffd0); }
 
-.ck-boot__ring-track {
-  stroke: rgb(46 232 138 / 14%);
-  stroke-width: 2;
-}
-
-.ck-boot__ring-signal {
-  stroke: var(--ck-green-glow, #5cffb0);
-  stroke-width: 3;
-  stroke-dasharray: 70 500;
-  filter: drop-shadow(0 0 6px rgb(92 255 176 / 70%));
-  animation: ck-boot-ring 1.9s cubic-bezier(0.45, 0, 0.35, 1) infinite;
-}
-
-/* A arte da marca, respirando. */
+/* A arte da marca, no centro do cubo. */
 .ck-boot__logo {
   position: relative;
   display: grid;
   place-items: center;
-  width: 116px;
-  height: 116px;
-  overflow: hidden;
-  border-radius: 22px;
-  animation: ck-boot-breathe 3.2s ease-in-out infinite;
+  width: calc(150px * var(--k));
+  height: calc(150px * var(--k));
+  animation: ck-boot-mark 5.4s cubic-bezier(0.2, 0.9, 0.3, 1) infinite;
 }
 
 .ck-boot__logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 6px 22px rgb(0 0 0 / 60%));
-}
-
-/* Varredura de luz atravessando a logo. */
-.ck-boot__sweep {
-  position: absolute;
-  inset: -40%;
-  background: linear-gradient(
-    100deg,
-    transparent 42%,
-    rgb(184 243 106 / 42%) 50%,
-    rgb(255 255 255 / 55%) 52%,
-    transparent 60%
-  );
-  mix-blend-mode: screen;
-  animation: ck-boot-sweep 2.6s cubic-bezier(0.5, 0, 0.4, 1) infinite;
+  filter: drop-shadow(0 0 18px rgb(46 232 138 / 50%));
 }
 
 /* ---------------------------------------------------------------- Texto */
@@ -218,23 +224,59 @@
 
 /* ---------------------------------------------------------------- Movimento */
 
-@keyframes ck-boot-spin { to { transform: rotate(360deg); } }
 @keyframes ck-boot-mesh { to { transform: translate3d(0, -64px, 0); } }
 
-@keyframes ck-boot-ring {
-  0% { stroke-dashoffset: 0; opacity: 0.4; }
-  55% { opacity: 1; }
-  100% { stroke-dashoffset: -540; opacity: 0.4; }
+@keyframes ck-boot-turn {
+  from { transform: rotateX(-22deg) rotateY(0deg); }
+  to { transform: rotateX(-22deg) rotateY(360deg); }
 }
 
-@keyframes ck-boot-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.055); }
+/*
+ * O palco é mais largo do que alto, e embaixo dele ainda vêm lettering, texto e
+ * barra: por isso as peças se afastam bem mais na horizontal do que na vertical.
+ */
+@keyframes ck-boot-open {
+  0%, 16% {
+    transform: translate3d(
+      calc(var(--x) * 25px * var(--k)),
+      calc(var(--y) * 25px * var(--k)),
+      calc(var(--z) * 25px * var(--k))
+    );
+  }
+  46%, 70% {
+    transform:
+      translate3d(
+        calc(var(--x) * 78px * var(--k)),
+        calc(var(--y) * 44px * var(--k)),
+        calc(var(--z) * 62px * var(--k))
+      )
+      rotate3d(1, 1, 0.4, 44deg);
+  }
+  96%, 100% {
+    transform: translate3d(
+      calc(var(--x) * 25px * var(--k)),
+      calc(var(--y) * 25px * var(--k)),
+      calc(var(--z) * 25px * var(--k))
+    );
+  }
 }
 
-@keyframes ck-boot-sweep {
-  0%, 12% { transform: translate3d(-90%, 0, 0); }
-  55%, 100% { transform: translate3d(90%, 0, 0); }
+@keyframes ck-boot-fade {
+  0%, 22% { opacity: 1; }
+  48%, 70% { opacity: 0.5; }
+  92%, 100% { opacity: 1; }
+}
+
+@keyframes ck-boot-mark {
+  0%, 24% { opacity: 0; transform: scale(0.55); }
+  48%, 70% { opacity: 1; transform: scale(1); }
+  88%, 100% { opacity: 0; transform: scale(0.55); }
+}
+
+@keyframes ck-boot-aura {
+  0%, 26% { opacity: 0; }
+  50%, 68% { opacity: 1; }
+  86%, 100% { opacity: 0; }
 }
 
 @keyframes ck-boot-letter {
@@ -254,22 +296,16 @@
  * ficaria como um traço solto. Os dois somem, o resto continua legível.
  */
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .ck-boot__sweep { display: none; }
-  :root:not([data-motion="full"]) .ck-boot__ring-signal { stroke-dasharray: 0 1; }
-  :root:not([data-motion="full"]) .ck-boot__halo { opacity: 0.4; }
+  :root:not([data-motion="full"]) .ck-boot__logo { opacity: 1; transform: none; }
+  :root:not([data-motion="full"]) .ck-boot__aura { opacity: 0.5; }
 }
 
-[data-motion="reduced"] .ck-boot__sweep { display: none; }
-[data-motion="reduced"] .ck-boot__ring-signal { stroke-dasharray: 0 1; }
-[data-motion="reduced"] .ck-boot__halo { opacity: 0.4; }
+[data-motion="reduced"] .ck-boot__logo { opacity: 1; transform: none; }
+[data-motion="reduced"] .ck-boot__aura { opacity: 0.5; }
 
 /* Tema claro: o fundo da tela de carregamento acompanha. */
 :root[data-theme="light"] .ck-boot {
   background:
     radial-gradient(circle at 50% 42%, rgb(15 125 77 / 10%), transparent 46%),
     var(--ck-bg-void, #f2f7f4);
-}
-
-:root[data-theme="light"] .ck-boot__halo::after {
-  background: var(--ck-bg-void, #f2f7f4);
 }

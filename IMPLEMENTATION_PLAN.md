@@ -1,6 +1,36 @@
 # Plano de implementação
 
-Atualizado em 23 de agosto de 2026. O pedido explícito de implementação substitui a pausa de aprovação inicial prevista na especificação.
+Atualizado em 24 de agosto de 2026. O pedido explícito de implementação substitui a pausa de aprovação inicial prevista na especificação.
+
+---
+
+## Terceiro incremento — o cubo na tela de carregamento e cinco questões por assunto
+
+### O que foi executado
+
+1. **A tela de carregamento passou a ser o cubo que se abre.** O halo cônico, o anel de energia e a varredura de luz saíram; entraram oito peças de seis faces que giram montadas, se afastam revelando a logo no centro e voltam a fechar. A peça é a mesma nos dois lugares em que a tela existe: escrita no HTML de 15 documentos, para aparecer na primeira pintura, e reconstruída por `js/ui/loader.js` nas transições internas. Toda a geometria e o tempo vivem em `css/loader.css`, de modo que as duas versões não podem divergir.
+2. **Uma escala só para a peça.** O palco reduzido da transição entre rotas reaproveita o mesmo cubo. Em vez de dois tamanhos soltos, existe agora `--k`: a transição declara `--k: 0.58` e o cubo inteiro — peças, distância de abertura, perspectiva e logo — encolhe junto.
+3. **As cores do cubo saíram da fábrica e vieram da marca.** As seis faces foram amostradas da própria arte oficial, que vive entre o ciano e o verde-menta. Como a arte não tem seis matizes distintos, as faces se separam por luminosidade — do gelo ao azul-petróleo, em degraus de dez a quinze pontos. Os valores são tokens em `css/tokens.css` e servem tanto ao cubo do carregamento quanto ao cubo interativo da tela inicial.
+4. **Cinco questões novas para cada assunto de cada matéria.** Não para os mais servidos: para todos os 39 tópicos, sem exceção. São 195 questões autorais em cinco arquivos (`js/data/questions-leva3-*.js`), cada uma com os cinco formatos cognitivos por tópico, dois níveis de dificuldade ou mais, justificativa por alternativa, explicação, origem e licença. O acervo passou de 306 para 501 questões.
+5. **A promessa virou teste.** `tests/content.test.mjs` ganhou uma verificação que exige exatamente cinco questões da terceira leva em cada tópico. Um assunto novo que entre no acervo sem receber as suas cinco derruba a suíte.
+6. **PDFs de provas anteriores: avaliado e não feito.** O relatório está em `PROJECT_AUDIT.md`. Em resumo: o branch do Neon tem teto de 512 MB, a aplicação não lê conteúdo do banco em tempo de execução e o acervo declara não copiar enunciado oficial. A instrução era não fazer se não fosse viável.
+
+### Critérios de aceitação
+
+- A tela de carregamento mostra o cubo se abrindo com a logo dentro, na primeira pintura, sem depender de JS.
+- A mesma peça aparece reduzida na transição entre rotas, com a proporção preservada.
+- As faces do cubo usam a paleta da marca, e o cubo embaralhado continua legível — seis faces distinguíveis.
+- Movimento reduzido mantém a tela legível: a logo fica visível e parada, sem peça apagada.
+- Todo tópico do acervo tem cinco questões da terceira leva, dez questões principais e uma de recuperação.
+- Nenhum slug de questão se repete; nenhuma explicação cita alternativa por letra; nenhuma duplicata.
+- Suíte, verificação de imports e regeneração do seed passam sem erro.
+
+### Resultado verificado
+
+- 149 testes automatizados passando; nenhum import quebrado.
+- 39 tópicos, **501 questões** (450 principais e 51 de recuperação), 11 matérias, zero duplicatas.
+- Gabarito distribuído entre 91 e 109 ocorrências por posição em 501 questões — nenhuma posição passa de 22%.
+- Dez telas percorridas em navegador headless, sem erro de console.
 
 ---
 
