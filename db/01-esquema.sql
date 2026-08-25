@@ -1,26 +1,6 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE EXTENSION IF NOT EXISTS "citext";
-
-
-
-
 
 CREATE TABLE areas (
   slug          text PRIMARY KEY,
@@ -48,14 +28,12 @@ CREATE TABLE topics (
   difficulty        text NOT NULL CHECK (difficulty IN ('intro', 'intermediate', 'challenging')),
   estimated_minutes int  NOT NULL DEFAULT 20,
 
-
   curation_weight   int  NOT NULL DEFAULT 50 CHECK (curation_weight BETWEEN 0 AND 100),
   display_order     int  NOT NULL DEFAULT 0,
   published         boolean NOT NULL DEFAULT true
 );
 CREATE INDEX topics_subject_idx ON topics(subject_slug);
 CREATE INDEX topics_area_idx    ON topics(area_slug);
-
 
 CREATE TABLE topic_prerequisites (
   topic_slug        text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
@@ -98,7 +76,6 @@ CREATE TABLE questions (
   skill_slug                text REFERENCES skills(slug) ON DELETE SET NULL,
   difficulty                text NOT NULL CHECK (difficulty IN ('intro', 'intermediate', 'challenging')),
 
-
   cognitive_format          text NOT NULL,
 
   is_recovery               boolean NOT NULL DEFAULT false,
@@ -124,12 +101,10 @@ CREATE TABLE question_options (
   body          text NOT NULL,
   is_correct    boolean NOT NULL DEFAULT false,
 
-
   rationale     text NOT NULL,
   error_hint    text,
   PRIMARY KEY (question_slug, label)
 );
-
 
 CREATE UNIQUE INDEX question_options_one_correct
   ON question_options(question_slug) WHERE is_correct;
@@ -157,7 +132,6 @@ CREATE TABLE session_templates (
   minutes             int  NOT NULL DEFAULT 20,
   mode                text NOT NULL CHECK (mode IN ('learning', 'exam')),
   kind                text NOT NULL,
-
 
   item_rule           jsonb NOT NULL,
   completion_rule     text NOT NULL,
@@ -190,10 +164,6 @@ CREATE TABLE essay_prompts (
   review_checklist    jsonb NOT NULL DEFAULT '[]'::jsonb
 );
 
-
-
-
-
 CREATE TABLE students (
   id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email                 citext,
@@ -214,7 +184,6 @@ CREATE TABLE students (
   confirmed_at          timestamptz,
   diagnostic_status     text NOT NULL DEFAULT 'pending'
                           CHECK (diagnostic_status IN ('pending', 'skipped', 'done')),
-
 
   dimensions_declared   jsonb NOT NULL DEFAULT '{}'::jsonb,
   dimensions_observed   jsonb NOT NULL DEFAULT '{}'::jsonb,
@@ -241,7 +210,6 @@ CREATE TABLE student_preferences (
   reminder_time     text
 );
 
-
 CREATE TABLE profile_history (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id       uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
@@ -252,8 +220,6 @@ CREATE TABLE profile_history (
   created_at       timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX profile_history_student_idx ON profile_history(student_id, created_at DESC);
-
-
 
 CREATE TABLE profile_confirmations (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -273,7 +239,6 @@ CREATE TABLE study_sessions (
   kind               text NOT NULL CHECK (kind IN ('learn', 'practice', 'review', 'simulate', 'diagnostic')),
   mode               text NOT NULL DEFAULT 'learning' CHECK (mode IN ('learning', 'exam')),
 
-
   reason             text,
   topic_slug         text REFERENCES topics(slug) ON DELETE SET NULL,
   simulation_slug    text REFERENCES simulations(slug) ON DELETE SET NULL,
@@ -282,7 +247,6 @@ CREATE TABLE study_sessions (
   current_index      int  NOT NULL DEFAULT 0,
   planned_minutes    int  NOT NULL DEFAULT 20,
   time_limit_seconds int,
-
 
   idempotency_key    text NOT NULL,
   started_at         timestamptz NOT NULL DEFAULT now(),
@@ -310,7 +274,6 @@ CREATE TABLE attempts (
   session_id     uuid REFERENCES study_sessions(id) ON DELETE SET NULL,
   question_slug  text NOT NULL REFERENCES questions(slug) ON DELETE RESTRICT,
 
-
   first_answer   text NOT NULL CHECK (first_answer IN ('A', 'B', 'C', 'D', 'E')),
   final_answer   text NOT NULL CHECK (final_answer IN ('A', 'B', 'C', 'D', 'E')),
   changed_answer boolean NOT NULL DEFAULT false,
@@ -336,7 +299,6 @@ CREATE TABLE topic_mastery (
   score             int  NOT NULL DEFAULT 0 CHECK (score BETWEEN 0 AND 100),
   attempt_count     int  NOT NULL DEFAULT 0,
   correct_count     int  NOT NULL DEFAULT 0,
-
 
   distinct_questions int NOT NULL DEFAULT 0,
   distinct_sessions  int NOT NULL DEFAULT 0,
@@ -365,7 +327,6 @@ CREATE TABLE review_queue (
   UNIQUE (student_id, question_slug)
 );
 CREATE INDEX review_queue_due_idx ON review_queue(student_id, status, due_at);
-
 
 CREATE TABLE error_notes (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -415,7 +376,6 @@ CREATE TABLE simulation_runs (
   score           int  NOT NULL DEFAULT 0,
   submitted_at    timestamptz,
 
-
   analysis        jsonb,
 
   fallback_note   text,
@@ -430,7 +390,6 @@ CREATE TABLE essays (
   prompt_slug text NOT NULL REFERENCES essay_prompts(slug) ON DELETE RESTRICT,
   outline     text NOT NULL DEFAULT '',
   body        text NOT NULL DEFAULT '',
-
 
   self_check  jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at  timestamptz NOT NULL DEFAULT now(),
@@ -452,11 +411,6 @@ CREATE TABLE content_reports (
 );
 CREATE INDEX content_reports_status_idx ON content_reports(status, created_at DESC);
 
-
-
-
-
-
 CREATE VIEW catalog_health AS
 SELECT
   (SELECT count(*) FROM areas)                                  AS areas,
@@ -474,8 +428,6 @@ SELECT
                                                                 AS topics_without_content,
   (SELECT count(*) FROM question_options o
      WHERE o.rationale IS NULL OR btrim(o.rationale) = '')       AS options_without_rationale;
-
-
 
 CREATE VIEW answer_key_balance AS
 SELECT

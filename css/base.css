@@ -1,5 +1,3 @@
-
-
 *,
 *::before,
 *::after {
@@ -54,11 +52,9 @@ button, input, select, textarea {
   color: inherit;
 }
 
-
 button, [role="button"], a, input, select, textarea, label {
   touch-action: manipulation;
 }
-
 
 :focus-visible {
   outline: 2px solid var(--ck-green);
@@ -71,7 +67,6 @@ button, [role="button"], a, input, select, textarea, label {
   color: var(--ck-bg-void);
 }
 
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -83,7 +78,6 @@ button, [role="button"], a, input, select, textarea, label {
   white-space: nowrap;
   border: 0;
 }
-
 
 .skip-link {
   position: absolute;
@@ -112,7 +106,6 @@ button, [role="button"], a, input, select, textarea, label {
 }
 .reading > * + * { margin-top: 0.9em; }
 
-
 @keyframes ck-enter {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
@@ -131,7 +124,6 @@ button, [role="button"], a, input, select, textarea, label {
 
 .ck-enter { animation: ck-enter var(--ck-dur) var(--ck-ease) both; }
 
-
 @view-transition { navigation: auto; }
 ::view-transition-old(root) { animation: ck-document-out 180ms var(--ck-ease) both; }
 ::view-transition-new(root) { animation: ck-document-in 320ms var(--ck-ease) both; }
@@ -141,12 +133,7 @@ button, [role="button"], a, input, select, textarea, label {
   to { opacity: 1; transform: none; }
 }
 
-
-
-
-
 @media (prefers-reduced-motion: reduce) {
-
 
   :root:not([data-motion="full"]) *,
   :root:not([data-motion="full"]) *::before,
@@ -158,7 +145,6 @@ button, [role="button"], a, input, select, textarea, label {
   }
   :root:not([data-motion="full"]) .ck-enter { animation: none; opacity: 1; transform: none; }
 }
-
 
 [data-motion="reduced"] *,
 [data-motion="reduced"] *::before,

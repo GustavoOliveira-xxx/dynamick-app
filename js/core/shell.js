@@ -1,13 +1,5 @@
-
-
-
-
-
-
-
-
-
 import { el, render } from './dom.js';
+import { iniciarEnvioAutomatico } from './sync.js';
 import { route, notFound, start, navigate, currentRoute } from './router.js';
 import { getState, onStorageError, storageAvailable, subscribe, watchOtherTabs } from './store.js';
 import { applyPreferences, student } from './student.js';
@@ -42,9 +34,6 @@ let disposeBackground = null;
 let lastIntensity = null;
 let lastBackgroundContext = null;
 let viewSequence = 0;
-
-
-
 
 function intensityFor(path) {
   if (path.startsWith('/sessao')) return 'low';
@@ -81,15 +70,9 @@ function syncBackground(path) {
   });
 }
 
-
-
 function isActive(match, path) {
   return path === match || path.startsWith(`${match}/`);
 }
-
-
-
-
 
 function isCurrentSection(match, path) {
   if (isActive(match, path)) return true;
@@ -190,27 +173,14 @@ function renderHeader() {
   );
 }
 
-
-
-
-
-
-
 export function requireAccount() {
   return isSignedIn() ? null : '/entrar';
 }
-
 
 export function requireOnboarding() {
   if (!isSignedIn()) return '/entrar';
   return student().onboardingStatus === 'not_started' ? '/onboarding' : null;
 }
-
-
-
-
-
-
 
 export function view(handler, { guard } = {}) {
   return async (context) => {
@@ -267,21 +237,9 @@ export function view(handler, { guard } = {}) {
   };
 }
 
-
-
-
-
-
-
-
-
-
-
-
 export async function startPage({ register, fallbackRoute = '/inicio', chrome = true }) {
   main = document.getElementById('conteudo-principal');
   backgroundHost = document.getElementById('fundo');
-
 
   bindActiveAccount();
 
@@ -292,6 +250,7 @@ export async function startPage({ register, fallbackRoute = '/inicio', chrome = 
 
   getState();
   applyPreferences();
+  iniciarEnvioAutomatico();
 
   onStorageError((text) => toast(text, 'danger', 8000));
 
@@ -316,13 +275,6 @@ export async function startPage({ register, fallbackRoute = '/inicio', chrome = 
 
   subscribe(() => applyPreferences());
 
-
-
-
-
-
-
-
   document.addEventListener('click', (event) => {
     if (event.defaultPrevented || event.button !== 0) return;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -338,10 +290,6 @@ export async function startPage({ register, fallbackRoute = '/inicio', chrome = 
   });
 
   register({ route, view, requireOnboarding, requireAccount });
-
-
-
-
 
   notFound(({ path }) => {
     const target = pageForRoute(path);
@@ -366,13 +314,11 @@ export async function startPage({ register, fallbackRoute = '/inicio', chrome = 
     renderHeader();
   });
 
-
   if (!window.location.hash || window.location.hash === '#') {
     window.location.replace(`${window.location.pathname}${window.location.search}#${fallbackRoute}`);
   }
 
   start();
-
 
   await hideLoader();
 }

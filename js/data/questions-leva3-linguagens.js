@@ -1,11 +1,3 @@
-/**
- * Terceira leva — cinco questões novas para cada assunto de Linguagens.
- *
- * Os textos de apoio são autorais e curtos, escritos para a questão. Quando um
- * autor é citado, trata-se de obra em domínio público no Brasil, e a citação
- * serve à análise, nunca à reprodução do texto integral.
- */
-
 import { expandedQuestion } from './questions-expansion-factory.js';
 
 const ORIGEM = 'AUTORAL_LEVA_3_2026_08';
@@ -14,7 +6,7 @@ const FONTE = 'Texto e situação autorais criados para prática de leitura e an
 const q = (definicao) => expandedQuestion({ ...definicao, support: FONTE, origin: ORIGEM });
 
 export const LINGUAGENS_QUESTOES_LEVA_3 = [
-  /* ------------------------------------------ Interpretação e inferência */
+
   q({
     topicSlug: 'interpretacao-e-inferencia', slug: 'q3-int-1',
     stem: 'Um texto afirma: "Mesmo com a chuva, o estádio estava cheio". A palavra "mesmo" indica que o autor considera a chuva um fator que:',
@@ -87,7 +79,6 @@ export const LINGUAGENS_QUESTOES_LEVA_3 = [
     strategy: 'Ao reescrever ou resumir, verifique se a atribuição de fonte sobreviveu. É o primeiro elemento a se perder e o que mais muda o sentido.',
   }),
 
-  /* ------------------------------------- Gêneros textuais e função social */
   q({
     topicSlug: 'generos-textuais-e-funcao-social', slug: 'q3-gen3-1',
     stem: 'Um mesmo conteúdo — a suspensão de uma linha de ônibus — pode aparecer em um aviso no ponto, em uma notícia e em uma carta de reclamação. O que distingue esses três gêneros é principalmente:',
@@ -159,7 +150,6 @@ export const LINGUAGENS_QUESTOES_LEVA_3 = [
     explanation: 'Cada gênero pressupõe um interlocutor. O manifesto mobiliza quem já compartilha a causa; a dissertação argumenta para quem ainda não foi convencido.',
   }),
 
-  /* ------------------------------------------------ Funções da linguagem */
   q({
     topicSlug: 'funcoes-da-linguagem', slug: 'q3-fl-1',
     stem: 'Um cartaz na rodovia traz apenas: "Reduza a velocidade. Salve uma vida." A função da linguagem predominante nesse enunciado é a:',
@@ -232,7 +222,6 @@ export const LINGUAGENS_QUESTOES_LEVA_3 = [
     strategy: 'Ao analisar funções, identifique todas as presentes e depois pergunte qual delas organiza o enunciado. As outras costumam servir a ela.',
   }),
 
-  /* ------------------------------------------------- Variação linguística */
   q({
     topicSlug: 'variacao-linguistica', slug: 'q3-var-1',
     stem: 'Sobre a afirmação "existe uma única forma correta de falar português", a posição sustentada pelos estudos linguísticos é que ela:',
@@ -304,7 +293,6 @@ export const LINGUAGENS_QUESTOES_LEVA_3 = [
     explanation: 'Respeitar a variação e ensinar a norma padrão não se opõem. O ganho está em somar registros ao repertório, deixando claro quando cada um é esperado.',
   }),
 
-  /* ------------------------------------------------- Recursos expressivos */
   q({
     topicSlug: 'recursos-expressivos', slug: 'q3-rec-1',
     stem: 'Em "a cidade acordou irritada com o barulho das obras", o recurso expressivo empregado e seu efeito são:',
@@ -377,7 +365,6 @@ export const LINGUAGENS_QUESTOES_LEVA_3 = [
     strategy: 'Quando o texto usa mais de um recurso, pergunte o que um faz com o outro. O efeito costuma estar na relação, não em cada um isolado.',
   }),
 
-  /* ------------------------------------------------ Literatura brasileira */
   q({
     topicSlug: 'literatura-brasileira', slug: 'q3-lit-1',
     stem: 'A afirmação de que uma obra literária "dialoga com seu contexto histórico" significa, em termos de análise, que:',

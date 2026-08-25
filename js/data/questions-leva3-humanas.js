@@ -1,11 +1,3 @@
-/**
- * Terceira leva — cinco questões novas para cada assunto de Ciências Humanas.
- *
- * As situações são autorais. Processos históricos, conceitos sociológicos e
- * dados geográficos são tratados em termos gerais, sem reproduzir enunciado
- * de prova oficial nem texto de terceiros.
- */
-
 import { expandedQuestion } from './questions-expansion-factory.js';
 
 const ORIGEM = 'AUTORAL_LEVA_3_2026_08';
@@ -14,7 +6,7 @@ const FONTE = 'Situação e formulação autorais criadas para prática de anál
 const q = (definicao) => expandedQuestion({ ...definicao, support: FONTE, origin: ORIGEM });
 
 export const HUMANAS_QUESTOES_LEVA_3 = [
-  /* --------------------------------------------------- Brasil República */
+
   q({
     topicSlug: 'brasil-republica', slug: 'q3-br-1',
     stem: 'Na República Velha, o voto era aberto e o eleitorado, restrito. A expressão "voto de cabresto" designa a prática de:',
@@ -86,7 +78,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Analisar uma constituição exige separar o que ela promete do que se realiza. A diferença entre os dois planos é onde a política acontece.',
   }),
 
-  /* ---------------------------------------------------- Industrialização */
   q({
     topicSlug: 'industrializacao', slug: 'q3-ind-1',
     stem: 'A expressão "divisão internacional do trabalho" designa, na análise da industrialização, a:',
@@ -158,7 +149,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Posição na cadeia produtiva define quanto de valor e de emprego qualificado fica no território. Exportar bruto e importar manufaturado deixa a parte mais rentável fora.',
   }),
 
-  /* ------------------------------------------- Urbanização e desigualdade */
   q({
     topicSlug: 'urbanizacao-e-desigualdade', slug: 'q3-urb-1',
     stem: 'O termo "segregação socioespacial" descreve, nos estudos urbanos, a situação em que:',
@@ -230,7 +220,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Ocupação de área de risco é sintoma de um problema de moradia e localização. Tratar só o sintoma reproduz o problema em outro lugar.',
   }),
 
-  /* ------------------------------------------- Meio ambiente e sociedade */
   q({
     topicSlug: 'meio-ambiente-e-sociedade', slug: 'q3-amb-1',
     stem: 'A expressão "serviços ecossistêmicos" designa:',
@@ -303,7 +292,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     strategy: 'Em questões ambientais, verifique se a escala da solução proposta corresponde à escala do processo que gera o problema.',
   }),
 
-  /* -------------------------------------------------------- Cartografia */
   q({
     topicSlug: 'cartografia', slug: 'q3-cart-1',
     stem: 'Toda projeção cartográfica distorce alguma propriedade da superfície terrestre. Essa limitação decorre de:',
@@ -375,7 +363,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Escolher a projeção é escolher o que se pode afirmar com o mapa. Para comparar áreas, é preciso uma projeção equivalente, não uma conforme.',
   }),
 
-  /* -------------------------------------------------------- Globalização */
   q({
     topicSlug: 'globalizacao', slug: 'q3-glob-1',
     stem: 'A afirmação de que a globalização "encurtou distâncias" refere-se, em termos geográficos, à:',
@@ -447,7 +434,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Eficiência e resiliência são objetivos que competem entre si. Depender do mercado externo barateia em tempos normais e cobra caro em choques.',
   }),
 
-  /* -------------------------------------------------------------- Ética */
   q({
     topicSlug: 'etica', slug: 'q3-eti-1',
     stem: 'A distinção entre moral e ética, tal como usada na filosofia, pode ser formulada assim:',
@@ -519,7 +505,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Diante de dilemas trágicos, a justiça possível é procedimental: critérios definidos antes, públicos e aplicáveis a todos, com responsabilidade preservada.',
   }),
 
-  /* --------------------------------------------------- Cidadania e direitos */
   q({
     topicSlug: 'cidadania-e-direitos', slug: 'q3-cid-1',
     stem: 'A classificação dos direitos em civis, políticos e sociais é útil porque:',
@@ -591,7 +576,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Direitos humanos existem sobretudo para limitar o que o poder pode fazer com qualquer pessoa. Punir com processo justo é compatível com eles; punir com tortura, não.',
   }),
 
-  /* ----------------------------------------------- Cultura e identidade */
   q({
     topicSlug: 'cultura-e-identidade', slug: 'q3-cult-1',
     stem: 'O conceito antropológico de cultura, tal como usado nas ciências sociais, refere-se a:',
@@ -663,7 +647,6 @@ export const HUMANAS_QUESTOES_LEVA_3 = [
     explanation: 'Currículo é escolha sobre o que merece ser conhecido por todos. Incluir matrizes formadoras amplia o comum em vez de fragmentá-lo.',
   }),
 
-  /* ---------------------------------------------- Trabalho e sociedade */
   q({
     topicSlug: 'trabalho-e-sociedade', slug: 'q3-trab-1',
     stem: 'A diferença entre emprego formal e trabalho informal, no Brasil, está principalmente em:',

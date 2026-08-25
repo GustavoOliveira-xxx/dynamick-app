@@ -1,16 +1,4 @@
-
-
-
-
-
-
-
-
-
-
 import { describe, it, expect } from './run.mjs';
-
-
 
 globalThis.localStorage ??= (() => {
   const mapa = new Map();

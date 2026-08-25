@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import {
   badge,
@@ -49,8 +43,6 @@ import {
   vinculoAtual,
 } from '../core/sync.js';
 import { navigate, refresh } from '../core/router.js';
-
-
 
 export function renderProfileHub(root) {
   const s = student();
@@ -120,8 +112,6 @@ function linkCard(title, description, href) {
   );
 }
 
-
-
 export function renderStudyProfile(root) {
   const s = student();
   const profile = activeProfile();
@@ -158,7 +148,6 @@ export function renderStudyProfile(root) {
           'Uma descrição provisória de como você estuda hoje, feita a partir das suas respostas. Não é diagnóstico, não é laudo e não diz nada sobre a sua capacidade. Ele muda quando você muda.',
         ),
       ),
-
 
       card(
         {},
@@ -199,7 +188,6 @@ export function renderStudyProfile(root) {
         ),
       ),
 
-
       card(
         {},
         el('h2', {}, 'O que este perfil muda na prática'),
@@ -214,7 +202,6 @@ export function renderStudyProfile(root) {
           'Nada disso bloqueia conteúdo. Tudo continua acessível pelo mapa de conteúdos e pela busca.',
         ),
       ),
-
 
       supports.length > 0
         ? card(
@@ -232,7 +219,6 @@ export function renderStudyProfile(root) {
             ),
           )
         : null,
-
 
       card(
         {},
@@ -294,7 +280,6 @@ export function renderStudyProfile(root) {
         trocaBox,
       ),
 
-
       history.length > 0
         ? card(
             {},
@@ -324,8 +309,6 @@ export function renderStudyProfile(root) {
   );
 }
 
-
-
 export function renderSettings(root) {
   const prefs = preferences();
   const s = student();
@@ -348,7 +331,6 @@ export function renderSettings(root) {
         el('h1', {}, 'Configurações'),
         el('p', { class: 'small secondary' }, 'Tudo aqui vale na hora e fica salvo neste navegador.'),
       ),
-
 
       card(
         {},
@@ -398,7 +380,6 @@ export function renderSettings(root) {
         }),
       ),
 
-
       card(
         {},
         el('h2', {}, 'Estudo'),
@@ -442,9 +423,7 @@ export function renderSettings(root) {
         }),
       ),
 
-
       disponibilidadeCard(s),
-
 
       lembretesCard(prefs, set),
 
@@ -574,8 +553,6 @@ function lembretesCard(prefs, set) {
   );
 }
 
-
-
 export function renderReport(root) {
   const state = getState();
   const sessions = Object.values(state.sessions)
@@ -609,7 +586,6 @@ export function renderReport(root) {
 
   const antes = taxa(antigas);
   const depois = taxa(recentes);
-
 
   const porEstado = new Map(MASTERY_STATES.map((estado) => [estado, []]));
   for (const topic of TOPICS) {
@@ -771,8 +747,6 @@ export function renderReport(root) {
     ),
   );
 }
-
-
 
 export function renderDataPage(root) {
   const state = getState();
@@ -945,12 +919,10 @@ export function renderDataPage(root) {
                 confirmLabel: 'Apagar definitivamente',
                 onConfirm: async () => {
 
-
                   if (syncDisponivel && vinculoAtual()) {
                     try {
                       await apagarNoServidor();
                     } catch {
-
 
                       toast(
                         'Apagamos tudo neste aparelho, mas não conseguimos falar com o servidor. O que está lá continua, e some sozinho depois de um tempo sem uso.',
@@ -973,16 +945,6 @@ export function renderDataPage(root) {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
 function sincronizacaoCard() {
   if (!syncDisponivel) {
     return card(
@@ -1000,7 +962,6 @@ function sincronizacaoCard() {
   const corpo = el('div', { class: 'stack stack--sm' });
   const aviso = el('div');
   const vinculo = vinculoAtual();
-
 
   async function executar(botao, rotulo, operacao) {
     setButtonLoading(botao, true, rotulo);
@@ -1020,7 +981,6 @@ function sincronizacaoCard() {
       setButtonLoading(botao, false);
     }
   }
-
 
   function conflitoAviso() {
     return message(
@@ -1214,7 +1174,6 @@ function sincronizacaoCard() {
 
   return card({}, el('h2', {}, 'Sincronizar entre aparelhos'), corpo, aviso);
 }
-
 
 function codigoNovoAviso(codigo) {
   return message(

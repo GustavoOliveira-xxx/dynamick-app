@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import { el, render } from './core/dom.js';
 import { badge, button, card, linkButton, message, progress } from './ui/components.js';
 import { markdown } from './core/markdown.js';
@@ -13,7 +5,6 @@ import { CONFIDENCE_LABELS, DIFFICULTY_LABELS, ERROR_REASON_LABELS, ERROR_REASON
 import { getQuestion } from './data/content.js';
 import { mountBackground } from './ui/background.js';
 import { dynamickLogo, consciousKnowledgeLogo } from './ui/brand.js';
-
 
 const AMOSTRA = ['q-porc-1', 'q-interp-1', 'q-eco-1'];
 

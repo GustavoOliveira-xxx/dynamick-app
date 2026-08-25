@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderEssayHub, renderEssayPrompt } from '../views/essay.js';
 

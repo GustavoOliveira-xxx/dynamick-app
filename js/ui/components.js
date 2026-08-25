@@ -1,16 +1,4 @@
-
-
 import { el, uid, trapFocus } from '../core/dom.js';
-
-
-
-
-
-
-
-
-
-
 
 export function button(options) {
   const {
@@ -38,10 +26,6 @@ export function button(options) {
   return node;
 }
 
-
-
-
-
 export function setButtonLoading(node, loading, loadingLabel) {
   const labelNode = node.querySelector('.btn__label');
   if (loading) {
@@ -60,7 +44,6 @@ export function setButtonLoading(node, loading, loadingLabel) {
   }
 }
 
-
 export function linkButton({ href, label, variant = 'primary', size = 'md', block, icon }) {
   return el(
     'a',
@@ -76,8 +59,6 @@ export function linkButton({ href, label, variant = 'primary', size = 'md', bloc
     el('span', { class: 'btn__label' }, label),
   );
 }
-
-
 
 const ACCENT_COLORS = {
   green: 'var(--ck-green)',
@@ -107,8 +88,6 @@ export function card(options = {}, ...children) {
   );
 }
 
-
-
 export function badge(label, tone = 'neutral', icon) {
   return el(
     'span',
@@ -117,9 +96,6 @@ export function badge(label, tone = 'neutral', icon) {
     label,
   );
 }
-
-
-
 
 export function progress({ value, max = 100, label, tone = 'green', size = 'md' }) {
   const safeMax = max > 0 ? max : 100;
@@ -142,9 +118,6 @@ export function progress({ value, max = 100, label, tone = 'green', size = 'md' 
     }),
   );
 }
-
-
-
 
 export function field({ label, name, type = 'text', value = '', hint, error, required, ...rest }) {
   const id = uid('field');
@@ -193,10 +166,6 @@ export function textarea({ label, name, value = '', rows = 4, hint, placeholder,
     hint ? el('p', { class: 'field__hint', id: hintId }, hint) : null,
   );
 }
-
-
-
-
 
 export function choiceGroup({ legend, name, options, value, multiple, hint, error, onChange, variant = 'option' }) {
   const groupId = uid('group');
@@ -249,8 +218,6 @@ export function choiceGroup({ legend, name, options, value, multiple, hint, erro
   );
 }
 
-
-
 export function emptyState({ title, description, actionLabel, actionHref, icon = '◇' }) {
   return card(
     { class: 'empty-state', pad: 'none' },
@@ -281,7 +248,6 @@ export function loadingState(label = 'Carregando…') {
   );
 }
 
-
 export function seedNotice(compact = false) {
   if (compact) {
     return el(
@@ -301,8 +267,6 @@ export function seedNotice(compact = false) {
   );
 }
 
-
-
 let toastRegion = null;
 
 export function toast(text, tone = 'info', timeout = 4500) {
@@ -315,12 +279,6 @@ export function toast(text, tone = 'info', timeout = 4500) {
   setTimeout(() => node.remove(), timeout);
   return node;
 }
-
-
-
-
-
-
 
 export function modal({ title, body, actions }) {
   const previousOverflow = document.body.style.overflow;
@@ -358,7 +316,6 @@ export function modal({ title, body, actions }) {
 
   return { close, dialog };
 }
-
 
 export function confirmDestructive({ title, description, confirmWord, confirmLabel, onConfirm }) {
   const input = el('input', { class: 'input', placeholder: confirmWord, 'aria-label': `Digite ${confirmWord} para confirmar` });

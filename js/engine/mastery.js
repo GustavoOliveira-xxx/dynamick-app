@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 export const CONSOLIDATION_RULES = {
   minDistinctQuestions: 4,
   minDistinctSessions: 2,
@@ -23,7 +15,6 @@ export function computeMasteryState(input) {
   if (input.attemptCount === 0) {
     return input.viewedContent ? 'explored' : 'not_started';
   }
-
 
   if (input.distinctQuestions < 3) return 'explored';
 
@@ -46,7 +37,6 @@ export function computeMasteryState(input) {
 
   return consolidated ? 'consolidated' : 'practicing';
 }
-
 
 export function computeMasteryScore(input) {
   if (input.attemptCount === 0) return input.viewedContent ? 10 : 0;

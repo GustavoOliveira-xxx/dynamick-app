@@ -1,19 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const PRESETS = {
   high: { nodes: 82, dust: 38, link: 0.62, glow: 0.68, spin: 0.06, tilt: 0.24 },
   'medium-high': { nodes: 60, dust: 26, link: 0.56, glow: 0.52, spin: 0.045, tilt: 0.2 },
@@ -43,7 +27,6 @@ const CONTEXT_ORIGINS = {
   focus: { x: 0.5, y: 0.3 },
 };
 
-
 let heavySceneOwner = null;
 
 function visualSettings() {
@@ -64,12 +47,6 @@ function visualSettings() {
   return { motion, decoration, density };
 }
 
-
-
-
-
-
-
 export function mountBackground(host, options = {}) {
   const intensity = options.intensity ?? 'medium';
   const interactive = options.interactive ?? false;
@@ -80,12 +57,10 @@ export function mountBackground(host, options = {}) {
   host.className = 'bg-layer';
   host.dataset.context = sceneContext;
 
-
   const gradient = document.createElement('div');
   gradient.className = 'bg-layer__gradient';
   gradient.style.background = GRADIENTS[intensity];
   host.append(gradient);
-
 
   const atmosphere = document.createElement('div');
   atmosphere.className = 'bg-layer__atmosphere';
@@ -98,7 +73,6 @@ export function mountBackground(host, options = {}) {
   host.append(atmosphere);
 
   const { motion, decoration, density } = visualSettings();
-
 
   const veil = document.createElement('div');
   veil.className = 'bg-layer__veil';
@@ -127,7 +101,6 @@ export function mountBackground(host, options = {}) {
   }
   const isOwner = !heavy || heavySceneOwner === token;
   const nodeCount = Math.max(8, Math.round(preset.nodes * density * (isOwner ? 1 : 0.4)));
-
 
   const nodes = Array.from({ length: nodeCount }, (_, index) => {
     const offset = 2 / nodeCount;
@@ -209,7 +182,6 @@ export function mountBackground(host, options = {}) {
     const y1 = node.y * cosX - z1 * sinX;
     const z2 = node.y * sinX + z1 * cosX;
 
-
     const perspective = 2.6 / (2.6 - z2);
     return {
       x: originX + x1 * sphere * perspective,
@@ -239,7 +211,6 @@ export function mountBackground(host, options = {}) {
 
     context.clearRect(0, 0, width, height);
 
-
     for (const particle of dust) {
       const drift = motion ? time * (2 + particle.depth * 4) : 0;
       const x = (particle.x * width + drift + pointerX * 12 * particle.depth) % (width + 24) - 12;
@@ -254,7 +225,6 @@ export function mountBackground(host, options = {}) {
     const projected = nodes
       .map((node) => ({ node, point: project(node, angle, tilt) }))
       .sort((a, b) => a.point.depth - b.point.depth);
-
 
     context.lineWidth = 1;
     const maxDistance = sphere * preset.link;
@@ -275,7 +245,6 @@ export function mountBackground(host, options = {}) {
       }
     }
 
-
     context.save();
     context.translate(originX, originY);
     context.rotate(-0.22 + pointerY * 0.035);
@@ -289,7 +258,6 @@ export function mountBackground(host, options = {}) {
       context.stroke();
     }
     context.restore();
-
 
     for (let signal = 0; signal < 3; signal += 1) {
       const phase = time * (0.34 + signal * 0.05) + signal * 2.1;
@@ -305,7 +273,6 @@ export function mountBackground(host, options = {}) {
       context.fill();
     }
 
-
     for (const { node, point } of projected) {
       const pulse = motion ? 0.75 + Math.sin(time * 1.1 + node.seed * 6) * 0.25 : 1;
       const radius = Math.max(0.6, 1.9 * point.scale * point.depth) * pulse;
@@ -316,7 +283,6 @@ export function mountBackground(host, options = {}) {
       context.fill();
     }
 
-
     const coreRadius = sphere * 0.22;
     const core = context.createRadialGradient(originX, originY, 0, originX, originY, coreRadius);
     core.addColorStop(0, `rgba(92, 255, 176, ${0.16 * preset.glow})`);
@@ -325,7 +291,6 @@ export function mountBackground(host, options = {}) {
     context.beginPath();
     context.arc(originX, originY, coreRadius, 0, Math.PI * 2);
     context.fill();
-
 
     if (!motion) cancelAnimationFrame(frame);
   }

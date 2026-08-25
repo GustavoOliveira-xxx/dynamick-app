@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import { el } from '../core/dom.js';
 import { brandStage, brandWord } from './loader.js';
 
@@ -43,17 +35,8 @@ function labelFor(path) {
   return ROUTE_LABELS.find(([pattern]) => pattern.test(path))?.[1] ?? 'Conectando conhecimentos';
 }
 
-
-
-
-
 export function beginRouteTransition(main, path) {
   activeTransition?.cancel();
-
-
-
-
-
 
   const boot = document.getElementById('ck-boot');
   if (boot && !boot.hidden && !boot.classList.contains('ck-boot--done')) {

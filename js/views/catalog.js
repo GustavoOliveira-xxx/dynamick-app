@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, card, linkButton, message, progress } from '../ui/components.js';
 import { percent, plural } from '../core/format.js';
@@ -13,7 +7,6 @@ import {
   SEED_LICENSE,
 } from '../engine/domain.js';
 import { catalogHealth, QUESTIONS } from '../data/content.js';
-
 
 const MINIMOS = [
   { key: 'areas', label: 'Áreas', min: 4 },
@@ -109,7 +102,6 @@ export function renderCatalog(root) {
             ),
           ),
 
-
       card(
         {},
         el('h2', {}, 'Mínimos do acervo'),
@@ -143,7 +135,6 @@ export function renderCatalog(root) {
           }),
         ),
       ),
-
 
       el(
         'div',

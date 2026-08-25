@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import { getState, update } from './store.js';
 import { applyPreferencesTo } from './preferences-dom.js';
 import { newId, startOfWeek, daysBetween, clamp } from './format.js';
@@ -23,8 +15,6 @@ import {
   questionsForTopic,
 } from '../data/content.js';
 
-
-
 export function student() {
   return getState().student;
 }
@@ -36,7 +26,6 @@ export function preferences() {
 export function activeProfile() {
   return getProfile(student().activeProfile);
 }
-
 
 export function syncProfile() {
   const result = classifyProfile(student().answers);
@@ -106,7 +95,6 @@ export function skipOnboarding() {
   }, { immediate: true });
 }
 
-
 export function confirmProfile(suggested, chosen, note) {
   const previous = student().activeProfile;
 
@@ -141,7 +129,6 @@ export function confirmProfile(suggested, chosen, note) {
 
   rebuildPlan();
 }
-
 
 export function changeProfile(chosen, note) {
   const previous = student().activeProfile;
@@ -185,7 +172,6 @@ export function updateAvailability({ daysPerWeek, sessionMinutes, examDate }) {
     s.answers.sessionMinutes = String(s.sessionMinutes);
   }, { immediate: true });
 
-
   rebuildPlan();
 }
 
@@ -195,7 +181,6 @@ export function updatePreferences(partial) {
   }, { immediate: true });
   applyPreferences();
 }
-
 
 export function applyPreferences() {
   applyPreferencesTo(preferences());
@@ -216,7 +201,6 @@ export function masteryFor(topicSlug) {
   );
 }
 
-
 export function markTopicViewed(topicSlug) {
   update((state) => {
     const current = state.mastery[topicSlug] ?? {
@@ -232,7 +216,6 @@ export function markTopicViewed(topicSlug) {
     state.mastery[topicSlug] = current;
   });
 }
-
 
 export function refreshMastery(topicSlug) {
   const state = getState();
@@ -274,9 +257,6 @@ export function refreshMastery(topicSlug) {
   });
 }
 
-
-
-
 export function collectSignals() {
   const state = getState();
   const now = Date.now();
@@ -307,7 +287,6 @@ export function collectSignals() {
     if (new Date(item.dueAt).getTime() > now) continue;
     dueByTopic.set(item.topicSlug, (dueByTopic.get(item.topicSlug) ?? 0) + 1);
   }
-
 
   const selfAssessment = state.student.answers.selfAssessment ?? {};
   const priorityAreas = new Set(
@@ -373,7 +352,6 @@ export function recommendationContext() {
   };
 }
 
-
 export function mainRecommendation() {
   const signals = collectSignals();
   const { selection } = recommendTopics(signals, recommendationContext(), 4);
@@ -414,8 +392,6 @@ export function alternativeRecommendations(limit = 3) {
     return topic ? [{ topicSlug: topic.slug, topicName: topic.name, areaSlug: topic.areaSlug, reason: item.reason }] : [];
   });
 }
-
-
 
 export function pendingReviews() {
   const now = Date.now();
@@ -477,8 +453,6 @@ export function registerRecall(reviewId, recall, wasCorrect) {
   }, { immediate: true });
 }
 
-
-
 export function errorNotes(status = 'open') {
   return Object.values(getState().notes)
     .filter((note) => (status === 'open' ? note.status !== 'resolved' : note.status === 'resolved'))
@@ -536,19 +510,12 @@ export function toggleErrorNoteResolved(id) {
   }, { immediate: true });
 }
 
-
-
 export function currentPlan() {
   const plan = getState().plan;
   const weekStart = startOfWeek().toISOString();
   if (!plan || plan.weekStart !== weekStart) return null;
   return plan;
 }
-
-
-
-
-
 
 export function rebuildPlan() {
   const personalization = activeProfile().personalization;

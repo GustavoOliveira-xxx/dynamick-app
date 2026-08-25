@@ -1,5 +1,3 @@
-
-
 export function formatMinutes(minutes) {
   if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
@@ -19,7 +17,6 @@ export function formatDate(value) {
   const date = value instanceof Date ? value : new Date(value);
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(date);
 }
-
 
 export function relativeDays(value) {
   if (!value) return 'ainda não praticado';
@@ -60,7 +57,6 @@ export function daysBetween(from, to = new Date()) {
 
 export const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-
 export function slugify(text) {
   return text
     .normalize('NFD')
@@ -70,7 +66,6 @@ export function slugify(text) {
     .replace(/^-+|-+$/g, '')
     .slice(0, 60);
 }
-
 
 export function newId(prefix = 'id') {
   const random = Math.random().toString(36).slice(2, 10);

@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 const ESC = '[';
 const GREEN = `${ESC}32m`;
 const RED = `${ESC}31m`;

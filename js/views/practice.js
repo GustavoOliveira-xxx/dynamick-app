@@ -1,8 +1,3 @@
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, seedNotice } from '../ui/components.js';
 import { formatMinutes, plural } from '../core/format.js';
@@ -26,8 +21,6 @@ import { createSession, resumableSession, selectReviewQuestions } from '../core/
 import { navigate } from '../core/router.js';
 import { startSession } from './dashboard.js';
 import { brain3d } from '../ui/brain-3d.js';
-
-
 
 export function renderPractice(root) {
   const profile = activeProfile();
@@ -83,7 +76,6 @@ export function renderPractice(root) {
           )
         : null,
 
-
       recommendation
         ? card(
             { accent: 'green' },
@@ -120,7 +112,6 @@ export function renderPractice(root) {
             actionLabel: 'Abrir o mapa de conteúdos',
             actionHref: '#/conteudos',
           }),
-
 
       el(
         'section',
@@ -167,7 +158,6 @@ export function renderPractice(root) {
           ),
         ),
       ),
-
 
       el(
         'section',
@@ -218,7 +208,6 @@ export function renderPractice(root) {
         ),
       ),
 
-
       alternatives.length > 0
         ? el(
             'section',
@@ -255,8 +244,6 @@ export function renderPractice(root) {
 
   return () => brain.dispose?.();
 }
-
-
 
 export function renderQuickSession(root) {
   const recommendation = mainRecommendation();
@@ -348,8 +335,6 @@ export function renderQuickSession(root) {
   );
 }
 
-
-
 export function renderSessionTemplate(root, { params }) {
   const template = getSessionTemplate(params.slug);
 
@@ -367,7 +352,6 @@ export function renderSessionTemplate(root, { params }) {
   }
 
   const resolved = resolveTemplate(template);
-
 
   if (resolved.redirectTo) {
     navigate(resolved.redirectTo.replace('#', ''), { replace: true });
@@ -475,20 +459,9 @@ export function renderSessionTemplate(root, { params }) {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
 function resolveTemplate(template) {
   const rule = template.itemRule;
   const vazio = { questionSlugs: [], topicSlugs: [], note: null, warning: null };
-
 
   if (rule.topicSlugs?.length) {
     const pool = rule.topicSlugs.flatMap((slug) => questionsForTopic(slug, { excludeRecovery: true }));
@@ -499,7 +472,6 @@ function resolveTemplate(template) {
       note: `Conteúdo fixo: ${rule.topicSlugs.map((slug) => getTopic(slug)?.name).filter(Boolean).join(', ')}.`,
     };
   }
-
 
   if (rule.source === 'review_queue') {
     const due = pendingReviews();
@@ -525,7 +497,6 @@ function resolveTemplate(template) {
         : 'Não sobrou questão inédita neste tópico. A sessão vai repetir itens já vistos, o que mede memória da questão, não domínio do conteúdo.',
     };
   }
-
 
   if (rule.source === 'recommendation' || rule.source === 'strategy') {
     const recommendation = mainRecommendation();
@@ -575,7 +546,6 @@ function resolveTemplate(template) {
     };
   }
 
-
   if (rule.source === 'interleaved') {
     const porMateria = new Map();
     for (const topic of TOPICS) {
@@ -610,7 +580,6 @@ function resolveTemplate(template) {
           : null,
     };
   }
-
 
   if (rule.source === 'diagnostic') {
     return { ...vazio, redirectTo: '#/diagnostico', note: 'Esta sessão é o diagnóstico leve, que tem tela própria.' };

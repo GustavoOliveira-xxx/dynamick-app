@@ -1,43 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const LABELS = ['A', 'B', 'C', 'D', 'E'];
 
 export const ORIGIN = 'AUTORAL_LEVA_2';
 export const LICENSE = 'Conteúdo autoral de desenvolvimento — Conscious Knowledge';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export function question(definition) {
   const {
@@ -78,23 +42,6 @@ export function question(definition) {
   };
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function topic(definition) {
   const {
     slug, name, subject, area, summary,
@@ -112,7 +59,6 @@ export function topic(definition) {
       throw new Error(`Tópico ${slug}: falta questão do formato "${esperado}".`);
     }
   }
-
 
   const comHabilidade = questions.map((item) => ({ ...item, skillSlug: item.skillSlug ?? skill.slug }));
 
