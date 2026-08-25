@@ -4,11 +4,6 @@ import {
   SESSION_TEMPLATES, SIMULATIONS, catalogHealth, contentTree, getTopic,
 } from '../js/data/content.js';
 
-
-
-
-
-
 describe('quantidades mínimas do pacote inicial', () => {
   const health = catalogHealth();
 
@@ -71,11 +66,6 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  /*
-   * A regra da terceira leva: cinco questões novas para CADA tópico, sem
-   * exceção. Este é o teste que trava a promessa — se um assunto novo entrar
-   * no acervo sem receber as suas cinco, a suíte acusa.
-   */
   it('cada um dos 39 tópicos recebeu exatamente 5 questões da terceira leva', () => {
     const fora = TOPICS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_3_2026_08').length !== 5,
@@ -83,14 +73,21 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('nenhum assunto é menos servido que outro', () => {
-    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
-    expect(Math.min(...principais)).toBeGreaterThanOrEqual(15);
+  it('cada um dos 39 tópicos recebeu exatamente 5 questões da quarta leva', () => {
+    const fora = TOPICS.filter(
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_4_2026_08').length !== 5,
+    );
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('o acervo totaliza 645 questões principais e 51 de recuperação', () => {
-    expect(health.totals.questions).toBe(696);
-    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(645);
+  it('nenhum assunto é menos servido que outro', () => {
+    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
+    expect(Math.min(...principais)).toBeGreaterThanOrEqual(20);
+  });
+
+  it('o acervo totaliza 840 questões principais e 51 de recuperação', () => {
+    expect(health.totals.questions).toBe(891);
+    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(840);
     expect(health.totals.recoveryQuestions).toBe(51);
   });
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));

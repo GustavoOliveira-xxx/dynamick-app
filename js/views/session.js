@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { navigate } from '../core/router.js';
 import { badge, button, card, emptyState, linkButton, message, progress, toast } from '../ui/components.js';
@@ -69,8 +58,6 @@ export function renderSession(root, { params, query }) {
 
   return renderRunner(root, session);
 }
-
-
 
 function renderPreparation(root, session) {
   const questions = session.items.map((item) => getQuestion(item.questionSlug)).filter(Boolean);
@@ -137,8 +124,6 @@ function renderPreparation(root, session) {
   );
 }
 
-
-
 function renderRunner(root, session) {
   const prefs = getState().preferences;
   let index = Math.min(Math.max(0, session.currentIndex), Math.max(0, session.items.length - 1));
@@ -169,7 +154,6 @@ function renderRunner(root, session) {
   function tick() {
     totalElapsed = Math.floor((Date.now() - new Date(session.startedAt).getTime()) / 1000);
 
-
     if (!isAnswered()) {
       elapsed = Math.floor((Date.now() - questionStart) / 1000);
       timerNode.textContent = formatSeconds(elapsed);
@@ -179,7 +163,6 @@ function renderRunner(root, session) {
     if (session.timeLimitSeconds) {
       const remaining = Math.max(0, session.timeLimitSeconds - totalElapsed);
       render(limitNode, badge(`Restam ${formatSeconds(remaining)}`, remaining < 60 ? 'warning' : 'neutral'));
-
 
       if (remaining === 0 && !timeExpired) {
         timeExpired = true;
@@ -531,11 +514,8 @@ function renderRunner(root, session) {
   paint();
   tick();
 
-
   return () => window.clearInterval(ticker);
 }
-
-
 
 function correctionCard(session, question, attempt, onChange) {
   const correct = question.options.find((option) => option.isCorrect);
@@ -710,7 +690,6 @@ function correctionCard(session, question, attempt, onChange) {
 
     reasonRegion,
 
-
     el(
       'div',
       { class: 'correction__actions' },
@@ -739,7 +718,6 @@ function correctionCard(session, question, attempt, onChange) {
     reportRegion,
   );
 }
-
 
 function reportButton(questionSlug) {
   const wrapper = el('div', {});
@@ -831,8 +809,6 @@ function reportButton(questionSlug) {
   return wrapper;
 }
 
-
-
 export function renderSessionResult(root, { params }) {
   const session = getSession(params.id);
   if (!session) {
@@ -885,7 +861,6 @@ export function renderSessionResult(root, { params }) {
         }),
         el('p', { class: 'small secondary', style: { marginTop: '0.75rem' } },
           `${summary.correct} acerto(s) e ${summary.wrong} erro(s).`),
-
 
         summary.correct > 0
           ? el(

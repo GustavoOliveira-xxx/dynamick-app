@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { navigate } from '../core/router.js';
 import { badge, button, card, choiceGroup, linkButton, message, progress } from '../ui/components.js';
@@ -39,11 +29,8 @@ import { classifyProfile, describePersonalization, supportsFor } from '../engine
 import { getProfile } from '../engine/profiles.js';
 import { formatMinutes } from '../core/format.js';
 
-
-
 export function renderOnboardingWelcome(root) {
   const s = student();
-
 
   const started = s.completedSteps.length > 0 || s.skippedSteps.length > 0;
   const resume = firstIncompleteStep(s.completedSteps, s.skippedSteps);
@@ -131,8 +118,6 @@ export function renderOnboardingWelcome(root) {
   );
 }
 
-
-
 export function renderOnboardingStep(root, { params }) {
   const step = getStep(params.etapa);
   if (!step) {
@@ -149,7 +134,6 @@ export function renderOnboardingStep(root, { params }) {
   const resumed =
     (s.completedSteps.length > 0 || s.skippedSteps.length > 0) &&
     !s.completedSteps.includes(step.slug);
-
 
   const draft = {};
   for (const question of step.questions) draft[question.id] = answers[question.id];
@@ -255,7 +239,6 @@ export function renderOnboardingStep(root, { params }) {
 
     render(errorRegion);
 
-
     if (step.slug === 'conforto') {
       updatePreferences({
         theme: draft.theme ?? 'dark',
@@ -303,7 +286,6 @@ export function renderOnboardingStep(root, { params }) {
         }),
       ),
 
-
       el('h1', { class: 'sr-only' }, `${step.title} — etapa ${index + 1} de ${total}`),
 
       resumed ? message('info', null, el('p', {}, MESSAGES.resumed)) : null,
@@ -347,7 +329,6 @@ export function renderOnboardingStep(root, { params }) {
   );
 }
 
-
 function selfAssessmentGrid(question, draft, onChange) {
   const value = { ...(draft[question.id] ?? {}) };
 
@@ -390,7 +371,6 @@ function selfAssessmentGrid(question, draft, onChange) {
     ),
   );
 }
-
 
 function choiceWithCustom(question, draft, errors, onChange) {
   const current = draft[question.id];
@@ -442,8 +422,6 @@ function choiceWithCustom(question, draft, errors, onChange) {
 
   return group;
 }
-
-
 
 export function renderProfileConfirmation(root) {
   syncProfile();
@@ -678,8 +656,6 @@ export function renderProfileConfirmation(root) {
     ),
   );
 }
-
-
 
 export function renderOnboardingSummary(root) {
   const s = student();

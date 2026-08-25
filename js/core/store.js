@@ -1,34 +1,11 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const BASE_KEY = 'dynamick:v1';
 const BACKUP_KEY = 'dynamick:v1:backup';
-
-
-
-
-
-
-
-
 
 let namespace = null;
 
 function storageKey() {
   return namespace ? `${BASE_KEY}:${namespace}` : BASE_KEY;
 }
-
 
 export function setNamespace(id) {
   const next = id || null;
@@ -45,7 +22,6 @@ export function currentNamespace() {
   return namespace;
 }
 
-
 export function hasLegacyState() {
   if (!storageAvailable) return false;
   try {
@@ -54,11 +30,6 @@ export function hasLegacyState() {
     return false;
   }
 }
-
-
-
-
-
 
 export function adoptLegacyState(targetId, sourceId = null) {
   if (!storageAvailable || !targetId) return false;
@@ -78,7 +49,6 @@ export function adoptLegacyState(targetId, sourceId = null) {
     return false;
   }
 }
-
 
 function emptyState() {
   return {
@@ -157,7 +127,6 @@ function isStorageAvailable() {
 
 export const storageAvailable = isStorageAvailable();
 
-
 function migrate(loaded) {
   const base = emptyState();
   const merged = { ...base, ...loaded };
@@ -190,9 +159,6 @@ export function load() {
     const raw = window.localStorage.getItem(storageKey());
     state = raw ? migrate(JSON.parse(raw)) : emptyState();
   } catch (error) {
-
-
-
 
     console.warn('Estado local ilegível; iniciando do zero. Backup em', BACKUP_KEY, error);
     try {
@@ -227,11 +193,6 @@ export function onStorageError(handler) {
   notifyError = handler;
 }
 
-
-
-
-
-
 export function update(mutator, options = {}) {
   const current = load();
   mutator(current);
@@ -248,7 +209,6 @@ export function update(mutator, options = {}) {
   return current;
 }
 
-
 export function subscribe(listener) {
   listeners.add(listener);
   return () => listeners.delete(listener);
@@ -258,11 +218,9 @@ export function getState() {
   return load();
 }
 
-
 export function exportData() {
   return JSON.stringify(load(), null, 2);
 }
-
 
 export function importData(json) {
   const parsed = JSON.parse(json);
@@ -275,7 +233,6 @@ export function importData(json) {
   for (const listener of listeners) listener(state);
   return state;
 }
-
 
 export function clearAll() {
   state = emptyState();
@@ -290,10 +247,6 @@ export function clearAll() {
   for (const listener of listeners) listener(state);
   return state;
 }
-
-
-
-
 
 export function watchOtherTabs(onExternalChange) {
   if (!storageAvailable) return () => {};

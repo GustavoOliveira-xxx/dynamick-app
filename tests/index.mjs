@@ -1,4 +1,3 @@
-
 import { run } from './run.mjs';
 
 const files = [
@@ -7,6 +6,7 @@ const files = [
   './mastery.test.mjs',
   './spaced.test.mjs',
   './simulation.test.mjs',
+  './simulados.test.mjs',
   './content.test.mjs',
   './answer-key.test.mjs',
   './pwa-archive.test.mjs',

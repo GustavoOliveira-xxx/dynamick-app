@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderAccount } from '../views/account.js';
 

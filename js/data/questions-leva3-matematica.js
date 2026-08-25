@@ -1,11 +1,3 @@
-/**
- * Terceira leva — cinco questões novas para cada assunto de Matemática.
- *
- * A regra desta leva é simples e vale para todas as matérias: cada tópico
- * cadastrado recebe cinco questões, nos cinco formatos cognitivos e com pelo
- * menos dois níveis de dificuldade. Nada aqui reaproveita enunciado oficial.
- */
-
 import { expandedQuestion } from './questions-expansion-factory.js';
 
 const ORIGEM = 'AUTORAL_LEVA_3_2026_08';
@@ -14,7 +6,7 @@ const FONTE = 'Situação e dados autorais criados para prática de raciocínio 
 const q = (definicao) => expandedQuestion({ ...definicao, support: FONTE, origin: ORIGEM });
 
 export const MATEMATICA_QUESTOES_LEVA_3 = [
-  /* ------------------------------------------------ Porcentagem e variação */
+
   q({
     topicSlug: 'porcentagem-e-variacao', slug: 'q3-porc-1',
     stem: 'Um aplicativo mostra que a bateria caiu de 80% para 60% em uma hora de uso. Sobre essa queda, é correto dizer que ela foi de:',
@@ -86,7 +78,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'A tarde cresceu 30% enquanto a escola cresceu 20%, então sua participação sobe. O cálculo final usa o total novo: 130 ÷ 300 ≈ 43%.',
   }),
 
-  /* --------------------------------------- Leitura de gráficos e tabelas */
   q({
     topicSlug: 'leitura-de-graficos-e-tabelas', slug: 'q3-graf-1',
     stem: 'Um gráfico de setores mostra a distribuição de gastos de uma família: moradia 35%, alimentação 25%, transporte 15%, saúde 10% e outros 15%. Para saber quanto foi gasto com moradia em reais, é indispensável conhecer:',
@@ -159,7 +150,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'Quando as populações diferem, comparar totais engana. A taxa por habitante coloca os dois postos na mesma medida.',
   }),
 
-  /* ------------------------------------------------- Funções e relações */
   q({
     topicSlug: 'funcoes-e-relacoes', slug: 'q3-fun-1',
     stem: 'Um estacionamento cobra R$ 8 pela primeira hora e R$ 3 por hora adicional. Chamando de h o total de horas, com h maior ou igual a 1, o valor pago é dado por:',
@@ -232,7 +222,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'Quando duas taxas atuam em sentidos opostos, o que importa é a diferença entre elas. Aqui o nível cai 6 litros por hora, e o volume inicial dura 100 horas.',
   }),
 
-  /* -------------------------------------------------- Razão e proporção */
   q({
     topicSlug: 'razao-e-proporcao', slug: 'q3-raz-1',
     stem: 'Uma receita de suco pede 2 partes de água para cada 3 partes de polpa. Sobre a razão entre polpa e o total da mistura, é correto dizer que ela é de:',
@@ -304,7 +293,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'Divisão proporcional soma as partes para achar o valor unitário: 4.200 ÷ 10 = 420 por parte. A maior fatia tem cinco partes.',
   }),
 
-  /* ------------------------------------------------------- Regra de três */
   q({
     topicSlug: 'regra-de-tres', slug: 'q3-rt-1',
     stem: 'Antes de aplicar regra de três, é preciso decidir se as grandezas são direta ou inversamente proporcionais. Essa decisão depende de:',
@@ -378,7 +366,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     strategy: 'Em problemas com três ou mais grandezas, calcule primeiro a produção unitária. Isso evita errar o sentido de cada proporção.',
   }),
 
-  /* ------------------------------------------------------ Geometria plana */
   q({
     topicSlug: 'geometria-plana', slug: 'q3-geo-1',
     stem: 'Um terreno retangular tem 12 m de frente e 30 m de fundo. Sobre perímetro e área desse terreno, é correto afirmar que:',
@@ -450,7 +437,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'A calçada é uma coroa circular: a área do círculo maior menos a do menor. A aproximação por perímetro vezes largura subestima porque despreza a curvatura.',
   }),
 
-  /* ---------------------------------------------------------- Estatística */
   q({
     topicSlug: 'estatistica', slug: 'q3-est-1',
     stem: 'Em uma equipe de 9 pessoas, oito ganham cerca de R$ 3.000 e uma ganha R$ 60.000. Para descrever o salário típico dessa equipe, a medida mais adequada é:',
@@ -523,7 +509,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     strategy: 'Nunca faça média de médias sem verificar o tamanho de cada grupo. Reconstruir a soma evita o erro.',
   }),
 
-  /* -------------------------------------------------------- Probabilidade */
   q({
     topicSlug: 'probabilidade', slug: 'q3-prob-1',
     stem: 'Uma moeda honesta foi lançada quatro vezes e deu cara nas quatro. Sobre o quinto lançamento, é correto afirmar que a probabilidade de sair cara é de:',
@@ -596,7 +581,6 @@ export const MATEMATICA_QUESTOES_LEVA_3 = [
     explanation: 'Para eventos que podem ocorrer juntos, a união soma os dois e desconta a interseção, que foi contada duas vezes.',
   }),
 
-  /* ------------------------------------------------ Matemática financeira */
   q({
     topicSlug: 'matematica-financeira', slug: 'q3-fin-1',
     stem: 'Sobre a diferença entre juros simples e juros compostos aplicados ao mesmo capital, prazo e taxa, é correto afirmar que:',

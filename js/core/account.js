@@ -1,24 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { setNamespace, clearNamespace, hasLegacyState, adoptLegacyState } from './store.js';
 
 const ACCOUNTS_KEY = 'dynamick:accounts:v1';
@@ -27,10 +6,7 @@ const SESSION_KEY = 'dynamick:session:v1';
 const ITERATIONS = 210000;
 const GUEST_ID = 'convidado';
 
-
 export const suportaSenha = Boolean(globalThis.crypto?.subtle);
-
-
 
 function readJson(key, fallback) {
   try {
@@ -60,8 +36,6 @@ function writeAccounts(accounts) {
   return writeJson(ACCOUNTS_KEY, { version: 1, accounts });
 }
 
-
-
 function toBase64(bytes) {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));
 }
@@ -86,7 +60,6 @@ async function derive(password, salt, iterations = ITERATIONS) {
   return toBase64(bits);
 }
 
-
 function equals(a, b) {
   if (a.length !== b.length) return false;
   let diff = 0;
@@ -95,9 +68,6 @@ function equals(a, b) {
   }
   return diff === 0;
 }
-
-
-
 
 export function listAccounts() {
   return readAccounts()
@@ -138,7 +108,6 @@ export function currentSession() {
   return { accountId: account.id, guest: false, since: session.since };
 }
 
-
 export function currentAccount() {
   const session = currentSession();
   if (!session) return null;
@@ -163,16 +132,10 @@ export function isSignedIn() {
   return currentSession() !== null;
 }
 
-
-
 function openSession(accountId) {
   writeJson(SESSION_KEY, { accountId, since: new Date().toISOString() });
   setNamespace(accountId);
 }
-
-
-
-
 
 export function bindActiveAccount() {
   const session = currentSession();
@@ -192,8 +155,6 @@ export function signOut() {
   }
   clearNamespace();
 }
-
-
 
 export function validateName(name) {
   const clean = String(name ?? '').trim();
@@ -216,10 +177,6 @@ export function validatePassword(password) {
   if (value.length > 200) return 'Senha longa demais.';
   return null;
 }
-
-
-
-
 
 export async function createAccount({ name, email = '', password = '' }) {
   const cleanName = String(name).trim();
@@ -270,16 +227,10 @@ export async function createAccount({ name, email = '', password = '' }) {
 
   openSession(id);
 
-
-
   if (first && hasLegacyState()) adoptLegacyState(id);
 
   return currentAccount();
 }
-
-
-
-
 
 export async function signIn({ identifier, password = '' }) {
   const account = findRaw(identifier);
@@ -302,13 +253,11 @@ export async function signIn({ identifier, password = '' }) {
   return currentAccount();
 }
 
-
 export function continueAsGuest() {
   openSession(GUEST_ID);
   if (hasLegacyState()) adoptLegacyState(GUEST_ID);
   return currentAccount();
 }
-
 
 export async function upgradeGuest({ name, email = '', password = '' }) {
   const session = currentSession();
@@ -320,7 +269,6 @@ export async function upgradeGuest({ name, email = '', password = '' }) {
   return account;
 }
 
-
 export function renameAccount(id, { name, email }) {
   const problem = validateName(name) ?? validateEmail(email ?? '');
   if (problem) throw new Error(problem);
@@ -331,10 +279,6 @@ export function renameAccount(id, { name, email }) {
   writeAccounts(accounts);
   return currentAccount();
 }
-
-
-
-
 
 export function deleteAccount(id) {
   const accounts = readAccounts().filter((item) => item.id !== id);

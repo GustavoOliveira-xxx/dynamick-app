@@ -1,8 +1,3 @@
-
-
-
-
-
 export const LINGUAGENS_TOPICS = [
   {
     slug: 'interpretacao-e-inferencia',

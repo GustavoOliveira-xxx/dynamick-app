@@ -1,5 +1,3 @@
-
-
 const LABELS = ['A', 'B', 'C', 'D', 'E'];
 
 export function expandedQuestion(definition) {

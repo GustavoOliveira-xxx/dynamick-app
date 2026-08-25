@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderDashboard } from '../views/dashboard.js';
 import { renderDiagnostic } from '../views/diagnostic.js';

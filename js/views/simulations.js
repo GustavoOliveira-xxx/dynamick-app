@@ -1,19 +1,11 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, progress } from '../ui/components.js';
 import { formatMinutes, formatSeconds, formatDate, percent, plural } from '../core/format.js';
 import { DIFFICULTY_LABELS, ERROR_REASON_LABELS } from '../engine/domain.js';
-import { SIMULATIONS, getArea, getSimulation } from '../data/content.js';
+import { SIMULATIONS, SUBJECTS, getArea, getSimulation } from '../data/content.js';
 import { getState } from '../core/store.js';
 import { createSimulationSession, getSession, summarizeSession } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
-
-
 
 export function renderSimulations(root) {
   const state = getState();
@@ -24,7 +16,9 @@ export function renderSimulations(root) {
   const openRun = runs.find((run) => !run.submittedAt);
 
   const diagnostic = SIMULATIONS.filter((item) => item.kind === 'diagnostic');
-  const byArea = SIMULATIONS.filter((item) => item.kind !== 'diagnostic');
+  const byArea = SIMULATIONS.filter((item) => item.kind === 'area');
+  const porMateria = SIMULATIONS.filter((item) => item.kind === 'subject');
+  const porAssunto = SIMULATIONS.filter((item) => item.kind === 'topic');
 
   render(
     root,
@@ -81,6 +75,18 @@ export function renderSimulations(root) {
         el('h2', {}, 'Por área'),
         el('div', { class: 'grid grid--2' }, byArea.map((item) => simulationCard(item, runs))),
       ),
+      el(
+        'section',
+        { class: 'stack' },
+        el('h2', {}, 'Por matéria'),
+        el(
+          'p',
+          { class: 'small secondary' },
+          'Questões espalhadas entre todos os assuntos da matéria, sorteadas a cada tentativa.',
+        ),
+        el('div', { class: 'grid grid--2' }, porMateria.map((item) => simulationCard(item, runs))),
+      ),
+      secaoPorAssunto(porAssunto, runs),
 
       el(
         'section',
@@ -136,6 +142,51 @@ export function renderSimulations(root) {
   );
 }
 
+function secaoPorAssunto(simulados, runs) {
+  const grade = el('div', { class: 'grid grid--2' });
+  const vazio = el('p', { class: 'small secondary' });
+  const busca = el('input', {
+    class: 'input',
+    type: 'search',
+    autocomplete: 'off',
+    placeholder: 'Filtrar por assunto ou matéria',
+    'aria-label': 'Filtrar simulados por assunto',
+  });
+
+  const materiaDe = new Map(SUBJECTS.map((materia) => [materia.slug, materia.name]));
+
+  function pintar() {
+    const termo = busca.value.trim().toLowerCase();
+    const visiveis = simulados.filter((item) => {
+      if (!termo) return true;
+      const materia = materiaDe.get(item.subjectSlug) ?? '';
+      return `${item.title} ${materia}`.toLowerCase().includes(termo);
+    });
+    render(grade, visiveis.map((item) => simulationCard(item, runs)));
+    render(
+      vazio,
+      visiveis.length === 0 ? 'Nenhum assunto com esse nome.' : `${visiveis.length} de ${simulados.length} assuntos.`,
+    );
+  }
+
+  busca.addEventListener('input', pintar);
+  pintar();
+
+  return el(
+    'section',
+    { class: 'stack' },
+    el('h2', {}, 'Por assunto'),
+    el(
+      'p',
+      { class: 'small secondary' },
+      'Um simulado para cada assunto do acervo, com questões sorteadas só dele. Refazer sorteia outras.',
+    ),
+    busca,
+    vazio,
+    grade,
+  );
+}
+
 function simulationCard(simulation, runs) {
   const previous = runs.filter((run) => run.simulationSlug === simulation.slug && run.submittedAt);
   const last = previous[0];
@@ -170,8 +221,6 @@ function simulationCard(simulation, runs) {
     ),
   );
 }
-
-
 
 export function renderSimulationDetail(root, { params }) {
   const simulation = getSimulation(params.slug);
@@ -326,8 +375,6 @@ export function renderSimulationDetail(root, { params }) {
   );
 }
 
-
-
 export function renderSimulationResult(root, { params }) {
   const run = getState().simulationRuns[params.runId];
 
@@ -348,7 +395,6 @@ export function renderSimulationResult(root, { params }) {
   const analysis = run.analysis ?? {};
   const summary = summarizeSession(run.sessionId);
   const rate = percent(run.score, run.totalItems);
-
 
   const previous = Object.values(getState().simulationRuns)
     .filter(

@@ -1,30 +1,5 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { el } from '../core/dom.js';
 import { button } from './components.js';
-
-
-
 
 const FACES = [
   { id: 'U', axis: 'y', sign: -1, normal: [0, -1, 0] },
@@ -37,7 +12,6 @@ const FACES = [
 
 const AXIS_INDEX = { x: 0, y: 1, z: 2 };
 
-
 function multiply(a, b) {
   const out = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (let row = 0; row < 3; row += 1) {
@@ -48,7 +22,6 @@ function multiply(a, b) {
   }
   return out;
 }
-
 
 function rotationMatrix(axis, quarterTurns) {
   const turns = ((quarterTurns % 4) + 4) % 4;
@@ -74,8 +47,6 @@ function matrix3d(m) {
   return `matrix3d(${m[0][0]},${m[1][0]},${m[2][0]},0,${m[0][1]},${m[1][1]},${m[2][1]},0,${m[0][2]},${m[1][2]},${m[2][2]},0,0,0,0,1)`;
 }
 
-
-
 function createCubies() {
   const cubies = [];
   for (let x = -1; x <= 1; x += 1) {
@@ -88,10 +59,6 @@ function createCubies() {
   }
   return cubies;
 }
-
-
-
-
 
 function cubieElement(cubie, size) {
   const node = el('div', { class: 'ck-cube__cubie' });
@@ -114,7 +81,6 @@ function cubieElement(cubie, size) {
         .join(' '),
     });
 
-
     const rotation =
       face.id === 'F' ? 'rotateY(0deg)'
         : face.id === 'B' ? 'rotateY(180deg)'
@@ -132,17 +98,7 @@ function cubieElement(cubie, size) {
   return node;
 }
 
-
-
 const AXIS_KEYS = ['x', 'y', 'z'];
-
-
-
-
-
-
-
-
 
 export function rubikCube(options = {}) {
   const {
@@ -179,8 +135,6 @@ export function rubikCube(options = {}) {
     body.append(cubie.node);
   }
 
-
-
   let view = { x: -24, y: -32 };
   let spinVelocity = { x: 0, y: autoSpin ? 0.16 : 0 };
   let dragging = null;
@@ -199,14 +153,6 @@ export function rubikCube(options = {}) {
   function paintView() {
     body.style.transform = `rotateX(${view.x}deg) rotateY(${view.y}deg)`;
   }
-
-
-
-
-
-
-
-
 
   function turn(axis, layer, direction, { animate = true, announce } = {}) {
     if (disposed) return Promise.resolve();
@@ -258,26 +204,14 @@ export function rubikCube(options = {}) {
     });
   }
 
-
-
-
-
-
-
   function layerFromGesture(sticker, dx, dy) {
     const cubie = cubies.find((item) => item.node === sticker.parentElement);
     if (!cubie) return null;
-
 
     const localNormal = sticker.dataset.normal.split(',').map(Number);
     const normal = applyMatrix(cubie.orientation, localNormal).map(Math.round);
     const faceAxis = normal.findIndex((value) => value !== 0);
     if (faceAxis < 0) return null;
-
-
-
-
-
 
     const rx = (view.x * Math.PI) / 180;
     const ry = (view.y * Math.PI) / 180;
@@ -286,12 +220,6 @@ export function rubikCube(options = {}) {
       const z1 = -x * Math.sin(ry) + z * Math.cos(ry);
       return { x: x1, y: y * Math.cos(rx) - z1 * Math.sin(rx) };
     }
-
-
-
-
-
-
 
     let best = null;
     for (const axis of [0, 1, 2].filter((value) => value !== faceAxis)) {
@@ -305,8 +233,6 @@ export function rubikCube(options = {}) {
       const score = motion.x * dx + motion.y * dy;
       if (!best || Math.abs(score) > Math.abs(best.score)) best = { axis, score };
     }
-
-
 
     if (!best || Math.abs(best.score) < 0.5) return null;
 
@@ -371,8 +297,6 @@ export function rubikCube(options = {}) {
     dragging = null;
   }
 
-
-
   const KEY_TURNS = {
     q: ['y', -1, -1, 'Camada de cima girada.'],
     w: ['y', -1, 1, 'Camada de cima girada ao contrário.'],
@@ -405,8 +329,6 @@ export function rubikCube(options = {}) {
     }
   }
 
-
-
   function randomTurn() {
     const axis = AXIS_KEYS[Math.floor(Math.random() * 3)];
     const layer = [-1, 0, 1][Math.floor(Math.random() * 3)];
@@ -423,11 +345,6 @@ export function rubikCube(options = {}) {
     }
     status.textContent = 'Embaralhado. Boa sorte.';
   }
-
-
-
-
-
 
   function reset() {
     queue = [];
@@ -446,8 +363,6 @@ export function rubikCube(options = {}) {
     status.textContent = 'Cubo montado de novo.';
   }
 
-
-
   function tick() {
     if (disposed) return;
     if (!dragging) {
@@ -463,8 +378,6 @@ export function rubikCube(options = {}) {
     }
     frame = requestAnimationFrame(tick);
   }
-
-
 
   paintCubies();
   paintView();
@@ -519,7 +432,6 @@ export function rubikCube(options = {}) {
   if (!reduced) {
     frame = requestAnimationFrame(tick);
   }
-
 
   root.dispose = () => {
     disposed = true;

@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 export const ESSAY_PROMPTS = [
   {
     slug: 'acesso-digital-e-direitos',

@@ -1,11 +1,3 @@
-/**
- * Terceira leva — cinco questões novas para cada assunto de Produção Textual.
- *
- * As questões tratam de decisões de escrita: como formular uma tese, escolher
- * repertório, encadear parágrafos e detalhar uma proposta. Todos os trechos
- * citados foram escritos para estas questões.
- */
-
 import { expandedQuestion } from './questions-expansion-factory.js';
 
 const ORIGEM = 'AUTORAL_LEVA_3_2026_08';
@@ -14,7 +6,7 @@ const FONTE = 'Trechos e situações autorais criados para prática de produçã
 const q = (definicao) => expandedQuestion({ ...definicao, support: FONTE, origin: ORIGEM });
 
 export const REDACAO_QUESTOES_LEVA_3 = [
-  /* ------------------------------------------------- Tese e argumentação */
+
   q({
     topicSlug: 'tese-e-argumentacao', slug: 'q3-tese-1',
     stem: 'Sobre o que distingue uma tese de um mero anúncio de tema em uma redação dissertativo-argumentativa, é correto afirmar que a tese:',
@@ -87,7 +79,6 @@ export const REDACAO_QUESTOES_LEVA_3 = [
     strategy: 'Depois de cada dado ou exemplo, escreva uma frase que responda: o que isso prova a respeito da minha tese?',
   }),
 
-  /* ------------------------------------------- Repertório sociocultural */
   q({
     topicSlug: 'repertorio-sociocultural', slug: 'q3-rep3-1',
     stem: 'Um repertório sociocultural é considerado produtivo em uma redação quando:',
@@ -159,7 +150,6 @@ export const REDACAO_QUESTOES_LEVA_3 = [
     explanation: 'Transpor repertório exige marcar a semelhança que sustenta o argumento e a diferença que impede a analogia de virar exagero.',
   }),
 
-  /* --------------------------------------------- Coesão e progressão */
   q({
     topicSlug: 'coesao-e-progressao', slug: 'q3-coe-1',
     stem: 'Em um texto dissertativo, a diferença entre coesão e coerência pode ser formulada assim:',
@@ -232,7 +222,6 @@ export const REDACAO_QUESTOES_LEVA_3 = [
     strategy: 'Antes de escolher o conectivo, nomeie a relação: acréscimo, contraste, causa, conclusão ou concessão. A palavra vem depois da relação.',
   }),
 
-  /* ------------------------------------------- Proposta de intervenção */
   q({
     topicSlug: 'proposta-de-intervencao', slug: 'q3-prop-1',
     stem: 'Uma proposta de intervenção completa em redação dissertativo-argumentativa costuma articular cinco elementos. São eles:',

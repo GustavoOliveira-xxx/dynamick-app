@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import { AREAS, SUBJECTS } from './areas.js';
 import { LINGUAGENS_TOPICS } from './topics-linguagens.js';
 import { MATEMATICA_TOPICS } from './topics-matematica.js';
@@ -17,24 +10,16 @@ import { HUMANAS_TOPICS_LEVA_2 } from './topics-humanas-leva2.js';
 import { NATUREZA_TOPICS_LEVA_2 } from './topics-natureza-leva2.js';
 import { REDACAO_TOPICS_LEVA_2 } from './topics-redacao-leva2.js';
 import { STUDY_METHODS } from './study-methods.js';
-import { SESSION_TEMPLATES, SIMULATIONS } from './sessions.js';
+import { SESSION_TEMPLATES, SIMULATIONS as SIMULADOS_FIXOS } from './sessions.js';
+import { simuladosDeAssunto, simuladosDeMateria } from './simulados-gerados.js';
 import { ESSAY_PROMPTS } from './essay-prompts.js';
 import { QUESTION_EXPANSION } from './questions-expansion.js';
 import { QUESTION_REINFORCEMENT } from './questions-reinforcement.js';
 import { QUESTOES_LEVA_3 } from './questions-leva3.js';
+import { QUESTOES_LEVA_4 } from './questions-leva4.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
-export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, SIMULATIONS, ESSAY_PROMPTS };
-
-
-
-
-
-
-
-
-
-
+export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, ESSAY_PROMPTS };
 
 const BASE_TOPICS = [
   ...LINGUAGENS_TOPICS,
@@ -67,6 +52,12 @@ const leva3ByTopic = QUESTOES_LEVA_3.reduce((index, question) => {
   return index;
 }, new Map());
 
+const leva4ByTopic = QUESTOES_LEVA_4.reduce((index, question) => {
+  if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
+  index.get(question.topicSlug).push(question);
+  return index;
+}, new Map());
+
 export const TOPICS = BASE_TOPICS.map((topic) => ({
   ...topic,
   questions: [
@@ -77,43 +68,21 @@ export const TOPICS = BASE_TOPICS.map((topic) => ({
       skillSlug: topic.skills[0]?.slug ?? null,
     })),
     ...(leva3ByTopic.get(topic.slug) ?? []),
+    ...(leva4ByTopic.get(topic.slug) ?? []),
   ],
 }));
 
-
+export const SIMULATIONS = [
+  ...SIMULADOS_FIXOS,
+  ...simuladosDeMateria(TOPICS),
+  ...simuladosDeAssunto(TOPICS),
+];
 
 const areaBySlug = new Map(AREAS.map((area) => [area.slug, area]));
 const subjectBySlug = new Map(SUBJECTS.map((subject) => [subject.slug, subject]));
 const topicBySlug = new Map(TOPICS.map((topic) => [topic.slug, topic]));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const POSICAO_ALVO = [1, 3, 0, 4, 2, 3, 1, 4, 0, 2, 4, 0, 3, 1, 2, 0, 4, 1, 3, 2];
-
-
-
-
-
-
 
 function deslocamentoDoTopico(slug) {
   let soma = 0;
@@ -121,13 +90,11 @@ function deslocamentoDoTopico(slug) {
   return soma;
 }
 
-
 function passoDoTopico(slug) {
   let soma = 7;
   for (const caractere of slug) soma = (soma * 131 + caractere.codePointAt(0)) % 7919;
   return soma;
 }
-
 
 function temOrdemNumerica(options) {
   const valores = options.map((option) => {
@@ -147,11 +114,8 @@ function balancearGabarito(question, ordem, topicSlug) {
   const options = question.options ?? [];
   const atual = options.findIndex((option) => option.isCorrect);
 
-
   if (atual < 0 || options.filter((option) => option.isCorrect).length !== 1) return question;
   if (temOrdemNumerica(options)) return question;
-
-
 
   const semente = deslocamentoDoTopico(topicSlug);
   const passos = [1, 3, 7, 9, 11, 13, 17, 19];
@@ -171,7 +135,6 @@ function balancearGabarito(question, ordem, topicSlug) {
     options: rotacionadas.map((option, indice) => ({ ...option, label: options[indice].label })),
   };
 }
-
 
 export const QUESTIONS = TOPICS.flatMap((topic) =>
   topic.questions.map((original, ordem) => {
@@ -211,7 +174,6 @@ export const getEssayPrompt = (slug) =>
 export const getStudyMethod = (slug) =>
   STUDY_METHODS.find((method) => method.slug === slug) ?? null;
 
-
 export function questionsForTopic(topicSlug, { recoveryOnly = false, excludeRecovery = false } = {}) {
   return QUESTIONS.filter((question) => {
     if (question.topicSlug !== topicSlug) return false;
@@ -225,11 +187,9 @@ export function questionsForArea(areaSlug) {
   return QUESTIONS.filter((question) => question.areaSlug === areaSlug);
 }
 
-
 export function contentOfKind(topic, kind) {
   return (topic?.content ?? []).filter((item) => item.kind === kind);
 }
-
 
 export function contentTree() {
   return AREAS.map((area) => ({
@@ -244,10 +204,6 @@ export function contentTree() {
       .filter((subject) => subject.topics.length > 0),
   })).filter((area) => area.subjects.length > 0);
 }
-
-
-
-
 
 export function catalogHealth() {
   const topicsWithoutContent = TOPICS.filter((topic) => (topic.content ?? []).length === 0);
@@ -265,7 +221,6 @@ export function catalogHealth() {
   const missingRationale = QUESTIONS.filter((question) =>
     question.options.some((option) => !option.rationale?.trim()),
   );
-
 
   const seen = new Map();
   const duplicates = [];

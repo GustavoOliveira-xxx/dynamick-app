@@ -1,8 +1,3 @@
-
-
-
-
-
 import { LINGUAGENS_QUESTION_EXPANSION } from './questions-expansion-linguagens.js';
 import { MATEMATICA_QUESTION_EXPANSION } from './questions-expansion-matematica.js';
 import { HUMANAS_QUESTION_EXPANSION } from './questions-expansion-humanas.js';

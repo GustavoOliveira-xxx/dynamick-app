@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 import { describe, it, expect } from './run.mjs';
 import { QUESTIONS, TOPICS, getQuestion } from '../js/data/content.js';
 

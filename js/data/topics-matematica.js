@@ -1,8 +1,3 @@
-
-
-
-
-
 export const MATEMATICA_TOPICS = [
   {
     slug: 'porcentagem-e-variacao',
