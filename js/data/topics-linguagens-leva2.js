@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
 import { question as q, topic } from './topic-factory.js';
 
 export const LINGUAGENS_TOPICS_LEVA_2 = [

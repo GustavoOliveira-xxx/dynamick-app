@@ -1,28 +1,12 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
-
 
 const MESES_ATE_EXPIRAR = 12;
 
 export default async function handler(req, res) {
   const segredo = process.env.CRON_SECRET;
   const enviado = req.headers?.authorization;
-
-
 
   if (!segredo) {
     res.status(503).json({ erro: 'CRON_SECRET não configurado.' });

@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 export const STUDY_METHODS = [
   {
     slug: 'estudo-ativo',

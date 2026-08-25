@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 export const QUESTIONNAIRE_VERSION = 'v1';
 
 export const AREA_SELF_ASSESSMENT = [
@@ -401,7 +394,6 @@ export function previousStepSlug(slug) {
   const index = stepIndex(slug);
   return index <= 0 ? null : ONBOARDING_STEPS[index - 1].slug;
 }
-
 
 export function firstIncompleteStep(completed, skipped) {
   const done = new Set([...completed, ...skipped]);

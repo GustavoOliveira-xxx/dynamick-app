@@ -1,8 +1,3 @@
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, card, button, linkButton, emptyState, message, progress } from '../ui/components.js';
 import { formatMinutes, relativeDays, WEEKDAYS } from '../core/format.js';
@@ -92,7 +87,6 @@ export function renderDashboard(root) {
           )
         : null,
 
-
       resumable
         ? card(
             { pad: 'lg' },
@@ -114,7 +108,6 @@ export function renderDashboard(root) {
             ),
           )
         : null,
-
 
       recommendation
         ? card(
@@ -161,7 +154,6 @@ export function renderDashboard(root) {
             actionLabel: 'Explorar conteúdos',
             actionHref: '#/conteudos',
           }),
-
 
       el(
         'section',
@@ -242,7 +234,6 @@ export function renderDashboard(root) {
           )
         : null,
 
-
       alternatives.length > 0
         ? el(
             'section',
@@ -272,11 +263,8 @@ export function renderDashboard(root) {
     ),
   );
 
-
-
   return () => cube.dispose?.();
 }
-
 
 export function startSession(triggerButton, topicSlug, kind) {
   import('../ui/components.js').then(({ setButtonLoading }) => {

@@ -1,19 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { el, render, uid } from '../core/dom.js';
 import { navigate } from '../core/router.js';
 import { badge, button, card, field, message, setButtonLoading, toast } from '../ui/components.js';
@@ -29,7 +13,7 @@ import {
   suportaSenha,
 } from '../core/account.js';
 import { student } from '../core/student.js';
-import { codigoValido, formatarCodigo, syncDisponivel, vincularExistente } from '../core/sync.js';
+import { codigoValido, entrarComCodigo, formatarCodigo, syncDisponivel } from '../core/sync.js';
 import { relativeDays } from '../core/format.js';
 
 const TABS = [
@@ -38,13 +22,10 @@ const TABS = [
   { id: 'codigo', label: 'Tenho um código' },
 ];
 
-
 function afterSignIn() {
   const status = student().onboardingStatus;
   navigate(status === 'not_started' ? '/onboarding' : '/inicio', { replace: true });
 }
-
-
 
 function signInPanel(accounts, rerender) {
   if (accounts.length === 0) {
@@ -175,8 +156,6 @@ function signInPanel(accounts, rerender) {
   );
 }
 
-
-
 function createPanel() {
   const error = el('div', { 'aria-live': 'polite' });
   const submit = button({ label: 'Criar conta e começar', type: 'submit' });
@@ -276,8 +255,6 @@ function createPanel() {
   );
 }
 
-
-
 function codePanel() {
   if (!syncDisponivel) {
     return card(
@@ -313,9 +290,13 @@ function codePanel() {
         setButtonLoading(submit, true, 'Buscando…');
         try {
 
-          continueAsGuest();
-          await vincularExistente(codigo);
-          toast('Progresso restaurado neste aparelho.', 'success');
+          const resultado = await entrarComCodigo(codigo);
+          toast(
+            resultado.nome
+              ? `Bem-vindo de volta, ${resultado.nome}. Seu progresso veio junto.`
+              : 'Progresso restaurado neste aparelho.',
+            'success',
+          );
           afterSignIn();
         } catch (problem) {
           setButtonLoading(submit, false);
@@ -353,8 +334,6 @@ function codePanel() {
     form,
   );
 }
-
-
 
 export function renderAccount(root, context) {
   const requested = context?.params?.aba ?? context?.query?.get('aba') ?? null;
@@ -410,11 +389,6 @@ export function renderAccount(root, context) {
 
   const cube = rubikCube({ size: 'sm', autoSpin: true });
   const sessaoAtual = currentAccount();
-
-
-
-
-
 
   const resume = sessaoAtual
     ? card(

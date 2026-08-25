@@ -1,41 +1,14 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { exportData, importData } from './store.js';
+import { exportData, importData, subscribe } from './store.js';
+import { currentAccount, createAccount, continueAsGuest } from './account.js';
 import { SYNC } from '../config.js';
-
 
 const API = SYNC.base.replace(/\/$/, '');
 
-const CHAVE_LOCAL = 'dynamick:sync';
+const CHAVE_LOCAL_BASE = 'dynamick:sync';
 const ITERACOES = 210000;
 const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 export const syncDisponivel = SYNC.habilitado && Boolean(globalThis.crypto?.subtle);
-
-
-
-
-
-
-
 
 export function gerarCodigo() {
   const bytes = new Uint8Array(20);
@@ -43,7 +16,6 @@ export function gerarCodigo() {
   const letras = [...bytes].map((b) => ALFABETO[b % ALFABETO.length]).join('');
   return letras.match(/.{1,4}/g).join('-');
 }
-
 
 export function normalizarCodigo(codigo) {
   return (codigo ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -57,8 +29,6 @@ export function codigoValido(codigo) {
 export function formatarCodigo(codigo) {
   return normalizarCodigo(codigo).match(/.{1,4}/g)?.join('-') ?? '';
 }
-
-
 
 const bytesParaBase64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
 const base64ParaBytes = (texto) => Uint8Array.from(atob(texto), (c) => c.charCodeAt(0));
@@ -108,12 +78,14 @@ async function decifrar(codigo, { ciphertext, iv, salt }) {
   return new TextDecoder().decode(aberto);
 }
 
-
-
+function chaveDoVinculo() {
+  const conta = currentAccount();
+  return conta ? `${CHAVE_LOCAL_BASE}:${conta.id}` : CHAVE_LOCAL_BASE;
+}
 
 export function vinculoAtual() {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE_LOCAL) ?? 'null');
+    return JSON.parse(localStorage.getItem(chaveDoVinculo()) ?? 'null');
   } catch {
     return null;
   }
@@ -121,8 +93,9 @@ export function vinculoAtual() {
 
 function gravarVinculo(vinculo) {
   try {
-    if (vinculo) localStorage.setItem(CHAVE_LOCAL, JSON.stringify(vinculo));
-    else localStorage.removeItem(CHAVE_LOCAL);
+    const chave = chaveDoVinculo();
+    if (vinculo) localStorage.setItem(chave, JSON.stringify(vinculo));
+    else localStorage.removeItem(chave);
   } catch {
 
   }
@@ -131,8 +104,6 @@ function gravarVinculo(vinculo) {
 export function desvincular() {
   gravarVinculo(null);
 }
-
-
 
 class ErroDeSync extends Error {
   constructor(mensagem, causa) {
@@ -164,20 +135,11 @@ async function chamar(caminho, opcoes = {}) {
   return resposta.json();
 }
 
-
-
-
-
-
-
-
-
 export async function enviar({ forcar = false } = {}) {
   const vinculo = vinculoAtual();
   if (!vinculo) throw new ErroDeSync('Este aparelho ainda não tem um código de sincronização.');
 
-  const payload = exportData();
-  const corpo = await cifrar(vinculo.codigo, payload);
+  const corpo = await cifrar(vinculo.codigo, montarPacote());
 
   const resultado = await chamar('/api/sync', {
     method: 'PUT',
@@ -192,31 +154,55 @@ export async function enviar({ forcar = false } = {}) {
   return resultado;
 }
 
+function montarPacote() {
+  const estado = JSON.parse(exportData());
+  const conta = currentAccount();
+  if (conta) estado.conta = { nome: conta.name, email: conta.email ?? '' };
+  return JSON.stringify(estado);
+}
 
-
-
+async function baixarPacote(codigo) {
+  const resposta = await chamar(`/api/sync?codeHash=${await hashDoCodigo(codigo)}`);
+  if (!resposta) return null;
+  let texto;
+  try {
+    texto = await decifrar(codigo, resposta);
+  } catch (erro) {
+    throw new ErroDeSync('Código incorreto para estes dados.', erro);
+  }
+  let conta = null;
+  try {
+    conta = JSON.parse(texto).conta ?? null;
+  } catch {
+    conta = null;
+  }
+  return { texto, conta, revision: resposta.revision, atualizadoEm: resposta.updatedAt };
+}
 
 export async function receber(codigo = null) {
   const vinculo = vinculoAtual();
   const usar = codigo ?? vinculo?.codigo;
   if (!usar) throw new ErroDeSync('Nenhum código informado.');
-
-  const resposta = await chamar(`/api/sync?codeHash=${await hashDoCodigo(usar)}`);
-  if (!resposta) return null;
-
-  let json;
-  try {
-    json = await decifrar(usar, resposta);
-  } catch (erro) {
-
-    throw new ErroDeSync('Código incorreto para estes dados.', erro);
-  }
-
-  importData(json);
-  gravarVinculo({ codigo: normalizarCodigo(usar), revision: resposta.revision, recebidoEm: new Date().toISOString() });
-  return { revision: resposta.revision, atualizadoEm: resposta.updatedAt };
+  const pacote = await baixarPacote(usar);
+  if (!pacote) return null;
+  importData(pacote.texto);
+  gravarVinculo({ codigo: normalizarCodigo(usar), revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm };
 }
 
+export async function entrarComCodigo(codigo) {
+  if (!codigoValido(codigo)) throw new ErroDeSync('Esse código não tem o formato esperado.');
+  const pacote = await baixarPacote(codigo);
+  if (!pacote) throw new ErroDeSync('Não encontramos nada gravado com esse código.');
+
+  const nome = pacote.conta?.nome?.trim();
+  if (nome) await createAccount({ name: nome, email: pacote.conta.email ?? '' });
+  else continueAsGuest();
+
+  importData(pacote.texto);
+  gravarVinculo({ codigo: normalizarCodigo(codigo), revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm, nome: nome ?? null };
+}
 
 export async function vincularNovo() {
   const codigo = gerarCodigo();
@@ -225,19 +211,12 @@ export async function vincularNovo() {
   return codigo;
 }
 
-
 export async function vincularExistente(codigo) {
   if (!codigoValido(codigo)) throw new ErroDeSync('Esse código não tem o formato esperado.');
   const resultado = await receber(codigo);
   if (!resultado) throw new ErroDeSync('Não encontramos nada gravado com esse código.');
   return resultado;
 }
-
-
-
-
-
-
 
 export async function apagarNoServidor() {
   const vinculo = vinculoAtual();
@@ -247,5 +226,61 @@ export async function apagarNoServidor() {
   return true;
 }
 
-
 export const _internals = { hashDoCodigo, cifrar, decifrar, derivarChave };
+
+let temporizador = null;
+let enviando = false;
+let pendente = false;
+
+async function drenar() {
+  if (enviando) { pendente = true; return; }
+  enviando = true;
+  try {
+    await enviar();
+  } catch (erro) {
+    if (erro?.message === 'conflito') {
+      try { await enviar({ forcar: true }); } catch { pendente = false; }
+    }
+  } finally {
+    enviando = false;
+    if (pendente) { pendente = false; agendarEnvio(1200); }
+  }
+}
+
+export function agendarEnvio(atraso = 4000) {
+  if (!syncDisponivel || !vinculoAtual()) return;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(drenar, atraso);
+}
+
+let automaticoLigado = false;
+
+export async function buscarNaAbertura() {
+  const vinculo = vinculoAtual();
+  if (!syncDisponivel || !vinculo) return null;
+  let resposta;
+  try {
+    resposta = await chamar(`/api/sync?codeHash=${await hashDoCodigo(vinculo.codigo)}`);
+  } catch {
+    return null;
+  }
+  if (!resposta || Number(resposta.revision) <= Number(vinculo.revision ?? 0)) return null;
+  try {
+    const texto = await decifrar(vinculo.codigo, resposta);
+    importData(texto);
+    gravarVinculo({ ...vinculo, revision: resposta.revision, recebidoEm: new Date().toISOString() });
+    return { revision: resposta.revision };
+  } catch {
+    return null;
+  }
+}
+
+export function iniciarEnvioAutomatico() {
+  if (automaticoLigado || !syncDisponivel) return;
+  automaticoLigado = true;
+  buscarNaAbertura();
+  subscribe(() => agendarEnvio());
+  addEventListener('pagehide', () => {
+    if (temporizador) { clearTimeout(temporizador); drenar(); }
+  });
+}

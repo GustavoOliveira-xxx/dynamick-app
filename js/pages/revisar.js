@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderReview, renderNotebook } from '../views/review.js';
 

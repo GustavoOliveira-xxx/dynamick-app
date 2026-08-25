@@ -1,23 +1,6 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
-
 
 const LIMITE_BYTES = 1_500_000;
 const HASH = /^[0-9a-f]{64}$/;
@@ -30,7 +13,6 @@ function json(res, status, corpo) {
   res.setHeader('cache-control', 'no-store');
   res.end(JSON.stringify(corpo));
 }
-
 
 function base64Valido(valor, maximo) {
   return typeof valor === 'string'
@@ -93,8 +75,6 @@ async function gravar(req, res) {
 
   const bytes = ciphertext.length;
 
-
-
   if (revision === null || revision === undefined) {
     const linhas = await sql`
       INSERT INTO sync_snapshots (code_hash, ciphertext, iv, salt, bytes)
@@ -116,7 +96,6 @@ async function gravar(req, res) {
     return json(res, 400, { erro: 'revision inválida.' });
   }
 
-
   if (revision === 0) {
     const linhas = await sql`
       INSERT INTO sync_snapshots (code_hash, ciphertext, iv, salt, bytes)
@@ -127,7 +106,6 @@ async function gravar(req, res) {
     if (linhas.length === 0) return json(res, 409, { erro: 'Já existe algo mais novo neste código.' });
     return json(res, 200, { revision: Number(linhas[0].revision), updatedAt: linhas[0].updated_at });
   }
-
 
   const linhas = await sql`
     UPDATE sync_snapshots

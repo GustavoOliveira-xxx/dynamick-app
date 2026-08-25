@@ -1,16 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { isCrossPage, linkTo, pageForRoute } from './pages.js';
 import { showLoaderForNavigation } from '../ui/loader.js';
 
@@ -18,12 +5,6 @@ const routes = [];
 let notFoundHandler = null;
 let currentCleanup = null;
 let currentPath = null;
-
-
-
-
-
-
 
 export function route(pattern, handler) {
   const names = [];
@@ -54,7 +35,6 @@ function parseHash() {
 
 async function resolve() {
   const { path, query } = parseHash();
-
 
   if (typeof currentCleanup === 'function') {
     try {
@@ -91,8 +71,6 @@ async function resolve() {
 export function navigate(path, { replace = false } = {}) {
   const clean = path.startsWith('#') ? path.slice(1) : path;
 
-
-
   if (isCrossPage(clean)) {
     const destino = pageForRoute(clean);
     showLoaderForNavigation(destino?.title ? `Abrindo ${destino.title.toLowerCase()}` : 'Carregando');
@@ -103,9 +81,6 @@ export function navigate(path, { replace = false } = {}) {
   }
 
   const target = `#${clean}`;
-
-
-
 
   if (window.location.hash === target) {
     resolve();
@@ -119,7 +94,6 @@ export function navigate(path, { replace = false } = {}) {
   }
 }
 
-
 export function refresh() {
   resolve();
 }
@@ -128,7 +102,6 @@ export function start() {
   window.addEventListener('hashchange', resolve);
   resolve();
 }
-
 
 export function redirect(path) {
   navigate(path, { replace: true });

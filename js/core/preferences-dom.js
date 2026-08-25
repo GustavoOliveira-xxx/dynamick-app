@@ -1,22 +1,5 @@
-
-
-
-
-
-
-
-
-
-
-
 const CHAVE_BASE = 'dynamick:v1';
 const CHAVE_SESSAO = 'dynamick:session:v1';
-
-
-
-
-
-
 
 function chaveAtiva() {
   try {
@@ -35,7 +18,6 @@ export const PADROES = {
   visualIntensity: 'full',
 };
 
-
 export function readPreferences() {
   try {
     const bruto = localStorage.getItem(chaveAtiva());
@@ -47,19 +29,12 @@ export function readPreferences() {
   }
 }
 
-
-
-
-
 export function applyPreferencesTo(prefs, root = document.documentElement) {
   root.dataset.theme = prefs.theme ?? PADROES.theme;
   root.dataset.textScale = prefs.textScale ?? PADROES.textScale;
 
   if (prefs.highContrast) root.dataset.contrast = 'high';
   else delete root.dataset.contrast;
-
-
-
 
   if (prefs.reducedMotion === 'reduced') root.dataset.motion = 'reduced';
   else if (prefs.reducedMotion === 'full') root.dataset.motion = 'full';
@@ -68,7 +43,6 @@ export function applyPreferencesTo(prefs, root = document.documentElement) {
   if (prefs.visualIntensity === 'reduced') root.dataset.visual = 'reduced';
   else delete root.dataset.visual;
 }
-
 
 export function applyStoredPreferences() {
   applyPreferencesTo(readPreferences());

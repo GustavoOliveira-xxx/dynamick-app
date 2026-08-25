@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderSession, renderSessionResult } from '../views/session.js';
 

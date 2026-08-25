@@ -1,5 +1,3 @@
-
-
 export const DIMENSION_WEIGHTS = {
   autonomy: 1,
   consistency: 1,
@@ -8,14 +6,6 @@ export const DIMENSION_WEIGHTS = {
   practicePreference: 1,
   needsShortSessions: 1.2,
 };
-
-
-
-
-
-
-
-
 
 export const PROFILE_PREMISES = {
   'treinador-de-desempenho': {

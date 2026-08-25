@@ -1,7 +1,3 @@
-
-
-
-
 import { writeFileSync } from 'node:fs';
 import {
   AREAS, SUBJECTS, TOPICS, QUESTIONS, STUDY_METHODS,
@@ -107,9 +103,6 @@ push('COMMIT;');
 const sql = linhas.join('\n') + '\n';
 writeFileSync(new URL('02-seed-acervo.sql', import.meta.url), sql);
 console.log('linhas:', linhas.length, '| bytes:', sql.length);
-
-
-
 
 if (process.argv.includes('--json')) {
   writeFileSync(new URL('acervo.json', import.meta.url), JSON.stringify({

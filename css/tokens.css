@@ -1,16 +1,9 @@
-
-
-
-
-
-
 :root {
 
   --ck-bg-void: #020504;
   --ck-bg-deep: #06100d;
   --ck-bg-panel: #0a1715;
   --ck-bg-raised: #0f201d;
-
 
   --ck-green: #2ee88a;
   --ck-green-glow: #5cffb0;
@@ -19,13 +12,6 @@
   --ck-cyan: #63e6ff;
   --ck-lime: #b8f36a;
 
-  /*
-   * Faces do cubo mágico — amostradas da própria arte da logo.
-   * A arte vive entre o ciano e o verde-menta, então as seis faces se separam
-   * por luminosidade, não por matiz: do gelo ao azul-petróleo, em degraus de
-   * dez a quinze pontos. É o que mantém o cubo legível (e resolvível) sem
-   * trazer para dentro dele uma cor que a marca não tem.
-   */
   --ck-face-u: #effdff;
   --ck-face-d: #a5ffd0;
   --ck-face-f: #4defab;
@@ -33,30 +19,24 @@
   --ck-face-r: #0a8f9c;
   --ck-face-l: #0a4f66;
 
-
   --ck-text: #e8f5ef;
   --ck-text-2: #a9c4ba;
   --ck-text-3: #7d968d;
 
-
   --ck-line: rgb(46 232 138 / 14%);
   --ck-line-strong: rgb(46 232 138 / 32%);
-
 
   --ck-danger: #ff6b7a;
   --ck-warning: #ffc861;
   --ck-success: #2ee88a;
   --ck-info: #63e6ff;
 
-
   --ck-glass: rgb(10 23 21 / 78%);
-
 
   --ck-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --ck-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --ck-text-scale: 1;
-
 
   --ck-r-sm: 6px;
   --ck-r-md: 10px;
@@ -64,23 +44,19 @@
   --ck-r-xl: 22px;
   --ck-r-pill: 999px;
 
-
   --ck-shadow: 0 10px 34px -18px rgb(0 0 0 / 85%);
   --ck-shadow-deep: 0 24px 60px -30px rgb(0 0 0 / 90%);
   --ck-glow: 0 0 0 1px rgb(46 232 138 / 34%), 0 12px 40px -16px rgb(46 232 138 / 34%);
   --ck-glow-soft: 0 0 26px -10px rgb(46 232 138 / 40%);
 
-
   --ck-gutter: 1.25rem;
   --ck-shell: 1240px;
-
 
   --ck-dur-fast: 160ms;
   --ck-dur: 260ms;
   --ck-dur-slow: 420ms;
   --ck-ease: cubic-bezier(0.16, 0.84, 0.44, 1);
   --ck-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-
 
   --ck-z-bg: 0;
   --ck-z-content: 10;
@@ -89,10 +65,8 @@
   --ck-z-toast: 50;
   --ck-z-transition: 60;
 
-
   --ck-visual-opacity: 1;
 }
-
 
 [data-theme="light"] {
   --ck-bg-void: #f2f7f4;
@@ -121,7 +95,6 @@
   --ck-glow-soft: 0 0 22px -12px rgb(15 125 77 / 34%);
 }
 
-
 [data-contrast="high"] {
   --ck-text: #ffffff;
   --ck-text-2: #d6ece2;
@@ -136,11 +109,9 @@
   --ck-text-3: #2c463a;
 }
 
-
 [data-visual="reduced"] {
   --ck-visual-opacity: 0;
 }
-
 
 [data-text-scale="112"] { --ck-text-scale: 1.12; }
 [data-text-scale="125"] { --ck-text-scale: 1.25; }

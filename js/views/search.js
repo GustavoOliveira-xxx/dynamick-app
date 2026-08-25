@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render, debounce } from '../core/dom.js';
 import { badge, card, emptyState } from '../ui/components.js';
 import { plural } from '../core/format.js';
@@ -18,14 +12,12 @@ import {
 import { masteryFor } from '../core/student.js';
 import { navigate } from '../core/router.js';
 
-
 function normalize(text) {
   return (text ?? '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 }
-
 
 let index = null;
 
@@ -260,7 +252,6 @@ export function renderSearch(root, { query }) {
   run(initial);
   input.focus();
 }
-
 
 function sugestoes() {
   const destaques = TOPICS.slice(0, 6);

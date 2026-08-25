@@ -1,27 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const PAGES = [
   { id: 'entrar', file: 'entrar.html', title: 'Entrar', routes: ['/entrar'] },
   { id: 'onboarding', file: 'onboarding.html', title: 'Seu perfil de estudo', routes: ['/onboarding'] },
@@ -41,20 +17,11 @@ export const PAGES = [
 
 const byId = new Map(PAGES.map((page) => [page.id, page]));
 
-
 export const HOME_PAGE = byId.get('inicio');
 
 export function getPage(id) {
   return byId.get(id) ?? null;
 }
-
-
-
-
-
-
-
-
 
 function split(path) {
   const withoutHash = String(path ?? '').replace(/^#/, '');
@@ -67,10 +34,6 @@ function split(path) {
 function normalize(path) {
   return split(path).route;
 }
-
-
-
-
 
 export function pageForRoute(path) {
   const clean = normalize(path);
@@ -87,15 +50,10 @@ export function pageForRoute(path) {
   return best?.page ?? null;
 }
 
-
 export function currentPageId() {
   if (typeof document === 'undefined') return null;
   return document.body?.dataset?.page ?? null;
 }
-
-
-
-
 
 export function linkTo(path) {
   const { route, query } = split(path);
@@ -104,7 +62,6 @@ export function linkTo(path) {
   if (!target || target.id === currentPageId()) return hash;
   return `${target.file}${hash}`;
 }
-
 
 export function isCrossPage(path) {
   const target = pageForRoute(path);

@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import { DIMENSION_KEYS } from './domain.js';
 import { clamp } from '../core/format.js';
 import {
@@ -43,11 +36,6 @@ function asList(value) {
   return [];
 }
 
-
-
-
-
-
 export function answeredSteps(answers) {
   return ONBOARDING_STEPS.filter((step) =>
     step.questions.some((question) => {
@@ -81,7 +69,6 @@ export function computeDimensions(answers) {
     }
   }
 
-
   const days = Number(asString(answers.daysPerWeek) ?? NaN);
   if (Number.isFinite(days) && days >= 1 && days <= 7) {
     dimensions.consistency = 30 + days * 8;
@@ -93,7 +80,6 @@ export function computeDimensions(answers) {
     if (asList(answers.frictions).includes('perder_ritmo')) dimensions.consistency -= 10;
   }
 
-
   const minutes = Number(asString(answers.sessionMinutes) ?? NaN);
   if (Number.isFinite(minutes) && ![10, 20, 30, 45, 60].includes(minutes)) {
     const bounded = clamp(minutes, 5, 180);
@@ -101,10 +87,8 @@ export function computeDimensions(answers) {
     dimensions.needsShortSessions += Math.round(effect);
   }
 
-
   const primaryGoal = asString(answers.primaryGoal);
   if (primaryGoal) applyEffect(dimensions, findOption('goals', primaryGoal)?.effect);
-
 
   const selfAssessment = answers.selfAssessment;
   if (selfAssessment && typeof selfAssessment === 'object' && !Array.isArray(selfAssessment)) {
@@ -133,7 +117,6 @@ function scoreProfile(dimensions, profile) {
   }
   return Math.round((100 - weighted / totalWeight) * 100) / 100;
 }
-
 
 export function buildSignals(answers) {
   const signals = [];
@@ -175,7 +158,6 @@ export function buildSignals(answers) {
 
   return signals;
 }
-
 
 export function detectContradictions(answers) {
   const found = [];
@@ -231,14 +213,12 @@ export function classifyProfile(answers) {
     return getProfile(a.slug).priority - getProfile(b.slug).priority;
   });
 
-
   const suggested = (ranking.find((item) => item.eligible) ?? ranking[0])?.slug ?? 'explorador-sem-rota';
 
   let confidence;
   if (missingRequiredSteps.length > 0 || contradictions.length > 0) confidence = 'low';
   else if (answered.length === ONBOARDING_STEPS.length) confidence = 'high';
   else confidence = 'medium';
-
 
   if (answered.length === 0) {
     return {
@@ -276,13 +256,11 @@ export function classifyProfile(answers) {
   };
 }
 
-
 export function supportsFor(answers) {
   return asList(answers.frictions)
     .map((value) => findOption('frictions', value)?.support)
     .filter(Boolean);
 }
-
 
 export function describePersonalization(slug) {
   const p = getProfile(slug).personalization;

@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, dirname, resolve, extname } from 'node:path';
 
@@ -27,7 +16,6 @@ function walk(dir, files = []) {
 const files = walk(JS_DIR);
 const problems = [];
 const warnings = [];
-
 
 function exportsOf(file) {
   const source = readFileSync(file, 'utf8');
@@ -57,7 +45,6 @@ for (const file of files) {
   const source = readFileSync(file, 'utf8');
   const rel = relative(ROOT, file);
 
-
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/g)) {
     const specifier = match[2];
     if (!specifier.startsWith('.')) continue;
@@ -80,7 +67,6 @@ for (const file of files) {
     }
   }
 
-
   for (const match of source.matchAll(/import\s+(\w+)\s+from\s*['"](\.[^'"]+)['"]/g)) {
     const target = resolve(dirname(file), match[2]);
     if (!existsSync(target)) {
@@ -91,7 +77,6 @@ for (const file of files) {
       problems.push(`${rel}: importa default de ${relative(ROOT, target)}, que não tem export default`);
     }
   }
-
 
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*['"][^'"]+['"]/g)) {
     for (const raw of match[1].split(',')) {

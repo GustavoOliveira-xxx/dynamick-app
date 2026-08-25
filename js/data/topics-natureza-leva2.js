@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 import { question as q, topic } from './topic-factory.js';
 
 export const NATUREZA_TOPICS_LEVA_2 = [

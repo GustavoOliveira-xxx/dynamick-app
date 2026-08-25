@@ -8,8 +8,6 @@ import {
 import { PROFILES } from '../js/engine/profiles.js';
 import { ONBOARDING_STEPS, REQUIRED_STEPS } from '../js/data/questionnaire.js';
 
-
-
 const perdidoComPoucoTempo = {
   schoolYear: 'em2',
   previousPrep: 'nunca',
