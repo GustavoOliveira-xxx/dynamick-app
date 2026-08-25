@@ -1,15 +1,5 @@
-
-
-
-
-
-
 export const REVIEW_INTERVALS = [1, 3, 7, 14, 30, 60];
 export const EASE_BOUNDS = { min: 130, max: 320 };
-
-
-
-
 
 export function reconcileRecall({ recall, wasCorrect }) {
   if (wasCorrect === undefined) return recall;
@@ -41,7 +31,6 @@ export function nextReviewState(current, outcome) {
     };
   }
 
-
   const grown = Math.round((current.interval * current.ease) / 100);
   return {
     interval: Math.min(180, Math.max(REVIEW_INTERVALS[1], grown)),
@@ -56,10 +45,6 @@ export function nextDueDate(state, from = new Date()) {
   due.setDate(due.getDate() + state.interval);
   return due;
 }
-
-
-
-
 
 export function buildReviewBatch(originalIds, candidates, size) {
   const seen = new Set(originalIds);

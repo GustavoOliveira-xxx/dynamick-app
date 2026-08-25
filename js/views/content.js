@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, card, emptyState, message, progress, seedNotice, button } from '../ui/components.js';
 import { markdown } from '../core/markdown.js';
@@ -34,8 +28,6 @@ const ACCENT_VAR = {
   cyan: 'var(--ck-cyan)',
   lime: 'var(--ck-lime)',
 };
-
-
 
 export function renderContentMap(root, { query }) {
   const filters = {
@@ -237,8 +229,6 @@ function topicCard(topic) {
   );
 }
 
-
-
 export function renderTopic(root, { params, query }) {
   const topic = getTopic(params.slug);
   if (!topic) {
@@ -250,7 +240,6 @@ export function renderTopic(root, { params, query }) {
     }));
     return;
   }
-
 
   markTopicViewed(topic.slug);
 

@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 import { el, frag } from './dom.js';
 
 export function markdown(source) {
@@ -23,7 +14,6 @@ export function markdown(source) {
       continue;
     }
 
-
     if (line.trim().startsWith('|') && (lines[index + 1] ?? '').includes('---')) {
       const header = splitRow(line);
       const rows = [];
@@ -36,7 +26,6 @@ export function markdown(source) {
       continue;
     }
 
-
     const heading = /^(#{2,4})\s+(.*)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
@@ -45,13 +34,11 @@ export function markdown(source) {
       continue;
     }
 
-
     if (line.startsWith('> ')) {
       blocks.push(el('blockquote', { class: 'md-quote' }, inline(line.slice(2).trim())));
       index += 1;
       continue;
     }
-
 
     if (line.startsWith('```')) {
       const code = [];
@@ -64,7 +51,6 @@ export function markdown(source) {
       blocks.push(el('pre', { class: 'md-code' }, el('code', {}, code.join('\n'))));
       continue;
     }
-
 
     if (/^[-*•]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
       const ordered = /^\d+\.\s+/.test(line);
@@ -79,7 +65,6 @@ export function markdown(source) {
       blocks.push(el(ordered ? 'ol' : 'ul', { class: 'md-list' }, items));
       continue;
     }
-
 
     const paragraph = [];
     while (index < lines.length && (lines[index] ?? '').trim() && !isBlockStart(lines[index])) {
@@ -128,7 +113,6 @@ function tableBlock(header, rows) {
     ),
   );
 }
-
 
 function inline(text) {
   const nodes = [];

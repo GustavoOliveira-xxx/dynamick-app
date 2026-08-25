@@ -1,7 +1,3 @@
-
-
-
-
 .card {
   position: relative;
   background:
@@ -41,8 +37,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
   background: linear-gradient(90deg, transparent, var(--ck-line-strong), transparent);
   margin-block: 1.25rem;
 }
-
-
 
 .btn {
   position: relative;
@@ -102,7 +96,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .btn--lg { min-height: 54px; padding-inline: 1.75rem; font-size: 1rem; }
 .btn--block { width: 100%; }
 
-
 .btn__spinner {
   width: 1rem;
   height: 1rem;
@@ -112,8 +105,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
   border-radius: 50%;
   animation: ck-spin 0.7s linear infinite;
 }
-
-
 
 .badge {
   display: inline-flex;
@@ -134,8 +125,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .badge--warning { color: var(--ck-warning); border-color: rgb(255 200 97 / 38%); }
 .badge--danger { color: var(--ck-danger); border-color: rgb(255 107 122 / 38%); }
 
-
-
 .progress {
   width: 100%;
   height: 10px;
@@ -152,8 +141,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 }
 .progress__fill--warning { background: linear-gradient(90deg, #7a5a12, var(--ck-warning)); }
 .progress__fill--teal { background: linear-gradient(90deg, var(--ck-green-deep), var(--ck-teal)); }
-
-
 
 .field { display: grid; gap: 0.4rem; align-content: start; }
 .field__label { font-size: 0.9rem; font-weight: 500; }
@@ -179,7 +166,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .input[aria-invalid="true"] { border-color: var(--ck-danger); }
 .textarea { min-height: auto; line-height: 1.6; resize: vertical; }
 
-
 .option {
   display: flex;
   align-items: flex-start;
@@ -201,7 +187,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 .option__body { min-width: 0; flex: 1; }
 .option--correct { border-color: var(--ck-success) !important; }
 .option--wrong { border-color: var(--ck-danger) !important; }
-
 
 .chip {
   display: inline-flex;
@@ -226,8 +211,6 @@ a.card-link { display: block; text-decoration: none; height: 100%; }
 
 fieldset { border: 0; }
 legend { padding: 0; }
-
-
 
 .skeleton {
   border-radius: var(--ck-r-sm);
@@ -277,8 +260,6 @@ legend { padding: 0; }
 .message--danger { border-color: var(--ck-danger); }
 .message--danger .message__title { color: var(--ck-danger); }
 
-
-
 .toast-region {
   position: fixed;
   right: 1rem;
@@ -300,8 +281,6 @@ legend { padding: 0; }
 }
 .toast--success { border-color: var(--ck-success); }
 .toast--danger { border-color: var(--ck-danger); }
-
-
 
 .modal-backdrop {
   position: fixed;
@@ -325,9 +304,6 @@ legend { padding: 0; }
   animation: ck-enter var(--ck-dur) var(--ck-ease) both;
 }
 
-
-
-
 .table-wrap { overflow-x: auto; }
 .table {
   width: 100%;
@@ -344,8 +320,6 @@ legend { padding: 0; }
 }
 .table th { font-weight: 600; border-bottom-color: var(--ck-line-strong); }
 .table td { color: var(--ck-text-2); }
-
-
 
 .stack { display: grid; gap: 1rem; }
 .stack--sm { gap: 0.5rem; }
@@ -382,8 +356,6 @@ legend { padding: 0; }
 }
 .flex-1 { flex: 1; min-width: 0; }
 
-
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -414,7 +386,6 @@ legend { padding: 0; }
 }
 .brand-img { object-fit: contain; height: auto; }
 
-
 .brand-mark--animated {
   animation: brand-in 900ms var(--ck-ease-spring) both;
 }
@@ -426,8 +397,6 @@ legend { padding: 0; }
   filter: drop-shadow(0 0 8px rgb(46 232 138 / 45%));
   transition: filter var(--ck-dur) var(--ck-ease);
 }
-
-
 
 .md-heading { margin-top: 1.4em; font-size: 1.02rem; }
 .md-heading:first-child { margin-top: 0; }
@@ -453,8 +422,6 @@ legend { padding: 0; }
   font-family: var(--ck-mono);
   font-size: 0.88em;
 }
-
-
 
 .bg-layer {
   position: fixed;
@@ -553,8 +520,6 @@ legend { padding: 0; }
   );
 }
 
-
-
 .choice-group__legend {
   margin-bottom: 0.35rem;
   font-size: 1.05rem;
@@ -563,7 +528,6 @@ legend { padding: 0; }
 .option__label { display: block; font-size: 0.95rem; font-weight: 500; }
 .option__hint { display: block; margin-top: 0.25rem; }
 .option__support { display: block; margin-top: 0.5rem; color: var(--ck-teal); }
-
 
 .card--accent {
   position: relative;
@@ -578,23 +542,9 @@ legend { padding: 0; }
   background: var(--card-accent, var(--ck-green));
 }
 
-
-
-
 .brand-picture { display: inline-flex; line-height: 0; max-width: 100%; }
 .brand-picture .brand-img { max-width: 100%; height: auto; }
 .brand-img--institutional { opacity: 0.9; }
-
-
-
-
-
-
-
-
-
-
-
 
 .ck-cube {
   --cubie: 34px;
@@ -626,7 +576,6 @@ legend { padding: 0; }
   outline: 2px solid var(--ck-green);
   outline-offset: 6px;
 }
-
 
 .ck-cube__aura {
   position: absolute;
@@ -666,7 +615,6 @@ legend { padding: 0; }
   will-change: transform;
 }
 
-
 .ck-cube__layer {
   position: absolute;
   width: 0;
@@ -694,21 +642,17 @@ legend { padding: 0; }
   backface-visibility: hidden;
 }
 
-
 .ck-cube__sticker--blank {
   background: #0b0f0e;
   box-shadow: none;
 }
 
-
-/* Faces na paleta da marca (tokens.css), não nas cores de fábrica do cubo. */
 .ck-cube__sticker--U { --face: var(--ck-face-u, #effdff); }
 .ck-cube__sticker--D { --face: var(--ck-face-d, #a5ffd0); }
 .ck-cube__sticker--F { --face: var(--ck-face-f, #4defab); }
 .ck-cube__sticker--B { --face: var(--ck-face-b, #12c98f); }
 .ck-cube__sticker--R { --face: var(--ck-face-r, #0a8f9c); }
 .ck-cube__sticker--L { --face: var(--ck-face-l, #0a4f66); }
-
 
 .ck-cube__sticker--core::after {
   content: "";
@@ -743,7 +687,6 @@ legend { padding: 0; }
   text-align: center;
 }
 
-
 @supports not (transform-style: preserve-3d) {
   .ck-cube__viewport { display: none; }
   .ck-cube__fallback { display: block; }
@@ -755,7 +698,6 @@ legend { padding: 0; }
   font-size: 0.85rem;
   text-align: center;
 }
-
 
 .route-transition {
   position: fixed;
@@ -820,11 +762,9 @@ legend { padding: 0; }
   filter: drop-shadow(0 0 6px var(--ck-green));
   animation: transition-signal 780ms var(--ck-ease) infinite;
 }
-/* Uma escala só: o cubo, as peças e a logo encolhem juntos. */
-.route-transition .ck-boot__stage { --k: 0.58; width: 132px; height: 132px; }
+.route-transition { --logo: clamp(5rem, 14vw, 6.5rem); }
 .route-transition .ck-boot__word { margin-top: 0.35rem; font-size: 0.95rem; }
-.route-transition--reduced .ck-boot__logo { opacity: 1; transform: none; }
-.route-transition--reduced .ck-boot__aura { opacity: 0.5; }
+.route-transition--reduced .ck-boot__shine { display: none; }
 .route-transition--reduced .route-transition__track { display: none; }
 @keyframes transition-field { to { transform: rotate(360deg); } }
 @keyframes transition-signal {

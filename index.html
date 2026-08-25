@@ -50,23 +50,30 @@
 
     <div class="ck-boot" id="ck-boot" role="status" aria-live="polite">
       <div class="ck-boot__stage" aria-hidden="true">
-        <span class="ck-boot__aura"></span>
-        <!-- Oito peças de seis faces. Posição, cor e tempo vêm do CSS. -->
-        <div class="ck-boot__cube">
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="ck-boot__cubie"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="ck-boot__glow"></span>
+        <div class="ck-boot__orbits">
+          <span class="ck-boot__orbit ck-boot__orbit--a"></span>
+          <span class="ck-boot__orbit ck-boot__orbit--b"></span>
+          <span class="ck-boot__orbit ck-boot__orbit--c"></span>
         </div>
+        <div class="ck-boot__sparks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <svg class="ck-boot__arc" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <linearGradient id="ck-boot-degrade" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#35d6c0" />
+              <stop offset="55%" stop-color="#5cffb0" />
+              <stop offset="100%" stop-color="#b8f36a" />
+            </linearGradient>
+          </defs>
+          <circle class="ck-boot__arc-track" cx="100" cy="100" r="92" />
+          <circle class="ck-boot__arc-run" cx="100" cy="100" r="92" />
+        </svg>
         <div class="ck-boot__logo">
           <picture>
             <source srcset="assets/brand/logo-dynamic.webp" type="image/webp" />
             <img src="assets/brand/logo-dynamic.png" alt="" width="116" height="105" decoding="async" fetchpriority="high" />
           </picture>
+          <span class="ck-boot__shine"></span>
         </div>
       </div>
       <p class="ck-boot__word" aria-hidden="true">
@@ -78,7 +85,6 @@
     </div>
 
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
-
 
     <div id="fundo" aria-hidden="true"></div>
 
@@ -116,7 +122,6 @@
               Sem cadastro e sem cartão. Seus dados de estudo ficam no seu navegador.
             </p>
           </div>
-
 
           <div class="hero__visual ck-enter">
             <div id="cubo-conhecimento" class="hero__cube"></div>
@@ -160,7 +165,6 @@
           </div>
         </section>
 
-
         <section class="shell section" aria-labelledby="beneficios">
           <h2 id="beneficios">O que muda na prática</h2>
           <div class="grid-3 section__grid">
@@ -193,7 +197,6 @@
           </div>
         </section>
 
-
         <section class="shell section" aria-labelledby="ciclo">
           <h2 id="ciclo">O ciclo que a plataforma sustenta</h2>
           <ol class="cycle">
@@ -207,7 +210,6 @@
             <li><span class="cycle__n">8</span> Acompanhar a evolução</li>
           </ol>
         </section>
-
 
         <section class="shell section" aria-labelledby="limites">
           <div class="card card--pad-lg">
@@ -264,16 +266,13 @@
       document.getElementById('marca').append(dynamickLogo({ variant: 'full', signature: true }));
       document.getElementById('marca-institucional').append(consciousKnowledgeLogo());
 
-
       document.getElementById('cubo-conhecimento').append(rubikCube({ size: 'md' }));
-
 
       mountBackground(document.getElementById('fundo'), {
         intensity: 'high',
         interactive: true,
         context: 'landing',
       });
-
 
       for (const link of document.querySelectorAll('a[href*=".html#/"]')) {
         link.addEventListener('click', () => showLoaderForNavigation('Abrindo sua área de estudo'));

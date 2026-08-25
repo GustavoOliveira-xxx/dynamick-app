@@ -1,5 +1,3 @@
-
-
 import { startPage } from '../core/shell.js';
 import { renderCatalog } from '../views/catalog.js';
 

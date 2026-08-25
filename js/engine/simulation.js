@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 export function generateSimulation(pool, blueprint, totalRequested, seed = 'default') {
   const available = pool.filter((question) => !question.isRecovery);
   const used = new Set();
@@ -23,15 +16,13 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     return taken;
   }
 
-
   for (const [topicSlug, count] of Object.entries(blueprint.topics ?? {})) {
-    const candidates = sortStable(available.filter((q) => q.topicSlug === topicSlug));
+    const candidates = shuffleStable(sortStable(available.filter((q) => q.topicSlug === topicSlug)), `${seed}:${topicSlug}`);
     const taken = take(candidates, count);
     if (taken < count) {
       shortfall.push({ dimension: 'tópico', key: topicSlug, requested: count, available: taken });
     }
   }
-
 
   for (const [areaSlug, count] of Object.entries(blueprint.areas ?? {})) {
     const alreadyFromArea = picked.filter((id) =>
@@ -40,7 +31,7 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     const missing = count - alreadyFromArea;
     if (missing <= 0) continue;
 
-    const candidates = sortStable(available.filter((q) => q.areaSlug === areaSlug));
+    const candidates = shuffleStable(sortStable(available.filter((q) => q.areaSlug === areaSlug)), `${seed}:${areaSlug}`);
     const taken = take(candidates, missing);
     if (taken < missing) {
       shortfall.push({
@@ -52,9 +43,8 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
     }
   }
 
-
   if (picked.length < totalRequested) {
-    take(sortStable(available), totalRequested - picked.length);
+    take(shuffleStable(sortStable(available), `${seed}:resto`), totalRequested - picked.length);
     if (picked.length < totalRequested) {
       shortfall.push({
         dimension: 'total',
@@ -79,11 +69,9 @@ export function generateSimulation(pool, blueprint, totalRequested, seed = 'defa
   };
 }
 
-
 function sortStable(items) {
   return [...items].sort((a, b) => a.id.localeCompare(b.id));
 }
-
 
 function shuffleStable(items, seed) {
   const result = [...items];

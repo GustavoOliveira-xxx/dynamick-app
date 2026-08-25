@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import { clamp } from '../core/format.js';
 
 export const FACTOR_WEIGHTS = {
@@ -12,11 +5,6 @@ export const FACTOR_WEIGHTS = {
   repeatedErrors: 7,
   lowConfidence: 5,
   timeSinceReview: 6,
-
-
-
-
-
 
   curation: 0.12,
   examProximity: 12,
@@ -41,10 +29,6 @@ function timeDecayPoints(days) {
   if (days <= 14) return 1;
   return 1.2;
 }
-
-
-
-
 
 function examProximityFactor(daysToExam) {
   if (daysToExam === null || daysToExam === undefined) return 0;
@@ -89,7 +73,6 @@ export function scoreTopic(signals, context) {
     add('neverPracticed', 'tópico ainda não praticado', FACTOR_WEIGHTS.neverPracticed);
   }
 
-
   if (signals.availableQuestions <= 0) {
     penalize('noQuestions', 'sem questões publicadas disponíveis', PENALTIES.noQuestions);
   }
@@ -118,11 +101,6 @@ export function scoreTopic(signals, context) {
   };
 }
 
-
-
-
-
-
 const EXPLANATORY_FACTORS = [
   'dueReviews',
   'repeatedErrors',
@@ -133,7 +111,6 @@ const EXPLANATORY_FACTORS = [
   'neverPracticed',
   'examProximity',
 ];
-
 
 export function buildReason(signals, factors) {
   const ranked = [...factors].sort((a, b) => b.points - a.points);
@@ -169,10 +146,6 @@ export function buildReason(signals, factors) {
   }
 }
 
-
-
-
-
 export function recommendTopics(signals, context, limit = 5) {
   const ranked = signals
     .map((signal) => scoreTopic(signal, context))
@@ -197,7 +170,6 @@ export function recommendTopics(signals, context, limit = 5) {
     perArea.set(signal.areaId, areaCount + 1);
     selection.push(candidate);
   }
-
 
   if (selection.length === 0) {
     for (const candidate of ranked) {

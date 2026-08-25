@@ -1,10 +1,3 @@
-/**
- * Terceira leva — cinco questões novas para cada assunto de Ciências da Natureza.
- *
- * Dados e situações são autorais. Valores numéricos foram escolhidos para que a
- * conta seja verificável a lápis, sem depender de tabela externa.
- */
-
 import { expandedQuestion } from './questions-expansion-factory.js';
 
 const ORIGEM = 'AUTORAL_LEVA_3_2026_08';
@@ -13,7 +6,7 @@ const FONTE = 'Situação e dados autorais criados para prática de raciocínio 
 const q = (definicao) => expandedQuestion({ ...definicao, support: FONTE, origin: ORIGEM });
 
 export const NATUREZA_QUESTOES_LEVA_3 = [
-  /* ------------------------------------------------- Ecologia e ciclos */
+
   q({
     topicSlug: 'ecologia-e-ciclos', slug: 'q3-eco-1',
     stem: 'Em uma cadeia alimentar, a quantidade de energia disponível diminui a cada nível trófico. A principal razão para essa perda é que:',
@@ -85,7 +78,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     explanation: 'Mata ciliar não é ornamento: ela segura o solo, filtra o escoamento superficial, sombreia a água e conecta habitats.',
   }),
 
-  /* ------------------------------------------------------ Genética básica */
   q({
     topicSlug: 'genetica-basica', slug: 'q3-gene-1',
     stem: 'Sobre a diferença entre genótipo e fenótipo, é correto afirmar que:',
@@ -157,7 +149,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     explanation: 'Um mesmo genótipo pode produzir fenótipos diferentes conforme o ambiente. É essa faixa de resposta que os geneticistas chamam de norma de reação.',
   }),
 
-  /* ---------------------------------------------------- Saúde e prevenção */
   q({
     topicSlug: 'saude-e-prevencao', slug: 'q3-saude-1',
     stem: 'Antibióticos são indicados para o tratamento de infecções causadas por:',
@@ -229,7 +220,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     explanation: 'Verminoses de transmissão fecal-oral são doenças de saneamento. Sem cortar a via de transmissão, o tratamento é reiniciado a cada ciclo.',
   }),
 
-  /* ---------------------------------------------- Energia e transformações */
   q({
     topicSlug: 'energia-e-transformacoes', slug: 'q3-ener-1',
     stem: 'A afirmação de que "a energia não é criada nem destruída, apenas transformada" implica que, ao acender uma lâmpada incandescente:',
@@ -302,7 +292,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     explanation: 'Ganho técnico e ganho efetivo não coincidem. Quando o custo marginal cai, o uso cresce e parte da economia prevista se dissolve.',
   }),
 
-  /* ------------------------------------------------------------ Mecânica */
   q({
     topicSlug: 'mecanica', slug: 'q3-mec-1',
     stem: 'Um passageiro em pé no ônibus é lançado para a frente quando o veículo freia bruscamente. Esse fenômeno é explicado por:',
@@ -374,7 +363,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     explanation: 'Impulso é força vezes tempo. Como a variação de quantidade de movimento está dada, alongar o tempo do impacto é o que reduz a força sofrida.',
   }),
 
-  /* -------------------------------------------------------- Eletricidade */
   q({
     topicSlug: 'eletricidade', slug: 'q3-ele-1',
     stem: 'Em uma instalação residencial, as tomadas são ligadas em paralelo. A principal razão dessa escolha é que, em paralelo:',
@@ -447,7 +435,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     strategy: 'Antes de ligar aparelhos de alta potência no mesmo circuito, some as potências e divida pela tensão. Compare o resultado com o disjuntor.',
   }),
 
-  /* ------------------------------------------------ Transformações químicas */
   q({
     topicSlug: 'transformacoes-quimicas', slug: 'q3-tq-1',
     stem: 'Entre os fenômenos a seguir, aquele que constitui uma transformação química é:',
@@ -520,7 +507,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     strategy: 'Ao receber quantidades de dois reagentes, verifique primeiro qual deles limita a reação. O excesso do outro simplesmente sobra.',
   }),
 
-  /* --------------------------------------------------------------- Soluções */
   q({
     topicSlug: 'solucoes', slug: 'q3-sol-1',
     stem: 'Uma solução é chamada de saturada quando:',
@@ -593,7 +579,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     strategy: 'Calcule primeiro a massa de soluto exigida pela solução final. Depois pergunte que volume do estoque contém essa massa.',
   }),
 
-  /* ----------------------------------------------- Estequiometria introdutória */
   q({
     topicSlug: 'estequiometria-introdutoria', slug: 'q3-est3-1',
     stem: 'Os coeficientes de uma equação química balanceada indicam:',
@@ -666,7 +651,6 @@ export const NATUREZA_QUESTOES_LEVA_3 = [
     strategy: 'Nunca opere diretamente com gramas. Massa vira mol, mol aplica a proporção da equação, e só então o resultado volta a gramas.',
   }),
 
-  /* ------------------------------------------------------- Química ambiental */
   q({
     topicSlug: 'quimica-ambiental', slug: 'q3-qamb-1',
     stem: 'A chuva ácida se forma principalmente pela reação, na atmosfera, entre água e:',

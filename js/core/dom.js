@@ -1,19 +1,4 @@
-
-
-
-
-
-
-
-
 import { linkTo } from './pages.js';
-
-
-
-
-
-
-
 
 export function el(tag, attrs = null, ...children) {
   const node = document.createElement(tag);
@@ -23,13 +8,6 @@ export function el(tag, attrs = null, ...children) {
       if (value === null || value === undefined || value === false) continue;
 
       if (key === 'href' && typeof value === 'string' && value.startsWith('#/')) {
-
-
-
-
-
-
-
 
         node.setAttribute('href', linkTo(value));
       } else if (key === 'class') {
@@ -74,7 +52,6 @@ export function frag(...children) {
   return fragment;
 }
 
-
 export function render(target, ...children) {
   target.replaceChildren();
   append(target, children);
@@ -84,22 +61,16 @@ export function render(target, ...children) {
 export const $ = (selector, scope = document) => scope.querySelector(selector);
 export const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
-
 let idCounter = 0;
 export function uid(prefix = 'ck') {
   idCounter += 1;
   return `${prefix}-${idCounter}`;
 }
 
-
 export function on(target, type, handler, options) {
   target.addEventListener(type, handler, options);
   return () => target.removeEventListener(type, handler, options);
 }
-
-
-
-
 
 export function trapFocus(container) {
   const previous = document.activeElement;
@@ -136,7 +107,6 @@ export function trapFocus(container) {
     if (previous instanceof HTMLElement) previous.focus();
   };
 }
-
 
 export function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));

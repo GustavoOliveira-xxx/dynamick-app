@@ -1,8 +1,3 @@
-
-
-
-
-
 export const NATUREZA_TOPICS = [
   {
     slug: 'ecologia-e-ciclos',

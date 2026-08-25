@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 import { el } from '../core/dom.js';
 
 export const USE_OFFICIAL_ASSETS = true;
@@ -22,14 +11,6 @@ export const BRAND = {
     'Uma jornada de estudos que se adapta ao que você acerta, ao que você erra e ao tempo que você tem.',
 };
 
-
-
-
-
-
-
-
-
 const ASSETS = {
   dynamick: {
     webp: 'assets/brand/logo-dynamic.webp',
@@ -42,10 +23,6 @@ const ASSETS = {
     ratio: 340 / 350,
   },
 };
-
-
-
-
 
 function brandPicture({ asset, alt, width, eager, className = 'brand-img' }) {
   const height = Math.round(width / asset.ratio);
@@ -66,11 +43,6 @@ function brandPicture({ asset, alt, width, eager, className = 'brand-img' }) {
   );
   return picture;
 }
-
-
-
-
-
 
 const OFFICIAL_WIDTHS = {
   full: 148,
@@ -95,7 +67,6 @@ function svg(tag, attrs) {
 }
 
 let gradientCounter = 0;
-
 
 function provisionalMark(size, monochrome, animated) {
   const id = `ck-grad-${(gradientCounter += 1)}`;
@@ -122,7 +93,6 @@ function provisionalMark(size, monochrome, animated) {
   root.append(defs);
 
   const stroke = `url(#${id})`;
-
 
   root.append(
     svg('path', {
@@ -159,10 +129,6 @@ function provisionalMark(size, monochrome, animated) {
 
   return root;
 }
-
-
-
-
 
 export function dynamickLogo(options = {}) {
   const { variant = 'full', animated = true, signature = false } = options;
@@ -202,7 +168,6 @@ export function dynamickLogo(options = {}) {
 
   return wrapper;
 }
-
 
 export function consciousKnowledgeLogo(options = {}) {
   const { variant = 'compact' } = options;

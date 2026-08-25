@@ -1,5 +1,3 @@
-
-
 export const PROFILE_SLUGS = [
   'explorador-sem-rota',
   'construtor-de-base',

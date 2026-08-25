@@ -1,26 +1,9 @@
-
-
-
-
-
-
-
-
-
-
 import { getState, update } from './store.js';
 import { newId, clamp } from './format.js';
 import { activeProfile, refreshMastery, scheduleReview, student, addErrorNote } from './student.js';
 import { getQuestion, getTopic, questionsForTopic, QUESTIONS, getSimulation } from '../data/content.js';
 import { generateSimulation } from '../engine/simulation.js';
 import { buildReviewBatch } from '../engine/spaced.js';
-
-
-
-
-
-
-
 
 export function selectQuestions(topicSlug, count) {
   const state = getState();
@@ -42,7 +25,6 @@ export function selectQuestions(topicSlug, count) {
   const fresh = candidates.filter((question) => !recentlySeen.has(question.slug));
   const pool = fresh.length >= count ? fresh : candidates;
 
-
   const perFormat = new Map();
   const picked = [];
 
@@ -62,7 +44,6 @@ export function selectQuestions(topicSlug, count) {
   return picked;
 }
 
-
 export function selectReviewQuestions(topicSlug, originalSlugs, count) {
   const candidates = questionsForTopic(topicSlug).map((question) => ({
     id: question.slug,
@@ -72,12 +53,6 @@ export function selectReviewQuestions(topicSlug, originalSlugs, count) {
   candidates.sort((a, b) => (a.isRecovery === b.isRecovery ? 0 : a.isRecovery ? -1 : 1));
   return buildReviewBatch(originalSlugs, candidates, count);
 }
-
-
-
-
-
-
 
 function idempotencyKey(parts) {
   return `${parts.join('|')}|${Math.floor(Date.now() / 60000)}`;
@@ -137,7 +112,6 @@ export function createSession({
   return getState().sessions[id];
 }
 
-
 export function createTopicSession(topicSlug, kind = 'practice') {
   const topic = getTopic(topicSlug);
   if (!topic) return null;
@@ -185,7 +159,6 @@ export function createTopicSession(topicSlug, kind = 'practice') {
   });
 }
 
-
 export function createDiagnosticSession(perArea = 2) {
   const byArea = new Map();
   for (const question of QUESTIONS) {
@@ -213,7 +186,6 @@ export function createDiagnosticSession(perArea = 2) {
   });
 }
 
-
 export function createSimulationSession(simulationSlug, timed = true) {
   const simulation = getSimulation(simulationSlug);
   if (!simulation) return null;
@@ -233,7 +205,11 @@ export function createSimulationSession(simulationSlug, timed = true) {
     isRecovery: question.isRecovery,
   }));
 
-  const result = generateSimulation(pool, simulation.blueprint, simulation.questionCount, simulation.slug);
+  const tentativa = Object.values(getState().simulationRuns ?? {}).filter(
+    (run) => run.simulationSlug === simulationSlug,
+  ).length;
+  const semente = `${simulation.slug}#${tentativa}#${Date.now().toString(36)}#${Math.random().toString(36).slice(2, 10)}`;
+  const result = generateSimulation(pool, simulation.blueprint, simulation.questionCount, semente);
   if (result.questionIds.length === 0) return null;
 
   const session = createSession({
@@ -269,8 +245,6 @@ export function createSimulationSession(simulationSlug, timed = true) {
   return session;
 }
 
-
-
 export function getSession(id) {
   return getState().sessions[id] ?? null;
 }
@@ -290,13 +264,6 @@ export function attemptFor(sessionId, questionSlug) {
 export function runForSession(sessionId) {
   return Object.values(getState().simulationRuns).find((run) => run.sessionId === sessionId) ?? null;
 }
-
-
-
-
-
-
-
 
 export function answerQuestion({ sessionId, questionSlug, optionLabel, confidence, timeSpentMs }) {
   const question = getQuestion(questionSlug);
@@ -336,7 +303,6 @@ export function answerQuestion({ sessionId, questionSlug, optionLabel, confidenc
   refreshMastery(question.topicSlug);
   return getState().attempts[id];
 }
-
 
 export function classifyError(attemptId, reason) {
   const attempt = getState().attempts[attemptId];
@@ -380,7 +346,6 @@ export function saveItemNote(sessionId, questionSlug, note) {
   }, { immediate: true });
 }
 
-
 export function pauseSession(sessionId) {
   update((state) => {
     const session = state.sessions[sessionId];
@@ -400,7 +365,6 @@ export function completeSession(sessionId) {
     }
   }, { immediate: true });
 
-
   const session = getSession(sessionId);
   if (session?.topicSlug) {
     update((state) => {
@@ -411,8 +375,6 @@ export function completeSession(sessionId) {
     });
   }
 }
-
-
 
 export function summarizeSession(sessionId) {
   const session = getSession(sessionId);
@@ -481,12 +443,10 @@ export function summarizeSession(sessionId) {
   };
 }
 
-
 export function submitSimulation(sessionId) {
   const run = runForSession(sessionId);
   const session = getSession(sessionId);
   if (!run || !session) return null;
-
 
   if (run.submittedAt) return run;
 

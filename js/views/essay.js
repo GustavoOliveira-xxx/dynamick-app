@@ -1,15 +1,8 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, button, card, emptyState, linkButton, message, textarea, toast } from '../ui/components.js';
 import { formatDate, plural } from '../core/format.js';
 import { ESSAY_PROMPTS, getEssayPrompt } from '../data/content.js';
 import { getState, update } from '../core/store.js';
-
 
 const CRITERIA = [
   {
@@ -38,8 +31,6 @@ const CRITERIA = [
     question: 'A proposta tem agente, ação, meio, finalidade e detalhamento — e responde ao problema que eu levantei?',
   },
 ];
-
-
 
 export function renderEssayHub(root) {
   const essays = getState().essays;
@@ -161,8 +152,6 @@ export function renderEssayHub(root) {
   );
 }
 
-
-
 export function renderEssayPrompt(root, { params }) {
   const prompt = getEssayPrompt(params.slug);
 
@@ -220,7 +209,6 @@ export function renderEssayPrompt(root, { params }) {
         el('p', { class: 'small secondary' }, prompt.focus),
       ),
 
-
       el(
         'section',
         { class: 'stack' },
@@ -235,13 +223,11 @@ export function renderEssayPrompt(root, { params }) {
         ),
       ),
 
-
       card(
         { accent: 'green' },
         el('h2', {}, 'Proposta de redação'),
         el('p', {}, prompt.productionCommand),
       ),
-
 
       el(
         'section',
@@ -280,7 +266,6 @@ export function renderEssayPrompt(root, { params }) {
         }),
       ),
 
-
       el(
         'section',
         { class: 'stack' },
@@ -304,7 +289,6 @@ export function renderEssayPrompt(root, { params }) {
         ),
       ),
 
-
       el(
         'section',
         { class: 'stack' },
@@ -320,7 +304,6 @@ export function renderEssayPrompt(root, { params }) {
           CRITERIA.map((criterion) => criterionRow(criterion, saved, persist)),
         ),
       ),
-
 
       card(
         {},
@@ -361,8 +344,6 @@ export function renderEssayPrompt(root, { params }) {
     ),
   );
 }
-
-
 
 function criterionRow(criterion, saved, persist) {
   const current = saved.selfCheck?.[criterion.key] ?? null;
@@ -411,10 +392,6 @@ function wordLabel(text) {
         : ' — extensão compatível com um texto dissertativo de prova.';
   return `${words} ${plural(words, 'palavra', 'palavras')}${reference}`;
 }
-
-
-
-
 
 function feedbackBlock(text, selfCheck, prompt) {
   const words = countWords(text);
@@ -466,7 +443,6 @@ function feedbackBlock(text, selfCheck, prompt) {
     ),
   );
 }
-
 
 function longestSharedRun(a, b) {
   const wordsA = a.toLowerCase().match(/\p{L}+/gu) ?? [];

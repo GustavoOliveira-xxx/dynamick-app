@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 export const SESSION_TEMPLATES = [
   {
     slug: 'comece-por-interpretacao',
@@ -177,10 +168,6 @@ export const SESSION_TEMPLATES = [
     order: 12,
   },
 ];
-
-
-
-
 
 export const SIMULATIONS = [
   {

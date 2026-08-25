@@ -1,8 +1,3 @@
-
-
-
-
-
 export const HUMANAS_TOPICS = [
   {
     slug: 'cidadania-e-direitos',

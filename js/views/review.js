@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { badge, button, card, choiceGroup, emptyState, linkButton, message, textarea, toast } from '../ui/components.js';
 import { markdown } from '../core/markdown.js';
@@ -30,13 +24,10 @@ import { startSession } from './dashboard.js';
 
 const RECALL_TONE = { forgot: 'danger', partial: 'warning', mastered: 'green' };
 
-
-
 export function renderReview(root) {
   const due = pendingReviews();
   const upcoming = upcomingReviewCount();
   const openNotes = errorNotes('open');
-
 
   const byTopic = new Map();
   for (const item of due) {
@@ -146,7 +137,6 @@ export function renderReview(root) {
   );
 }
 
-
 function reviewItemRow(item) {
   const question = getQuestion(item.questionSlug);
   const container = el('li', { class: 'item-row' });
@@ -177,7 +167,6 @@ function reviewItemRow(item) {
       options: RECALL_LEVELS.map((level) => ({ value: level, label: RECALL_LABELS[level] })),
       onChange: (value) => {
 
-
         registerRecall(item.id, value, value === 'mastered');
         toast('Anotado. A próxima data de revisão levou isso em conta.', 'info');
         refresh();
@@ -188,8 +177,6 @@ function reviewItemRow(item) {
   container.append(head, recallBox);
   return container;
 }
-
-
 
 export function renderNotebook(root, { query }) {
   const showResolved = query.get('estado') === 'resolvidos';

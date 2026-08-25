@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { el, render } from '../core/dom.js';
 import { button, card, emptyState, linkButton, message } from '../ui/components.js';
 import { formatMinutes, percent } from '../core/format.js';
@@ -17,7 +11,6 @@ const PER_AREA = 2;
 
 export function renderDiagnostic(root) {
   const s = student();
-
 
   const done = Object.values(getState().sessions)
     .filter((session) => session.kind === 'diagnostic' && session.status === 'completed')
@@ -127,7 +120,6 @@ export function renderDiagnostic(root) {
     ),
   );
 }
-
 
 function resultado(session) {
   const summary = summarizeSession(session.id);

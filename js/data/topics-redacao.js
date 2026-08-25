@@ -1,8 +1,3 @@
-
-
-
-
-
 export const REDACAO_TOPICS = [
   {
     slug: 'tese-e-argumentacao',
