@@ -1,4 +1,4 @@
-const CACHE = 'dynamick-shell-v6';
+const CACHE = 'dynamick-shell-v7';
 const SHELL = [
   './',
   './index.html',
@@ -34,8 +34,22 @@ const SHELL = [
   './assets/brand/logo-dynamic.png'
 ];
 
+async function guardarShell() {
+  const cache = await caches.open(CACHE);
+  await Promise.all(
+    SHELL.map(async (caminho) => {
+      try {
+        const resposta = await fetch(caminho, { cache: 'reload' });
+        if (resposta.ok && !resposta.redirected) await cache.put(caminho, resposta);
+      } catch {
+
+      }
+    }),
+  );
+}
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(guardarShell().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -50,6 +64,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
@@ -64,11 +79,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  if (/\.(?:js|mjs|css)$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(request, { cache: 'reload' })
+        .then((response) => {
+          if (response.ok && !response.redirected) {
+            const copia = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copia));
+          }
+          return response;
+        })
+        .catch(async () => (await caches.match(request)) || Response.error()),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const fresh = fetch(request)
         .then((response) => {
-          if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
+          if (response.ok && !response.redirected) {
+            const copia = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copia));
+          }
           return response;
         })
         .catch(() => cached);
