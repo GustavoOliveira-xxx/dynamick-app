@@ -20,7 +20,7 @@ import {
 import { createSession, resumableSession, selectReviewQuestions } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
 import { startSession } from './dashboard.js';
-import { brain3d } from '../ui/brain-3d.js';
+import { nucleo3d } from '../ui/nucleo-3d.js';
 
 export function renderPractice(root) {
   const profile = activeProfile();
@@ -29,7 +29,7 @@ export function renderPractice(root) {
   const alternatives = alternativeRecommendations(4);
   const resumable = resumableSession();
   const due = pendingReviews();
-  const brain = brain3d({ size: 'md' });
+  const nucleo = nucleo3d({ size: 'md' });
 
   const templates = [...SESSION_TEMPLATES].sort((a, b) => a.order - b.order);
 
@@ -57,8 +57,8 @@ export function renderPractice(root) {
         ),
         el(
           'div',
-          { class: 'practice-hero__brain' },
-          brain,
+          { class: 'practice-hero__nucleo' },
+          nucleo,
           el('p', { class: 'xsmall muted' }, 'Conexões ficam mais fortes quando você recupera uma ideia sem olhar.'),
         ),
       ),
@@ -242,7 +242,7 @@ export function renderPractice(root) {
     ),
   );
 
-  return () => brain.dispose?.();
+  return () => nucleo.dispose?.();
 }
 
 export function renderQuickSession(root) {

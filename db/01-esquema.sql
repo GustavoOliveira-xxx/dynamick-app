@@ -411,6 +411,19 @@ CREATE TABLE content_reports (
 );
 CREATE INDEX content_reports_status_idx ON content_reports(status, created_at DESC);
 
+CREATE TABLE sync_snapshots (
+  code_hash    text PRIMARY KEY CHECK (code_hash ~ '^[0-9a-f]{64}$'),
+  ciphertext   text NOT NULL,
+  iv           text NOT NULL,
+  salt         text NOT NULL,
+  bytes        int  NOT NULL DEFAULT 0,
+  revision     bigint NOT NULL DEFAULT 1,
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now(),
+  last_seen_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX sync_snapshots_last_seen_idx ON sync_snapshots(last_seen_at);
+
 CREATE VIEW catalog_health AS
 SELECT
   (SELECT count(*) FROM areas)                                  AS areas,
