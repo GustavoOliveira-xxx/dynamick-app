@@ -16,6 +16,110 @@
         if (p.visualIntensity === "reduced") r.dataset.visual = "reduced";
       } catch (e) {}
     </script>
+    <script>
+      (function () {
+        var falhas = [];
+        var modulos = [];
+        var mostrado = false;
+        var prazo = 15000;
+
+        function anotar(texto) {
+          if (!texto) return;
+          texto = String(texto);
+          if (falhas.indexOf(texto) === -1) falhas.push(texto);
+          var achado = texto.match(/['"]([^'"]+\.m?js)['"]/);
+          if (achado && modulos.indexOf(achado[1]) === -1) modulos.push(achado[1]);
+          prazo = 1500;
+          setTimeout(mostrar, 1500);
+        }
+
+        addEventListener('error', function (evento) {
+          if (evento.target && evento.target.src) anotar('não carregou ' + evento.target.src);
+          else anotar(evento.message);
+        }, true);
+
+        addEventListener('unhandledrejection', function (evento) {
+          var causa = evento.reason;
+          anotar(causa && causa.message ? causa.message : causa);
+        });
+
+        function ativo() {
+          var boot = document.getElementById('ck-boot');
+          if (!boot || boot.hidden) return null;
+          if (boot.className.indexOf('ck-boot--done') !== -1) return null;
+          return boot;
+        }
+
+        function limpar(botao) {
+          botao.textContent = 'Atualizando…';
+          var tarefas = modulos.concat([location.pathname]).map(function (u) {
+            return fetch(u, { cache: 'reload' }).catch(function () {});
+          });
+          if (window.caches && caches.keys) {
+            tarefas.push(caches.keys().then(function (nomes) {
+              return Promise.all(nomes.map(function (n) { return caches.delete(n); }));
+            }).catch(function () {}));
+          }
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            tarefas.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+              return Promise.all(regs.map(function (r) { return r.unregister(); }));
+            }).catch(function () {}));
+          }
+          Promise.all(tarefas).catch(function () {}).then(function () {
+            location.reload();
+          });
+        }
+
+        function mostrar() {
+          var boot = ativo();
+          if (mostrado || !boot) return;
+          mostrado = true;
+
+          var painel = document.createElement('div');
+          painel.className = 'ck-falha';
+
+          var titulo = document.createElement('h1');
+          titulo.textContent = 'Não conseguimos abrir esta tela';
+
+          var texto = document.createElement('p');
+          texto.textContent = 'Isso costuma acontecer logo depois de uma atualização, quando o navegador ainda guarda uma parte antiga do site. O botão abaixo busca a versão nova e abre de novo.';
+
+          var acoes = document.createElement('div');
+          acoes.className = 'ck-falha__acoes';
+
+          var principal = document.createElement('button');
+          principal.type = 'button';
+          principal.className = 'ck-falha__botao';
+          principal.textContent = 'Atualizar e abrir de novo';
+          principal.addEventListener('click', function () { limpar(principal); });
+
+          var simples = document.createElement('button');
+          simples.type = 'button';
+          simples.className = 'ck-falha__botao ck-falha__botao--simples';
+          simples.textContent = 'Só recarregar';
+          simples.addEventListener('click', function () { location.reload(); });
+
+          acoes.appendChild(principal);
+          acoes.appendChild(simples);
+          painel.appendChild(titulo);
+          painel.appendChild(texto);
+          painel.appendChild(acoes);
+
+          if (falhas.length) {
+            var detalhe = document.createElement('p');
+            detalhe.className = 'ck-falha__detalhe';
+            detalhe.textContent = falhas[0];
+            painel.appendChild(detalhe);
+          }
+
+          boot.textContent = '';
+          boot.className = 'ck-boot ck-boot--falhou';
+          boot.appendChild(painel);
+        }
+
+        setTimeout(function () { mostrar(); }, prazo);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Formas de estudar · Dynamic CK</title>
     <meta name="description" content="Métodos de estudo curtos, com quando usar e quando não usar." />
