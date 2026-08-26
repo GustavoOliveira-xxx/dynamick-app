@@ -253,6 +253,39 @@ export async function signIn({ identifier, password = '' }) {
   return currentAccount();
 }
 
+export async function adotarConta({ name, email = '', password = '' }) {
+  const cleanName = String(name ?? '').trim();
+  const cleanEmail = String(email ?? '').trim();
+  const existente = findRaw(cleanEmail) ?? (cleanEmail ? null : findRaw(cleanName));
+
+  if (!existente) return createAccount({ name: cleanName, email: cleanEmail, password });
+
+  const accounts = readAccounts();
+  const indice = accounts.findIndex((item) => item.id === existente.id);
+  const conta = {
+    ...accounts[indice],
+    name: cleanName || accounts[indice].name,
+    email: cleanEmail || accounts[indice].email || '',
+    lastLoginAt: new Date().toISOString(),
+  };
+
+  if (password && suportaSenha) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    conta.salt = toBase64(salt);
+    conta.iterations = ITERATIONS;
+    conta.hash = await derive(password, salt, ITERATIONS);
+    conta.protegida = true;
+  }
+
+  accounts[indice] = conta;
+  if (!writeAccounts(accounts)) {
+    throw new Error('Não foi possível salvar a conta neste navegador. Verifique o espaço disponível.');
+  }
+
+  openSession(conta.id);
+  return currentAccount();
+}
+
 export function continueAsGuest() {
   openSession(GUEST_ID);
   if (hasLegacyState()) adoptLegacyState(GUEST_ID);

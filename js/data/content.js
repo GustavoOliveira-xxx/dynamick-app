@@ -17,6 +17,7 @@ import { QUESTION_EXPANSION } from './questions-expansion.js';
 import { QUESTION_REINFORCEMENT } from './questions-reinforcement.js';
 import { QUESTOES_LEVA_3 } from './questions-leva3.js';
 import { QUESTOES_LEVA_4 } from './questions-leva4.js';
+import { QUESTOES_LEVA_5 } from './questions-leva5.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, ESSAY_PROMPTS };
@@ -58,6 +59,12 @@ const leva4ByTopic = QUESTOES_LEVA_4.reduce((index, question) => {
   return index;
 }, new Map());
 
+const leva5ByTopic = QUESTOES_LEVA_5.reduce((index, question) => {
+  if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
+  index.get(question.topicSlug).push(question);
+  return index;
+}, new Map());
+
 export const TOPICS = BASE_TOPICS.map((topic) => ({
   ...topic,
   questions: [
@@ -69,6 +76,7 @@ export const TOPICS = BASE_TOPICS.map((topic) => ({
     })),
     ...(leva3ByTopic.get(topic.slug) ?? []),
     ...(leva4ByTopic.get(topic.slug) ?? []),
+    ...(leva5ByTopic.get(topic.slug) ?? []),
   ],
 }));
 
