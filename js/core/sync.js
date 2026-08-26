@@ -1,5 +1,5 @@
 import { exportData, importData, subscribe } from './store.js';
-import { currentAccount, createAccount, continueAsGuest } from './account.js';
+import { currentAccount, adotarConta, continueAsGuest } from './account.js';
 import { SYNC } from '../config.js';
 
 const API = SYNC.base.replace(/\/$/, '');
@@ -30,19 +30,48 @@ export function formatarCodigo(codigo) {
   return normalizarCodigo(codigo).match(/.{1,4}/g)?.join('-') ?? '';
 }
 
+export function normalizarEmail(email) {
+  return String(email ?? '').trim().toLowerCase();
+}
+
 const bytesParaBase64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
 const base64ParaBytes = (texto) => Uint8Array.from(atob(texto), (c) => c.charCodeAt(0));
 
-async function hashDoCodigo(codigo) {
-  const dados = new TextEncoder().encode(`dynamick-sync-v1:${normalizarCodigo(codigo)}`);
+async function hashDoSegredo(segredo) {
+  const dados = new TextEncoder().encode(`dynamick-sync-v1:${segredo}`);
   const digest = await crypto.subtle.digest('SHA-256', dados);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function derivarChave(codigo, salt) {
+async function hashDoCodigo(codigo) {
+  return hashDoSegredo(normalizarCodigo(codigo));
+}
+
+export async function segredoDaConta(email, senha) {
+  const material = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(String(senha ?? '')),
+    'PBKDF2',
+    false,
+    ['deriveBits'],
+  );
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      hash: 'SHA-256',
+      salt: new TextEncoder().encode(`dynamick-conta-v1:${normalizarEmail(email)}`),
+      iterations: ITERACOES,
+    },
+    material,
+    256,
+  );
+  return bytesParaBase64(bits);
+}
+
+async function derivarChave(segredo, salt) {
   const base = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(normalizarCodigo(codigo)),
+    new TextEncoder().encode(segredo),
     'PBKDF2',
     false,
     ['deriveKey'],
@@ -56,10 +85,10 @@ async function derivarChave(codigo, salt) {
   );
 }
 
-async function cifrar(codigo, texto) {
+async function cifrar(segredo, texto) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const chave = await derivarChave(codigo, salt);
+  const chave = await derivarChave(segredo, salt);
   const cifrado = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
     chave,
@@ -68,8 +97,8 @@ async function cifrar(codigo, texto) {
   return { ciphertext: bytesParaBase64(cifrado), iv: bytesParaBase64(iv), salt: bytesParaBase64(salt) };
 }
 
-async function decifrar(codigo, { ciphertext, iv, salt }) {
-  const chave = await derivarChave(codigo, base64ParaBytes(salt));
+async function decifrar(segredo, { ciphertext, iv, salt }) {
+  const chave = await derivarChave(segredo, base64ParaBytes(salt));
   const aberto = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: base64ParaBytes(iv) },
     chave,
@@ -83,26 +112,45 @@ function chaveDoVinculo() {
   return conta ? `${CHAVE_LOCAL_BASE}:${conta.id}` : CHAVE_LOCAL_BASE;
 }
 
-export function vinculoAtual() {
+function lerVinculos() {
+  let bruto = null;
   try {
-    return JSON.parse(localStorage.getItem(chaveDoVinculo()) ?? 'null');
+    bruto = JSON.parse(localStorage.getItem(chaveDoVinculo()) ?? 'null');
   } catch {
-    return null;
+    return {};
+  }
+  if (!bruto) return {};
+  if (bruto.codigo && !bruto.conta && !bruto.porCodigo) {
+    return { porCodigo: { ...bruto, segredo: normalizarCodigo(bruto.codigo) } };
+  }
+  return bruto;
+}
+
+function gravarVinculos(vinculos) {
+  try {
+    const chave = chaveDoVinculo();
+    const limpo = Object.fromEntries(Object.entries(vinculos ?? {}).filter(([, v]) => v));
+    if (Object.keys(limpo).length === 0) localStorage.removeItem(chave);
+    else localStorage.setItem(chave, JSON.stringify(limpo));
+  } catch {
+
   }
 }
 
-function gravarVinculo(vinculo) {
-  try {
-    const chave = chaveDoVinculo();
-    if (vinculo) localStorage.setItem(chave, JSON.stringify(vinculo));
-    else localStorage.removeItem(chave);
-  } catch {
+function gravarVinculo(canal, vinculo) {
+  gravarVinculos({ ...lerVinculos(), [canal]: vinculo });
+}
 
-  }
+export function vinculoAtual() {
+  return lerVinculos().porCodigo ?? null;
+}
+
+export function vinculoDaConta() {
+  return lerVinculos().conta ?? null;
 }
 
 export function desvincular() {
-  gravarVinculo(null);
+  gravarVinculo('porCodigo', null);
 }
 
 class ErroDeSync extends Error {
@@ -130,43 +178,57 @@ async function chamar(caminho, opcoes = {}) {
   if (resposta.status === 409) throw new ErroDeSync('conflito');
   if (resposta.status === 413) throw new ErroDeSync('Seus dados passaram do tamanho máximo aceito pela sincronização.');
   if (resposta.status === 429) throw new ErroDeSync('Muitas tentativas seguidas. Espere um minuto e tente de novo.');
-  if (!resposta.ok) throw new ErroDeSync(`O servidor respondeu ${resposta.status}.`);
+
+  if (!resposta.ok) {
+    let detalhe = '';
+    try {
+      detalhe = (await resposta.json())?.erro ?? '';
+    } catch {
+      detalhe = '';
+    }
+    throw new ErroDeSync(detalhe || `O servidor respondeu ${resposta.status}.`);
+  }
 
   return resposta.json();
-}
-
-export async function enviar({ forcar = false } = {}) {
-  const vinculo = vinculoAtual();
-  if (!vinculo) throw new ErroDeSync('Este aparelho ainda não tem um código de sincronização.');
-
-  const corpo = await cifrar(vinculo.codigo, montarPacote());
-
-  const resultado = await chamar('/api/sync', {
-    method: 'PUT',
-    body: JSON.stringify({
-      codeHash: await hashDoCodigo(vinculo.codigo),
-      ...corpo,
-      revision: forcar ? null : (vinculo.revision ?? 0),
-    }),
-  });
-
-  gravarVinculo({ ...vinculo, revision: resultado.revision, enviadoEm: new Date().toISOString() });
-  return resultado;
 }
 
 function montarPacote() {
   const estado = JSON.parse(exportData());
   const conta = currentAccount();
-  if (conta) estado.conta = { nome: conta.name, email: conta.email ?? '' };
+  if (conta) estado.conta = { nome: conta.name, email: conta.email ?? '', protegida: Boolean(conta.protegida) };
   return JSON.stringify(estado);
 }
 
-async function baixarPacote(codigo) {
-  const resposta = await chamar(`/api/sync?codeHash=${await hashDoCodigo(codigo)}`);
+async function subirPacote(vinculo, { forcar = false } = {}) {
+  const corpo = await cifrar(vinculo.segredo, montarPacote());
+  return chamar('/api/sync', {
+    method: 'PUT',
+    body: JSON.stringify({
+      codeHash: await hashDoSegredo(vinculo.segredo),
+      ...corpo,
+      revision: forcar ? null : (vinculo.revision ?? 0),
+    }),
+  });
+}
+
+async function enviarCanal(canal, { forcar = false } = {}) {
+  const vinculo = lerVinculos()[canal];
+  if (!vinculo) throw new ErroDeSync('Este aparelho ainda não tem um código de sincronização.');
+  const resultado = await subirPacote(vinculo, { forcar });
+  gravarVinculo(canal, { ...vinculo, revision: resultado.revision, enviadoEm: new Date().toISOString() });
+  return resultado;
+}
+
+export async function enviar({ forcar = false } = {}) {
+  return enviarCanal('porCodigo', { forcar });
+}
+
+async function baixarPacote(segredo) {
+  const resposta = await chamar(`/api/sync?codeHash=${await hashDoSegredo(segredo)}`);
   if (!resposta) return null;
   let texto;
   try {
-    texto = await decifrar(codigo, resposta);
+    texto = await decifrar(segredo, resposta);
   } catch (erro) {
     throw new ErroDeSync('Código incorreto para estes dados.', erro);
   }
@@ -181,33 +243,50 @@ async function baixarPacote(codigo) {
 
 export async function receber(codigo = null) {
   const vinculo = vinculoAtual();
-  const usar = codigo ?? vinculo?.codigo;
-  if (!usar) throw new ErroDeSync('Nenhum código informado.');
-  const pacote = await baixarPacote(usar);
+  const segredo = codigo ? normalizarCodigo(codigo) : vinculo?.segredo;
+  if (!segredo) throw new ErroDeSync('Nenhum código informado.');
+  const pacote = await baixarPacote(segredo);
   if (!pacote) return null;
   importData(pacote.texto);
-  gravarVinculo({ codigo: normalizarCodigo(usar), revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  gravarVinculo('porCodigo', {
+    codigo: segredo,
+    segredo,
+    revision: pacote.revision,
+    recebidoEm: new Date().toISOString(),
+  });
   return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm };
 }
 
 export async function entrarComCodigo(codigo) {
   if (!codigoValido(codigo)) throw new ErroDeSync('Esse código não tem o formato esperado.');
-  const pacote = await baixarPacote(codigo);
+  const segredo = normalizarCodigo(codigo);
+  const pacote = await baixarPacote(segredo);
   if (!pacote) throw new ErroDeSync('Não encontramos nada gravado com esse código.');
 
   const nome = pacote.conta?.nome?.trim();
-  if (nome) await createAccount({ name: nome, email: pacote.conta.email ?? '' });
+  if (nome) await adotarConta({ name: nome, email: pacote.conta.email ?? '' });
   else continueAsGuest();
 
   importData(pacote.texto);
-  gravarVinculo({ codigo: normalizarCodigo(codigo), revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  gravarVinculo('porCodigo', {
+    codigo: segredo,
+    segredo,
+    revision: pacote.revision,
+    recebidoEm: new Date().toISOString(),
+  });
   return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm, nome: nome ?? null };
 }
 
 export async function vincularNovo() {
   const codigo = gerarCodigo();
-  gravarVinculo({ codigo: normalizarCodigo(codigo), revision: 0 });
-  await enviar({ forcar: true });
+  const segredo = normalizarCodigo(codigo);
+  const resultado = await subirPacote({ segredo, revision: 0 }, { forcar: true });
+  gravarVinculo('porCodigo', {
+    codigo: segredo,
+    segredo,
+    revision: resultado.revision,
+    enviadoEm: new Date().toISOString(),
+  });
   return codigo;
 }
 
@@ -218,15 +297,62 @@ export async function vincularExistente(codigo) {
   return resultado;
 }
 
+export function contaPodeSincronizar(conta) {
+  return syncDisponivel && Boolean(conta?.email) && Boolean(conta?.protegida);
+}
+
+export async function registrarConta({ email, senha }) {
+  if (!syncDisponivel) throw new ErroDeSync('A sincronização não está disponível neste navegador.');
+  const segredo = await segredoDaConta(email, senha);
+
+  let resultado;
+  try {
+    resultado = await subirPacote({ segredo, revision: 0 });
+  } catch (erro) {
+    if (erro?.message === 'conflito') {
+      throw new ErroDeSync('Já existe uma conta salva com esse e-mail e essa senha. Use "Entrar" para trazê-la.');
+    }
+    throw erro;
+  }
+
+  gravarVinculo('conta', { segredo, revision: resultado.revision, enviadoEm: new Date().toISOString() });
+  return { revision: resultado.revision };
+}
+
+export async function contaExisteNoServidor({ email, senha }) {
+  if (!syncDisponivel) return false;
+  const segredo = await segredoDaConta(email, senha);
+  const resposta = await chamar(`/api/sync?codeHash=${await hashDoSegredo(segredo)}`);
+  return Boolean(resposta);
+}
+
+export async function entrarComSenha({ email, senha }) {
+  if (!syncDisponivel) throw new ErroDeSync('A sincronização não está disponível neste navegador.');
+  const segredo = await segredoDaConta(email, senha);
+  const pacote = await baixarPacote(segredo);
+  if (!pacote) {
+    throw new ErroDeSync('E-mail ou senha não conferem, ou esta conta ainda não foi salva para outros aparelhos.');
+  }
+
+  const nome = pacote.conta?.nome?.trim() || String(email).split('@')[0];
+  await adotarConta({ name: nome, email: normalizarEmail(email), password: senha });
+  importData(pacote.texto);
+  gravarVinculo('conta', { segredo, revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  return { nome, revision: pacote.revision, atualizadoEm: pacote.atualizadoEm };
+}
+
 export async function apagarNoServidor() {
-  const vinculo = vinculoAtual();
-  if (!vinculo) return false;
-  await chamar(`/api/sync?codeHash=${await hashDoCodigo(vinculo.codigo)}`, { method: 'DELETE' });
-  desvincular();
+  const vinculos = lerVinculos();
+  const canais = Object.entries(vinculos).filter(([, v]) => v?.segredo);
+  if (canais.length === 0) return false;
+  for (const [, vinculo] of canais) {
+    await chamar(`/api/sync?codeHash=${await hashDoSegredo(vinculo.segredo)}`, { method: 'DELETE' });
+  }
+  gravarVinculos({});
   return true;
 }
 
-export const _internals = { hashDoCodigo, cifrar, decifrar, derivarChave };
+export const _internals = { hashDoCodigo, hashDoSegredo, cifrar, decifrar, derivarChave };
 
 let temporizador = null;
 let enviando = false;
@@ -236,10 +362,14 @@ async function drenar() {
   if (enviando) { pendente = true; return; }
   enviando = true;
   try {
-    await enviar();
-  } catch (erro) {
-    if (erro?.message === 'conflito') {
-      try { await enviar({ forcar: true }); } catch { pendente = false; }
+    for (const canal of Object.keys(lerVinculos())) {
+      try {
+        await enviarCanal(canal);
+      } catch (erro) {
+        if (erro?.message === 'conflito') {
+          try { await enviarCanal(canal, { forcar: true }); } catch { pendente = false; }
+        }
+      }
     }
   } finally {
     enviando = false;
@@ -248,31 +378,43 @@ async function drenar() {
 }
 
 export function agendarEnvio(atraso = 4000) {
-  if (!syncDisponivel || !vinculoAtual()) return;
+  if (!syncDisponivel || Object.keys(lerVinculos()).length === 0) return;
   clearTimeout(temporizador);
   temporizador = setTimeout(drenar, atraso);
 }
 
 let automaticoLigado = false;
 
+async function olharCanal(canal, vinculo) {
+  try {
+    const resposta = await chamar(`/api/sync?codeHash=${await hashDoSegredo(vinculo.segredo)}`);
+    if (!resposta) return null;
+    if (Number(resposta.revision) <= Number(vinculo.revision ?? 0)) return null;
+    return { canal, vinculo, resposta };
+  } catch {
+    return null;
+  }
+}
+
 export async function buscarNaAbertura() {
-  const vinculo = vinculoAtual();
-  if (!syncDisponivel || !vinculo) return null;
-  let resposta;
+  if (!syncDisponivel) return null;
+  const vinculos = Object.entries(lerVinculos()).filter(([, v]) => v?.segredo);
+  if (vinculos.length === 0) return null;
+
+  const achados = (await Promise.all(vinculos.map(([canal, v]) => olharCanal(canal, v)))).filter(Boolean);
+  if (achados.length === 0) return null;
+
+  achados.sort((a, b) => String(b.resposta.updatedAt ?? '').localeCompare(String(a.resposta.updatedAt ?? '')));
+  const { canal, vinculo, resposta } = achados[0];
+
   try {
-    resposta = await chamar(`/api/sync?codeHash=${await hashDoCodigo(vinculo.codigo)}`);
+    importData(await decifrar(vinculo.segredo, resposta));
   } catch {
     return null;
   }
-  if (!resposta || Number(resposta.revision) <= Number(vinculo.revision ?? 0)) return null;
-  try {
-    const texto = await decifrar(vinculo.codigo, resposta);
-    importData(texto);
-    gravarVinculo({ ...vinculo, revision: resposta.revision, recebidoEm: new Date().toISOString() });
-    return { revision: resposta.revision };
-  } catch {
-    return null;
-  }
+
+  gravarVinculo(canal, { ...vinculo, revision: resposta.revision, recebidoEm: new Date().toISOString() });
+  return { canal, revision: resposta.revision };
 }
 
 export function iniciarEnvioAutomatico() {

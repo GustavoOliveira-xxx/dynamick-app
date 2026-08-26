@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 const LIMITE_BYTES = 1_500_000;
 const HASH = /^[0-9a-f]{64}$/;
@@ -25,6 +25,12 @@ export default async function handler(req, res) {
 
   res.setHeader('vary', 'origin');
 
+  if (!sql) {
+    return json(res, 503, {
+      erro: 'A sincronização não está configurada neste servidor: falta a variável DATABASE_URL.',
+    });
+  }
+
   try {
     if (req.method === 'GET') return await ler(req, res);
     if (req.method === 'PUT') return await gravar(req, res);
@@ -34,6 +40,11 @@ export default async function handler(req, res) {
   } catch (erro) {
 
     console.error('falha em /api/sync', erro);
+    if (/relation .*sync_snapshots.* does not exist/i.test(String(erro?.message ?? ''))) {
+      return json(res, 503, {
+        erro: 'O banco ainda não tem a tabela sync_snapshots. Rode db/01-esquema.sql antes de sincronizar.',
+      });
+    }
     return json(res, 500, { erro: 'Falha interna ao sincronizar.' });
   }
 }

@@ -80,14 +80,21 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('nenhum assunto é menos servido que outro', () => {
-    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
-    expect(Math.min(...principais)).toBeGreaterThanOrEqual(20);
+  it('cada um dos 39 tópicos recebeu exatamente 5 questões da quinta leva', () => {
+    const fora = TOPICS.filter(
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_5_2026_08').length !== 5,
+    );
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('o acervo totaliza 840 questões principais e 51 de recuperação', () => {
-    expect(health.totals.questions).toBe(891);
-    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(840);
+  it('nenhum assunto é menos servido que outro', () => {
+    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
+    expect(Math.min(...principais)).toBeGreaterThanOrEqual(25);
+  });
+
+  it('o acervo totaliza 1035 questões principais e 51 de recuperação', () => {
+    expect(health.totals.questions).toBe(1086);
+    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(1035);
     expect(health.totals.recoveryQuestions).toBe(51);
   });
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));
