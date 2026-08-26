@@ -37,11 +37,14 @@ import {
   enviar,
   formatarCodigo,
   receber,
+  registrarConta,
   syncDisponivel,
   vincularExistente,
   vincularNovo,
   vinculoAtual,
+  vinculoDaConta,
 } from '../core/sync.js';
+import { currentAccount } from '../core/account.js';
 import { navigate, refresh } from '../core/router.js';
 
 export function renderProfileHub(root) {
@@ -803,6 +806,7 @@ export function renderDataPage(root) {
         el('p', { class: 'xsmall muted', style: { marginTop: '0.5rem' } }, 'Criado em ', formatDate(state.createdAt), ' · última alteração em ', formatDate(state.updatedAt), '.'),
       ),
 
+      contaEmOutrosAparelhosCard(),
       sincronizacaoCard(),
 
       card(
@@ -942,6 +946,105 @@ export function renderDataPage(root) {
 
       el('div', { class: 'row' }, linkButton({ href: '#/perfil', label: 'Voltar', variant: 'ghost' })),
     ),
+  );
+}
+
+function contaEmOutrosAparelhosCard() {
+  if (!syncDisponivel) return null;
+
+  const conta = currentAccount();
+  const ligada = Boolean(vinculoDaConta());
+
+  if (conta?.guest) {
+    return card(
+      {},
+      el('h2', {}, 'Entrar em outros aparelhos'),
+      el(
+        'p',
+        { class: 'small secondary' },
+        'Você está estudando como convidado. Crie uma conta com e-mail e senha para poder entrar com ela no celular sem perder nada do que já fez.',
+      ),
+      el(
+        'div',
+        { class: 'row', style: { marginTop: '0.75rem' } },
+        linkButton({ href: '#/entrar?aba=criar', label: 'Criar minha conta' }),
+      ),
+    );
+  }
+
+  if (ligada) {
+    return card(
+      { accent: 'green' },
+      el('h2', {}, 'Entrar em outros aparelhos'),
+      badge('ligado', 'green'),
+      el(
+        'p',
+        { class: 'small secondary', style: { marginTop: '0.6rem' } },
+        'No celular, abra o site, vá em Entrar e digite ',
+        el('strong', {}, conta?.email || 'seu e-mail'),
+        ' com a sua senha. Seu progresso desce junto e continua sincronizando sozinho nos dois aparelhos.',
+      ),
+    );
+  }
+
+  if (!conta?.email || !conta?.protegida) {
+    return card(
+      {},
+      el('h2', {}, 'Entrar em outros aparelhos'),
+      el(
+        'p',
+        { class: 'small secondary' },
+        'Para entrar com e-mail e senha no celular, esta conta precisa dos dois. ',
+        conta?.email ? 'Falta uma senha.' : 'Falta um e-mail.',
+        ' Você pode preencher em Perfil › Configurações, ou usar o código de sincronização abaixo.',
+      ),
+    );
+  }
+
+  const erro = el('div', { 'aria-live': 'polite' });
+  const senha = field({
+    label: 'Confirme sua senha',
+    name: 'senha-conta',
+    type: 'password',
+    autocomplete: 'current-password',
+    hint: 'É ela que cifra o pacote. Digitamos aqui porque a senha não fica guardada em lugar nenhum.',
+  });
+
+  const ligar = button({
+    label: 'Ligar entrada por e-mail e senha',
+    onClick: async (evento) => {
+      const valor = senha.querySelector('input')?.value ?? '';
+      render(erro);
+      if (!valor) {
+        render(erro, message('danger', 'Faltou a senha', el('p', {}, 'Digite a senha desta conta.')));
+        return;
+      }
+      setButtonLoading(evento.currentTarget, true, 'Ligando…');
+      try {
+        await registrarConta({ email: conta.email, senha: valor });
+        toast('Pronto. Agora você entra nesta conta pelo celular com e-mail e senha.', 'success');
+        refresh();
+      } catch (problema) {
+        setButtonLoading(evento.currentTarget, false);
+        render(erro, message('danger', 'Não deu certo', el('p', {}, problema.message)));
+      }
+    },
+  });
+
+  return card(
+    {},
+    el('h2', {}, 'Entrar em outros aparelhos'),
+    el(
+      'p',
+      { class: 'small secondary' },
+      'Guarda seu progresso cifrado com a sua senha. Depois é só abrir o site no celular e entrar com ',
+      el('strong', {}, conta.email),
+      ' e essa mesma senha.',
+    ),
+    el('hr', { class: 'hairline' }),
+    senha,
+    erro,
+    el('div', { class: 'row' }, ligar),
   );
 }
 

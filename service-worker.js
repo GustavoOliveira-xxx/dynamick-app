@@ -1,4 +1,4 @@
-const CACHE = 'dynamick-shell-v5';
+const CACHE = 'dynamick-shell-v6';
 const SHELL = [
   './',
   './index.html',
@@ -24,6 +24,10 @@ const SHELL = [
   './css/components.css',
   './css/landing.css',
   './css/app.css',
+  './assets/fontes/work-sans-latin.woff2',
+  './assets/fontes/work-sans-latin-ext.woff2',
+  './assets/fontes/work-sans-italico-latin.woff2',
+  './assets/fontes/fraunces-latin.woff2',
   './assets/brand/favicon.png',
   './assets/brand/favicon.svg',
   './assets/brand/logo-dynamic.webp',
