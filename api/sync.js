@@ -1,6 +1,14 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+const databaseUrl =
+  process.env.DATABASE_URL
+  ?? process.env.DATABASE_URL_UNPOOLED
+  ?? process.env.POSTGRES_URL
+  ?? process.env.POSTGRES_PRISMA_URL
+  ?? process.env.NEON_DATABASE_URL
+  ?? null;
+
+const sql = databaseUrl ? neon(databaseUrl) : null;
 
 const LIMITE_BYTES = 1_500_000;
 const HASH = /^[0-9a-f]{64}$/;
@@ -27,7 +35,7 @@ export default async function handler(req, res) {
 
   if (!sql) {
     return json(res, 503, {
-      erro: 'A sincronização não está configurada neste servidor: falta a variável DATABASE_URL.',
+      erro: 'A sincronização está temporariamente indisponível. Tente novamente em alguns instantes.',
     });
   }
 
