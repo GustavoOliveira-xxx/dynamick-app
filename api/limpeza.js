@@ -1,10 +1,23 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL);
+const databaseUrl =
+  process.env.DATABASE_URL
+  ?? process.env.DATABASE_URL_UNPOOLED
+  ?? process.env.POSTGRES_URL
+  ?? process.env.POSTGRES_PRISMA_URL
+  ?? process.env.NEON_DATABASE_URL
+  ?? null;
+
+const sql = databaseUrl ? neon(databaseUrl) : null;
 
 const MESES_ATE_EXPIRAR = 12;
 
 export default async function handler(req, res) {
+  if (!sql) {
+    res.status(503).json({ erro: 'Banco de sincronização não configurado.' });
+    return;
+  }
+
   const segredo = process.env.CRON_SECRET;
   const enviado = req.headers?.authorization;
 

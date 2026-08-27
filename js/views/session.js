@@ -181,6 +181,24 @@ function renderRunner(root, session) {
     paint();
   }
 
+  async function advanceTo(next, { answered = isAnswered() } = {}) {
+    if (transitionBusy) return;
+    transitionBusy = true;
+    const destination = Math.min(Math.max(0, next), session.items.length - 1);
+    const activeCard = container.querySelector('.question-card');
+    try {
+      await playAnswerTransition(activeCard, {
+        hasNext: destination > index,
+        answered,
+        current: index + 1,
+        next: destination + 1,
+        onSwap: () => goTo(destination),
+      });
+    } finally {
+      transitionBusy = false;
+    }
+  }
+
   function finish() {
     if (submitting) return;
     submitting = true;
@@ -327,10 +345,14 @@ function renderRunner(root, session) {
                 paint();
                 return;
               }
-              await playAnswerTransition(questionCard, { hasNext: !isLast });
-              transitionBusy = false;
-              if (!isLast) goTo(index + 1);
-              else paint();
+              if (!isLast) {
+                transitionBusy = false;
+                await advanceTo(index + 1, { answered: true });
+              } else {
+                await playAnswerTransition(questionCard, { hasNext: false, answered: true });
+                transitionBusy = false;
+                paint();
+              }
             },
           }),
         );
@@ -422,7 +444,12 @@ function renderRunner(root, session) {
         'div',
         { class: 'session-controls' },
         button({ label: '← Anterior', variant: 'ghost', size: 'sm', disabled: index === 0, onClick: () => goTo(index - 1) }),
-        !isLast ? button({ label: 'Próxima →', variant: 'secondary', size: 'sm', onClick: () => goTo(index + 1) }) : null,
+        !isLast ? button({
+          label: answered ? 'Próxima →' : 'Pular por agora →',
+          variant: 'secondary',
+          size: 'sm',
+          onClick: () => advanceTo(index + 1, { answered }),
+        }) : null,
         button({
           label: item.flagged ? 'Desmarcar' : 'Marcar para revisar depois',
           variant: 'ghost',
