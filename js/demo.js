@@ -5,6 +5,7 @@ import { CONFIDENCE_LABELS, DIFFICULTY_LABELS, ERROR_REASON_LABELS, ERROR_REASON
 import { getQuestion } from './data/content.js';
 import { mountBackground } from './ui/background.js';
 import { dynamickLogo, consciousKnowledgeLogo } from './ui/brand.js';
+import { playAnswerTransition } from './ui/answer-transition.js';
 
 const AMOSTRA = ['q-porc-1', 'q-interp-1', 'q-eco-1'];
 
@@ -285,9 +286,18 @@ function desenhar() {
         { class: 'row' },
         button({
           label: indice + 1 < lista.length ? 'Próxima questão' : 'Ver o fechamento',
-          onClick: () => {
-            indice += 1;
-            desenhar();
+          onClick: async () => {
+            const nextIndex = indice + 1;
+            await playAnswerTransition(raiz.querySelector('.card'), {
+              hasNext: nextIndex < lista.length,
+              answered: true,
+              current: indice + 1,
+              next: Math.min(nextIndex + 1, lista.length),
+              onSwap: () => {
+                indice = nextIndex;
+                desenhar();
+              },
+            });
           },
         }),
       ),

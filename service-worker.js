@@ -1,4 +1,4 @@
-const CACHE = 'dynamick-shell-v6';
+const CACHE = 'dynamick-shell-v7';
 const SHELL = [
   './',
   './index.html',
