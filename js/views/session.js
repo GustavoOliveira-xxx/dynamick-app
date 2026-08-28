@@ -23,6 +23,7 @@ import {
   getSession,
   pauseSession,
   saveItemNote,
+  setElimination,
   setSessionIndex,
   submitSimulation,
   summarizeSession,
@@ -30,6 +31,7 @@ import {
 } from '../core/sessions.js';
 import { addErrorNote, mainRecommendation } from '../core/student.js';
 import { playAnswerTransition } from '../ui/answer-transition.js';
+import { getExamEnvironment } from '../data/exam-environments.js';
 
 export function renderSession(root, { params, query }) {
   const session = getSession(params.id);
@@ -67,6 +69,7 @@ function renderPreparation(root, session) {
     : questions.some((q) => q.difficulty === 'intermediate')
       ? 'intermediate'
       : 'intro';
+  const environment = session.examEnvironment ? getExamEnvironment(session.examEnvironment) : null;
 
   render(
     root,
@@ -92,6 +95,21 @@ function renderPreparation(root, session) {
               session.mode === 'learning'
                 ? 'A correção aparece depois de cada questão.'
                 : 'O resultado aparece apenas ao final.'),
+          ),
+          environment
+            ? el(
+                'div',
+                {},
+                el('dt', {}, 'Ambiente'),
+                el('dd', {}, environment.title),
+                el('p', { class: 'xsmall muted', style: { marginTop: '0.25rem' } }, environment.description),
+              )
+            : null,
+          el(
+            'div',
+            {},
+            el('dt', {}, 'Eliminação'),
+            el('dd', {}, session.eliminationEnabled ? 'Disponível' : 'Desativada'),
           ),
         ),
 
@@ -119,13 +137,17 @@ function renderPreparation(root, session) {
       ),
 
       el('p', { class: 'xsmall muted' },
-        'Você pode pausar a qualquer momento. Nada do que já respondeu se perde.'),
+        session.allowPause === false
+          ? 'Este ambiente não oferece pausa durante a execução. As respostas continuam salvas neste aparelho.'
+          : 'Você pode pausar a qualquer momento. Nada do que já respondeu se perde.'),
     ),
   );
 }
 
 function renderRunner(root, session) {
   const prefs = getState().preferences;
+  const showTimer = session.showTimerOverride ?? prefs.showTimer;
+  const confidencePrompt = session.confidencePromptOverride ?? prefs.confidencePrompt;
   let index = Math.min(Math.max(0, session.currentIndex), Math.max(0, session.items.length - 1));
 
   let questionStart = Date.now();
@@ -138,6 +160,7 @@ function renderRunner(root, session) {
   const timerNode = el('span', { class: 'timer' });
   const limitNode = el('span', {});
   const container = el('div', { class: 'stack stack--lg session-shell' });
+  if (session.focusMode) document.documentElement.classList.add('exam-focus-active');
   render(root, container);
 
   const ticker = window.setInterval(tick, 1000);
@@ -158,6 +181,9 @@ function renderRunner(root, session) {
       elapsed = Math.floor((Date.now() - questionStart) / 1000);
       timerNode.textContent = formatSeconds(elapsed);
       timerNode.setAttribute('aria-label', `Tempo nesta questão: ${formatSeconds(elapsed)}`);
+      if (session.perQuestionTargetSeconds) {
+        timerNode.dataset.pace = elapsed > session.perQuestionTargetSeconds ? 'late' : 'on-track';
+      }
     }
 
     if (session.timeLimitSeconds) {
@@ -249,37 +275,77 @@ function renderRunner(root, session) {
             { class: 'stack stack--sm' },
             question.options.map((option) => {
               const isSelected = selected === option.label;
+              const elimination = item.eliminations?.[option.label] ?? null;
 
               const revealed = answered && learning;
               const showCorrect = revealed && option.isCorrect;
               const showWrong = revealed && isSelected && !option.isCorrect;
 
+              const setCertainty = (certainty) => {
+                if (selected === option.label) selected = null;
+                const next = elimination === certainty ? null : certainty;
+                setElimination(session.id, question.slug, option.label, next);
+                Object.assign(session, getSession(session.id));
+                paintOptions();
+                paintActions();
+              };
+
               return el(
-                'label',
-                {
-                  class: `option${showCorrect ? ' option--correct' : showWrong ? ' option--wrong' : ''}`,
-                },
-                el('input', {
-                  type: 'radio',
-                  name: `q-${question.slug}`,
-                  value: option.label,
-                  checked: isSelected || undefined,
-                  onChange: () => {
-                    selected = option.label;
-                    paintActions();
-                  },
-                }),
+                'div',
+                { class: `option-shell${elimination ? ` option-shell--${elimination}` : ''}` },
                 el(
-                  'span',
-                  { class: 'option__body' },
-                  el('span', {}, el('strong', {}, `${option.label}) `), option.text),
-                  showCorrect
-                    ? el('span', { class: 'option__verdict option__verdict--correct' }, '✓ Alternativa correta')
-                    : null,
-                  showWrong
-                    ? el('span', { class: 'option__verdict option__verdict--wrong' }, '✗ Foi a sua resposta')
-                    : null,
+                  'label',
+                  {
+                    class: `option${elimination ? ' option--eliminated' : ''}${showCorrect ? ' option--correct' : showWrong ? ' option--wrong' : ''}`,
+                  },
+                  el('input', {
+                    type: 'radio',
+                    name: `q-${question.slug}`,
+                    value: option.label,
+                    checked: isSelected || undefined,
+                    onChange: () => {
+                      selected = option.label;
+                      if (elimination) setElimination(session.id, question.slug, option.label, null);
+                      Object.assign(session, getSession(session.id));
+                      paintOptions();
+                      paintActions();
+                    },
+                  }),
+                  el(
+                    'span',
+                    { class: 'option__body' },
+                    el('span', {}, el('strong', {}, `${option.label}) `), option.text),
+                    elimination === 'maybe'
+                      ? el('span', { class: 'option__elimination-tag' }, 'Talvez errada')
+                      : elimination === 'sure'
+                        ? el('span', { class: 'option__elimination-tag option__elimination-tag--sure' }, 'Certeza que está errada')
+                        : null,
+                    showCorrect
+                      ? el('span', { class: 'option__verdict option__verdict--correct' }, '✓ Alternativa correta')
+                      : null,
+                    showWrong
+                      ? el('span', { class: 'option__verdict option__verdict--wrong' }, '✗ Foi a sua resposta')
+                      : null,
+                  ),
                 ),
+                session.eliminationEnabled && !revealed
+                  ? el(
+                      'div',
+                      { class: 'option-elimination', role: 'group', 'aria-label': `Eliminar alternativa ${option.label}` },
+                      button({
+                        label: elimination === 'maybe' ? 'Desfazer dúvida' : 'Talvez errada',
+                        variant: elimination === 'maybe' ? 'secondary' : 'ghost',
+                        size: 'sm',
+                        onClick: () => setCertainty('maybe'),
+                      }),
+                      button({
+                        label: elimination === 'sure' ? 'Desfazer certeza' : 'Certeza que está errada',
+                        variant: elimination === 'sure' ? 'secondary' : 'ghost',
+                        size: 'sm',
+                        onClick: () => setCertainty('sure'),
+                      }),
+                    )
+                  : null,
               );
             }),
           ),
@@ -292,7 +358,7 @@ function renderRunner(root, session) {
     function paintActions() {
       const children = [];
 
-      if (prefs.confidencePrompt && !answered) {
+      if (confidencePrompt && !answered) {
         children.push(
           el(
             'fieldset',
@@ -421,8 +487,12 @@ function renderRunner(root, session) {
           el(
             'div',
             { class: 'row', style: { gap: '0.5rem' } },
-            prefs.showTimer && !answered ? timerNode : null,
+            showTimer && !answered ? timerNode : null,
             session.timeLimitSeconds ? limitNode : null,
+            session.perQuestionTargetSeconds
+              ? badge(`Meta ${formatSeconds(session.perQuestionTargetSeconds)}/questão`, 'cyan')
+              : null,
+            session.focusMode ? badge('Ambiente imersivo', 'lime') : null,
             badge(`${index + 1} de ${session.items.length}`),
           ),
         ),
@@ -466,7 +536,8 @@ function renderRunner(root, session) {
           size: 'sm',
           onClick: () => paintNote(true),
         }),
-        el(
+        session.allowPause !== false
+          ? el(
           'div',
           { class: 'session-controls__end' },
           button({
@@ -479,7 +550,8 @@ function renderRunner(root, session) {
               navigate('/inicio');
             },
           }),
-        ),
+          )
+          : el('span', { class: 'session-controls__end xsmall muted' }, 'Sem pausa neste ambiente'),
       ),
 
       noteRegion,
@@ -541,13 +613,24 @@ function renderRunner(root, session) {
   paint();
   tick();
 
-  return () => window.clearInterval(ticker);
+  return () => {
+    window.clearInterval(ticker);
+    document.documentElement.classList.remove('exam-focus-active');
+  };
 }
 
 function correctionCard(session, question, attempt, onChange) {
   const correct = question.options.find((option) => option.isCorrect);
   const chosen = question.options.find((option) => option.label === attempt.answer);
   const isCorrect = attempt.isCorrect;
+  const eliminated = Object.entries(attempt.eliminations ?? {}).map(([label, certainty]) => ({
+    label,
+    certainty,
+    option: question.options.find((option) => option.label === label),
+  })).filter((entry) => entry.option);
+  const eliminatedCorrect = eliminated.filter((entry) => entry.option.isCorrect);
+  const sureAccurate = eliminated.filter((entry) => entry.certainty === 'sure' && !entry.option.isCorrect);
+  const sureTotal = eliminated.filter((entry) => entry.certainty === 'sure');
 
   let showDistractors = !isCorrect;
   let reason = attempt.errorReason ?? '';
@@ -669,6 +752,29 @@ function correctionCard(session, question, attempt, onChange) {
       ? el('p', { class: 'small secondary', style: { marginTop: '1rem' } },
           'Você marcou ', el('strong', {}, chosen.label), '. A correta é ',
           el('strong', { style: { color: 'var(--ck-success)' } }, correct.label), '.')
+      : null,
+
+    eliminated.length
+      ? el(
+          'div',
+          { class: `elimination-review${eliminatedCorrect.length ? ' elimination-review--warning' : ''}` },
+          el('p', { class: 'eyebrow' }, 'Seu raciocínio por eliminação'),
+          el(
+            'p',
+            { class: 'small', style: { marginTop: '0.35rem' } },
+            `Você descartou ${eliminated.length} alternativa(s). `,
+            eliminatedCorrect.length
+              ? `A alternativa correta apareceu entre os descartes ${eliminatedCorrect.length} vez(es).`
+              : 'Todos os descartes estavam realmente incorretos.',
+          ),
+          sureTotal.length
+            ? el(
+                'p',
+                { class: 'xsmall secondary', style: { marginTop: '0.35rem' } },
+                `Certeza bem calibrada: ${sureAccurate.length} de ${sureTotal.length} descartes seguros.`,
+              )
+            : null,
+        )
       : null,
 
     question.explanation

@@ -6,6 +6,7 @@ import { SIMULATIONS, SUBJECTS, getArea, getSimulation } from '../data/content.j
 import { getState } from '../core/store.js';
 import { createSimulationSession, getSession, summarizeSession } from '../core/sessions.js';
 import { navigate } from '../core/router.js';
+import { EXAM_ENVIRONMENTS, getExamEnvironment } from '../data/exam-environments.js';
 
 export function renderSimulations(root) {
   const state = getState();
@@ -242,7 +243,8 @@ export function renderSimulationDetail(root, { params }) {
   const distribution = Object.entries(simulation.blueprint.difficulty ?? {});
   const topics = Object.entries(simulation.blueprint.topics ?? {});
 
-  let timed = true;
+  let environmentSlug = getState().preferences.preferredExamEnvironment ?? 'padrao';
+  let eliminationEnabled = true;
   const aviso = el('div');
 
   render(
@@ -312,14 +314,70 @@ export function renderSimulationDetail(root, { params }) {
 
       card(
         {},
-        el('h2', {}, 'Antes de começar'),
+        el('h2', {}, 'Escolha o ambiente de prova'),
+        el(
+          'p',
+          { class: 'small secondary' },
+          'O conteúdo é o mesmo. O que muda é a pressão do tempo, a possibilidade de pausa e o nível de concentração exigido.',
+        ),
+        el(
+          'fieldset',
+          { class: 'exam-environment-grid' },
+          el('legend', { class: 'sr-only' }, 'Ambiente do simulado'),
+          EXAM_ENVIRONMENTS.map((environment) =>
+            el(
+              'label',
+              { class: 'exam-environment' },
+              el('input', {
+                type: 'radio',
+                name: 'exam-environment',
+                value: environment.slug,
+                checked: environment.slug === environmentSlug || undefined,
+                onChange: () => {
+                  environmentSlug = environment.slug;
+                  render(
+                    aviso,
+                    el(
+                      'p',
+                      { class: 'xsmall muted', style: { marginTop: '0.65rem' } },
+                      environment.timeFactor == null
+                        ? 'Sem encerramento automático por tempo.'
+                        : `Tempo desta configuração: ${formatMinutes(Math.round(simulation.minutes * environment.timeFactor))}.`,
+                    ),
+                  );
+                },
+              }),
+              el(
+                'span',
+                { class: 'exam-environment__body' },
+                el('span', { class: 'eyebrow' }, environment.eyebrow),
+                el('strong', {}, environment.title),
+                el('span', { class: 'small secondary' }, environment.description),
+                el(
+                  'span',
+                  { class: 'exam-environment__traits' },
+                  badge(environment.timeFactor == null ? 'Sem limite' : `${Math.round(environment.timeFactor * 100)}% do tempo`, 'neutral'),
+                  badge(environment.allowPause ? 'Com pausa' : 'Sem pausa', environment.allowPause ? 'neutral' : 'warning'),
+                  environment.pacePerQuestion ? badge('Meta por questão', 'cyan') : null,
+                ),
+              ),
+            ),
+          ),
+        ),
+        aviso,
+      ),
+
+      card(
+        {},
+        el('h2', {}, 'Ferramentas opcionais'),
         el(
           'ul',
           { class: 'plain-list stack stack--sm small secondary' },
+          el('li', {}, 'O método de eliminação registra quais alternativas você considerou erradas e com qual certeza.'),
           el('li', {}, 'Você pode marcar questões para revisar antes de enviar.'),
           el('li', {}, 'Nenhuma resposta é corrigida durante a execução.'),
           el('li', {}, 'Se o tempo acabar, o simulado é enviado automaticamente com o que estiver respondido.'),
-          el('li', {}, 'Sair da tela não perde o progresso — o simulado continua aberto até o envio.'),
+          el('li', {}, 'Seu progresso permanece salvo; ambientes sem pausa escondem a saída durante a prova.'),
         ),
         el(
           'label',
@@ -328,22 +386,16 @@ export function renderSimulationDetail(root, { params }) {
             type: 'checkbox',
             checked: true,
             onChange: (event) => {
-              timed = event.currentTarget.checked;
-              render(
-                aviso,
-                timed
-                  ? null
-                  : el(
-                      'p',
-                      { class: 'xsmall muted', style: { marginTop: '0.5rem' } },
-                      'Sem cronômetro o simulado deixa de treinar ritmo de prova. O tempo continua sendo medido para a análise.',
-                    ),
-              );
+              eliminationEnabled = event.currentTarget.checked;
             },
           }),
-          'Usar cronômetro',
+          'Usar método de eliminação',
         ),
-        aviso,
+        el(
+          'p',
+          { class: 'xsmall muted', style: { marginTop: '0.5rem' } },
+          'Opcional. Você poderá marcar “talvez errada” ou “certeza que está errada” em cada alternativa. Isso não altera a nota, apenas melhora a análise do seu processo de decisão.',
+        ),
       ),
 
       el(
@@ -353,7 +405,10 @@ export function renderSimulationDetail(root, { params }) {
           label: 'Começar o simulado',
           onClick: (event) => {
             event.currentTarget.disabled = true;
-            const session = createSimulationSession(simulation.slug, timed);
+            const session = createSimulationSession(simulation.slug, {
+              environmentSlug,
+              eliminationEnabled,
+            });
             if (!session) {
               event.currentTarget.disabled = false;
               render(
@@ -392,6 +447,7 @@ export function renderSimulationResult(root, { params }) {
   }
 
   const simulation = getSimulation(run.simulationSlug);
+  const environment = getExamEnvironment(run.environmentSlug);
   const analysis = run.analysis ?? {};
   const summary = summarizeSession(run.sessionId);
   const rate = percent(run.score, run.totalItems);
@@ -416,7 +472,7 @@ export function renderSimulationResult(root, { params }) {
         { class: 'view-header' },
         el('p', { class: 'breadcrumb' }, el('a', { href: '#/simulados' }, 'Simulados'), ' › Resultado'),
         el('h1', {}, simulation?.title ?? 'Resultado do simulado'),
-        el('p', { class: 'small secondary' }, 'Enviado em ', formatDate(run.submittedAt), '.'),
+        el('p', { class: 'small secondary' }, 'Enviado em ', formatDate(run.submittedAt), ' · ', environment.title, '.'),
       ),
 
       run.fallbackNote
@@ -472,6 +528,31 @@ export function renderSimulationResult(root, { params }) {
               'p',
               { class: 'xsmall muted', style: { marginTop: '0.5rem' } },
               'Acerto com dúvida e acerto após troca de alternativa não são o mesmo que domínio: os dois voltam na fila de revisão.',
+            ),
+          )
+        : null,
+
+      analysis.elimination?.marked
+        ? card(
+            { accent: analysis.elimination.correctOptionsEliminated > 0 ? 'warning' : 'cyan' },
+            el('span', { class: 'eyebrow' }, 'Método de eliminação'),
+            el('h2', { style: { marginTop: '0.3rem' } }, 'Como você descartou alternativas'),
+            el(
+              'dl',
+              { class: 'def-list' },
+              el('dt', {}, 'Alternativas marcadas'), el('dd', {}, String(analysis.elimination.marked)),
+              el('dt', {}, 'Descartes corretos'), el('dd', {}, `${analysis.elimination.accurate} de ${analysis.elimination.marked}`),
+              el('dt', {}, 'Com certeza'), el('dd', {}, `${analysis.elimination.sureAccurate} de ${analysis.elimination.sure}`),
+              el('dt', {}, 'Gabaritos descartados'), el('dd', {}, String(analysis.elimination.correctOptionsEliminated)),
+            ),
+            el(
+              'p',
+              { class: 'small secondary', style: { marginTop: '0.75rem' } },
+              analysis.elimination.correctOptionsEliminated > 0
+                ? 'Você eliminou a alternativa correta em pelo menos uma questão. Reveja quais pistas fizeram uma opção válida parecer impossível.'
+                : analysis.elimination.sure === analysis.elimination.sureAccurate
+                  ? 'Seus descartes feitos com certeza foram consistentes neste simulado.'
+                  : 'Alguns descartes seguros não se confirmaram. Compare certeza percebida e evidência textual no caderno de revisão.',
             ),
           )
         : null,
