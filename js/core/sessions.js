@@ -4,6 +4,8 @@ import { activeProfile, refreshMastery, scheduleReview, student, addErrorNote } 
 import { getQuestion, getTopic, questionsForTopic, QUESTIONS, getSimulation } from '../data/content.js';
 import { generateSimulation } from '../engine/simulation.js';
 import { buildReviewBatch } from '../engine/spaced.js';
+import { analyzeEliminations } from '../engine/elimination.js';
+import { getExamEnvironment } from '../data/exam-environments.js';
 
 export function selectQuestions(topicSlug, count) {
   const state = getState();
@@ -68,6 +70,13 @@ export function createSession({
   minutes = 20,
   timeLimitSeconds = null,
   simulationSlug = null,
+  eliminationEnabled = getState().preferences.eliminationMode,
+  examEnvironment = null,
+  allowPause = true,
+  showTimerOverride = null,
+  confidencePromptOverride = null,
+  perQuestionTargetSeconds = null,
+  focusMode = false,
 }) {
   const key = idempotencyKey([topicSlug ?? 'sem-topico', kind, simulationSlug ?? 'sem-simulado']);
   const existing = Object.values(getState().sessions).find(
@@ -95,6 +104,13 @@ export function createSession({
       currentIndex: 0,
       plannedMinutes: minutes,
       timeLimitSeconds,
+      eliminationEnabled: Boolean(eliminationEnabled),
+      examEnvironment,
+      allowPause,
+      showTimerOverride,
+      confidencePromptOverride,
+      perQuestionTargetSeconds,
+      focusMode,
       idempotencyKey: key,
       startedAt: now,
       lastActiveAt: now,
@@ -104,6 +120,7 @@ export function createSession({
         order,
         flagged: false,
         note: null,
+        eliminations: {},
         status: 'pending',
       })),
     };
@@ -186,9 +203,18 @@ export function createDiagnosticSession(perArea = 2) {
   });
 }
 
-export function createSimulationSession(simulationSlug, timed = true) {
+export function createSimulationSession(simulationSlug, options = {}) {
   const simulation = getSimulation(simulationSlug);
   if (!simulation) return null;
+
+  const normalized = typeof options === 'boolean'
+    ? { environmentSlug: options ? 'padrao' : 'flexivel' }
+    : options;
+  const environment = getExamEnvironment(normalized.environmentSlug);
+  const eliminationEnabled = normalized.eliminationEnabled ?? environment.eliminationDefault;
+  const seconds = environment.timeFactor == null
+    ? null
+    : Math.max(60, Math.round(simulation.minutes * 60 * environment.timeFactor));
 
   const existing = Object.values(getState().simulationRuns).find(
     (run) => run.simulationSlug === simulationSlug && !run.submittedAt,
@@ -219,8 +245,17 @@ export function createSimulationSession(simulationSlug, timed = true) {
     reason: simulation.description,
     questionSlugs: result.questionIds,
     minutes: simulation.minutes,
-    timeLimitSeconds: timed ? simulation.minutes * 60 : null,
+    timeLimitSeconds: seconds,
     simulationSlug,
+    eliminationEnabled,
+    examEnvironment: environment.slug,
+    allowPause: environment.allowPause,
+    showTimerOverride: environment.showTimer,
+    confidencePromptOverride: environment.confidencePrompt,
+    perQuestionTargetSeconds: environment.pacePerQuestion
+      ? Math.max(30, Math.round(seconds / result.questionIds.length))
+      : null,
+    focusMode: environment.focusMode,
   });
   if (!session) return null;
 
@@ -230,7 +265,9 @@ export function createSimulationSession(simulationSlug, timed = true) {
       id: runId,
       simulationSlug,
       sessionId: session.id,
-      timed,
+      timed: seconds != null,
+      environmentSlug: environment.slug,
+      eliminationEnabled,
       totalItems: result.questionIds.length,
       score: 0,
       submittedAt: null,
@@ -261,6 +298,25 @@ export function attemptFor(sessionId, questionSlug) {
   ) ?? null;
 }
 
+export function setElimination(sessionId, questionSlug, optionLabel, certainty = null) {
+  if (![null, 'maybe', 'sure'].includes(certainty)) return null;
+
+  update((state) => {
+    const item = state.sessions[sessionId]?.items.find((entry) => entry.questionSlug === questionSlug);
+    if (!item) return;
+    item.eliminations ??= {};
+    if (certainty) item.eliminations[optionLabel] = certainty;
+    else delete item.eliminations[optionLabel];
+    const attempt = Object.values(state.attempts).find(
+      (entry) => entry.sessionId === sessionId && entry.questionSlug === questionSlug,
+    );
+    if (attempt) attempt.eliminations = { ...item.eliminations };
+    state.sessions[sessionId].lastActiveAt = new Date().toISOString();
+  }, { immediate: true });
+
+  return getState().sessions[sessionId]?.items.find((entry) => entry.questionSlug === questionSlug)?.eliminations ?? {};
+}
+
 export function runForSession(sessionId) {
   return Object.values(getState().simulationRuns).find((run) => run.sessionId === sessionId) ?? null;
 }
@@ -274,6 +330,7 @@ export function answerQuestion({ sessionId, questionSlug, optionLabel, confidenc
 
   const existing = attemptFor(sessionId, questionSlug);
   const id = existing?.id ?? newId('att');
+  const sessionItem = getState().sessions[sessionId]?.items.find((entry) => entry.questionSlug === questionSlug);
 
   update((state) => {
     const previous = state.attempts[id];
@@ -287,6 +344,7 @@ export function answerQuestion({ sessionId, questionSlug, optionLabel, confidenc
       changedAnswer: previous ? previous.firstAnswer !== optionLabel : false,
       isCorrect: Boolean(option.isCorrect),
       confidence: confidence ?? previous?.confidence ?? null,
+      eliminations: { ...(sessionItem?.eliminations ?? previous?.eliminations ?? {}) },
       timeSpentMs: (previous?.timeSpentMs ?? 0) + (timeSpentMs ?? 0),
       errorReason: previous?.errorReason ?? null,
       answeredAt: new Date().toISOString(),
@@ -390,6 +448,7 @@ export function summarizeSession(sessionId) {
   let correctWithDoubt = 0;
   let correctAfterChange = 0;
   let totalTimeMs = 0;
+  const eliminationRecords = [];
   const times = [];
 
   for (const item of session.items) {
@@ -416,6 +475,8 @@ export function summarizeSession(sessionId) {
       } else if (attempt.errorReason) {
         reasons.set(attempt.errorReason, (reasons.get(attempt.errorReason) ?? 0) + 1);
       }
+
+      eliminationRecords.push({ options: question.options, eliminations: attempt.eliminations });
     }
 
     byTopic.set(question.topicName, bucket);
@@ -436,6 +497,7 @@ export function summarizeSession(sessionId) {
     totalTimeMs,
     medianTimeMs: sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0,
     slowestMs: sorted.at(-1) ?? 0,
+    elimination: analyzeEliminations(eliminationRecords),
     topics: [...byTopic.entries()].map(([name, value]) => ({ name, ...value })),
     errorReasons: [...reasons.entries()]
       .map(([reason, count]) => ({ reason, count }))
@@ -487,6 +549,7 @@ export function submitSimulation(sessionId) {
         answered: summary.answered,
       },
       errorReasons: summary.errorReasons,
+      elimination: summary.elimination,
     };
   }, { immediate: true });
 

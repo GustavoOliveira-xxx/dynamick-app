@@ -23,6 +23,7 @@ describe('aplicativo instalável', () => {
     const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
     expect(manifest.display).toBe('standalone');
     expect(manifest.icons.length).toBeGreaterThanOrEqual(2);
+    expect(manifest.icons.some((icon) => icon.src === 'assets/brand/app-icon-512.png')).toBe(true);
     expect(manifest.shortcuts).toHaveLength(3);
   });
 
@@ -42,5 +43,6 @@ describe('aplicativo instalável', () => {
     const source = await readFile(new URL('../service-worker.js', import.meta.url), 'utf8');
     expect(source).toContain("'./enems.html'");
     expect(source).toContain("'./offline.html'");
+    expect(source).toContain("'./assets/brand/app-icon-512.png'");
   });
 });
