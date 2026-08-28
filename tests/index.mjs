@@ -6,6 +6,7 @@ const files = [
   './mastery.test.mjs',
   './spaced.test.mjs',
   './simulation.test.mjs',
+  './elimination.test.mjs',
   './simulados.test.mjs',
   './content.test.mjs',
   './answer-key.test.mjs',

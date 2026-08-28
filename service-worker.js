@@ -1,4 +1,4 @@
-const CACHE = 'dynamick-shell-v7';
+const CACHE = 'dynamick-shell-v8';
 const SHELL = [
   './',
   './index.html',
@@ -29,7 +29,7 @@ const SHELL = [
   './assets/fontes/work-sans-italico-latin.woff2',
   './assets/fontes/fraunces-latin.woff2',
   './assets/brand/favicon.png',
-  './assets/brand/favicon.svg',
+  './assets/brand/app-icon-512.png',
   './assets/brand/logo-dynamic.webp',
   './assets/brand/logo-dynamic.png'
 ];

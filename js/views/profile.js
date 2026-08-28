@@ -19,6 +19,7 @@ import { DIMENSION_KEYS, DIMENSION_LABELS, MASTERY_LABELS, MASTERY_STATES, REPOR
 import { PROFILES, getProfile } from '../engine/profiles.js';
 import { describePersonalization, supportsFor } from '../engine/profile.js';
 import { TOPICS, getTopic } from '../data/content.js';
+import { EXAM_ENVIRONMENTS } from '../data/exam-environments.js';
 import { clearAll, exportData, getState, importData } from '../core/store.js';
 import {
   activeProfile,
@@ -423,6 +424,31 @@ export function renderSettings(root) {
             { value: 'nao', label: 'Não perguntar' },
           ],
           onChange: (value) => set({ confidencePrompt: value === 'sim' }),
+        }),
+        choiceGroup({
+          legend: 'Método de eliminação nas sessões de estudo',
+          name: 'eliminacao',
+          value: prefs.eliminationMode ? 'sim' : 'nao',
+          options: [
+            {
+              value: 'sim',
+              label: 'Disponível',
+              hint: 'Permite marcar alternativas como talvez erradas ou certamente erradas e analisa seus descartes.',
+            },
+            { value: 'nao', label: 'Oculto', hint: 'Você ainda pode ativá-lo ao montar um simulado.' },
+          ],
+          onChange: (value) => set({ eliminationMode: value === 'sim' }),
+        }),
+        choiceGroup({
+          legend: 'Ambiente padrão dos simulados',
+          name: 'ambiente-prova',
+          value: prefs.preferredExamEnvironment,
+          options: EXAM_ENVIRONMENTS.map((environment) => ({
+            value: environment.slug,
+            label: environment.title,
+            hint: environment.description,
+          })),
+          onChange: (value) => set({ preferredExamEnvironment: value }),
         }),
       ),
 

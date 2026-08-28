@@ -83,6 +83,8 @@ function emptyState() {
       correctionMode: 'learning',
       showTimer: true,
       confidencePrompt: true,
+      eliminationMode: false,
+      preferredExamEnvironment: 'padrao',
       remindersEnabled: false,
       reminderDays: [],
       reminderTime: '',

@@ -95,14 +95,22 @@ describe('quantidades mínimas do pacote inicial', () => {
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
+  it('o padrão da sétima leva adiciona exatamente 5 questões a cada um dos 39 tópicos', () => {
+    const fora = TOPICS.filter(
+      (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_7_2026_08').length !== 5,
+    );
+    expect(TOPICS).toHaveLength(39);
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
+  });
+
   it('nenhum assunto é menos servido que outro', () => {
     const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
     expect(Math.min(...principais)).toBeGreaterThanOrEqual(25);
   });
 
-  it('o acervo totaliza 1230 questões principais e 51 de recuperação', () => {
-    expect(health.totals.questions).toBe(1281);
-    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(1230);
+  it('o acervo totaliza 1425 questões principais e 51 de recuperação', () => {
+    expect(health.totals.questions).toBe(1476);
+    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(1425);
     expect(health.totals.recoveryQuestions).toBe(51);
   });
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));
