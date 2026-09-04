@@ -1,14 +1,33 @@
 import { neon } from '@neondatabase/serverless';
 
-const databaseUrl =
-  process.env.DATABASE_URL
-  ?? process.env.DATABASE_URL_UNPOOLED
-  ?? process.env.POSTGRES_URL
-  ?? process.env.POSTGRES_PRISMA_URL
-  ?? process.env.NEON_DATABASE_URL
-  ?? null;
+/**
+ * Nomes aceitos para a conexão, na ordem em que são procurados. DATABASE_URL é
+ * o que a integração Neon-Vercel cria sozinha; os outros cobrem instalações
+ * antigas e o painel de Postgres da Vercel.
+ */
+const VARIAVEIS = [
+  'DATABASE_URL',
+  'DATABASE_URL_UNPOOLED',
+  'POSTGRES_URL',
+  'POSTGRES_PRISMA_URL',
+  'NEON_DATABASE_URL',
+];
 
-const sql = databaseUrl ? neon(databaseUrl) : null;
+let cache = null;
+
+/**
+ * A conexão é resolvida a cada chamada, e não uma vez no carregamento do
+ * módulo: assim basta definir a variável e publicar de novo, sem depender de
+ * qual instância da função continuou viva.
+ */
+function conectar() {
+  const variavel = VARIAVEIS.find((nome) => String(process.env[nome] ?? '').trim().length > 0);
+  if (!variavel) return null;
+
+  const url = process.env[variavel].trim();
+  if (cache?.url !== url) cache = { url, sql: neon(url) };
+  return cache.sql;
+}
 
 const LIMITE_BYTES = 1_500_000;
 const HASH = /^[0-9a-f]{64}$/;
@@ -33,16 +52,22 @@ export default async function handler(req, res) {
 
   res.setHeader('vary', 'origin');
 
+  const sql = conectar();
+
   if (!sql) {
+    // Só acontece quando o projeto foi publicado sem a variável do banco.
+    // A mensagem diz o que fazer em vez de sugerir esperar por uma falha
+    // passageira, que era o que a versão anterior pedia.
+    console.error(`/api/sync sem banco: defina uma destas variáveis — ${VARIAVEIS.join(', ')}`);
     return json(res, 503, {
-      erro: 'A sincronização está temporariamente indisponível. Tente novamente em alguns instantes.',
+      erro: 'A sincronização ainda não foi ligada nesta publicação: falta a variável DATABASE_URL apontando para o banco Neon.',
     });
   }
 
   try {
-    if (req.method === 'GET') return await ler(req, res);
-    if (req.method === 'PUT') return await gravar(req, res);
-    if (req.method === 'DELETE') return await apagar(req, res);
+    if (req.method === 'GET') return await ler(sql, req, res);
+    if (req.method === 'PUT') return await gravar(sql, req, res);
+    if (req.method === 'DELETE') return await apagar(sql, req, res);
     res.setHeader('allow', 'GET, PUT, DELETE');
     return json(res, 405, { erro: 'Método não suportado.' });
   } catch (erro) {
@@ -57,19 +82,25 @@ export default async function handler(req, res) {
   }
 }
 
-async function ler(req, res) {
+async function ler(sql, req, res) {
   const codeHash = req.query?.codeHash;
   if (!HASH.test(codeHash ?? '')) return json(res, 400, { erro: 'codeHash inválido.' });
 
   const linhas = await sql`
-    UPDATE sync_snapshots
-       SET last_seen_at = now()
+    SELECT ciphertext, iv, salt, revision, updated_at, last_seen_at
+      FROM sync_snapshots
      WHERE code_hash = ${codeHash}
-    RETURNING ciphertext, iv, salt, revision, updated_at
   `;
   if (linhas.length === 0) return json(res, 404, { erro: 'Nada gravado com este código.' });
 
   const linha = linhas[0];
+
+  // O carimbo só serve para a limpeza anual, então uma vez por dia basta.
+  // Atualizar a cada leitura transformava toda abertura do app numa escrita.
+  if (Date.now() - new Date(linha.last_seen_at).getTime() > 86400000) {
+    await sql`UPDATE sync_snapshots SET last_seen_at = now() WHERE code_hash = ${codeHash}`;
+  }
+
   return json(res, 200, {
     ciphertext: linha.ciphertext,
     iv: linha.iv,
@@ -79,7 +110,7 @@ async function ler(req, res) {
   });
 }
 
-async function gravar(req, res) {
+async function gravar(sql, req, res) {
   const corpo = req.body ?? {};
   const { codeHash, ciphertext, iv, salt, revision } = corpo;
 
@@ -143,7 +174,7 @@ async function gravar(req, res) {
   return json(res, 200, { revision: Number(linhas[0].revision), updatedAt: linhas[0].updated_at });
 }
 
-async function apagar(req, res) {
+async function apagar(sql, req, res) {
   const codeHash = req.query?.codeHash;
   if (!HASH.test(codeHash ?? '')) return json(res, 400, { erro: 'codeHash inválido.' });
   await sql`DELETE FROM sync_snapshots WHERE code_hash = ${codeHash}`;
