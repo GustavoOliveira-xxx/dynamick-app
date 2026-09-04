@@ -1,4 +1,5 @@
 import { exportData, importData, subscribe } from './store.js';
+import { mesclarEstados } from './merge.js';
 import { currentAccount, adotarConta, continueAsGuest } from './account.js';
 import { SYNC } from '../config.js';
 
@@ -199,6 +200,32 @@ function montarPacote() {
   return JSON.stringify(estado);
 }
 
+function estadoLocal() {
+  try {
+    return JSON.parse(exportData());
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Aplica o pacote do servidor sem apagar o que foi feito neste aparelho.
+ *
+ * Substituir o estado local pelo remoto perde tudo o que foi estudado offline
+ * aqui; a fusão junta os dois lados item a item.
+ */
+function fundirNoLocal(textoRemoto) {
+  let remoto;
+  try {
+    remoto = JSON.parse(textoRemoto);
+  } catch (erro) {
+    throw new ErroDeSync('O pacote recebido do servidor está ilegível.', erro);
+  }
+  const mesclado = mesclarEstados(estadoLocal(), remoto);
+  importData(JSON.stringify(mesclado));
+  return mesclado;
+}
+
 async function subirPacote(vinculo, { forcar = false } = {}) {
   const corpo = await cifrar(vinculo.segredo, montarPacote());
   return chamar('/api/sync', {
@@ -247,13 +274,14 @@ export async function receber(codigo = null) {
   if (!segredo) throw new ErroDeSync('Nenhum código informado.');
   const pacote = await baixarPacote(segredo);
   if (!pacote) return null;
-  importData(pacote.texto);
+  fundirNoLocal(pacote.texto);
   gravarVinculo('porCodigo', {
     codigo: segredo,
     segredo,
     revision: pacote.revision,
     recebidoEm: new Date().toISOString(),
   });
+  agendarEnvio(1500);
   return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm };
 }
 
@@ -267,13 +295,14 @@ export async function entrarComCodigo(codigo) {
   if (nome) await adotarConta({ name: nome, email: pacote.conta.email ?? '' });
   else continueAsGuest();
 
-  importData(pacote.texto);
+  fundirNoLocal(pacote.texto);
   gravarVinculo('porCodigo', {
     codigo: segredo,
     segredo,
     revision: pacote.revision,
     recebidoEm: new Date().toISOString(),
   });
+  agendarEnvio(1500);
   return { revision: pacote.revision, atualizadoEm: pacote.atualizadoEm, nome: nome ?? null };
 }
 
@@ -336,8 +365,9 @@ export async function entrarComSenha({ email, senha }) {
 
   const nome = pacote.conta?.nome?.trim() || String(email).split('@')[0];
   await adotarConta({ name: nome, email: normalizarEmail(email), password: senha });
-  importData(pacote.texto);
+  fundirNoLocal(pacote.texto);
   gravarVinculo('conta', { segredo, revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  agendarEnvio(1500);
   return { nome, revision: pacote.revision, atualizadoEm: pacote.atualizadoEm };
 }
 
@@ -358,6 +388,27 @@ let temporizador = null;
 let enviando = false;
 let pendente = false;
 
+/**
+ * O outro aparelho gravou antes de nós.
+ *
+ * Reenviar à força apagaria o estudo dele, então baixamos o que está lá, os
+ * dois lados são fundidos e o resultado volta por cima da revisão atual.
+ */
+async function resolverConflito(canal) {
+  const vinculo = lerVinculos()[canal];
+  if (!vinculo?.segredo) return;
+
+  const pacote = await baixarPacote(vinculo.segredo);
+  if (!pacote) {
+    await enviarCanal(canal, { forcar: true });
+    return;
+  }
+
+  fundirNoLocal(pacote.texto);
+  gravarVinculo(canal, { ...vinculo, revision: pacote.revision, recebidoEm: new Date().toISOString() });
+  await enviarCanal(canal);
+}
+
 async function drenar() {
   if (enviando) { pendente = true; return; }
   enviando = true;
@@ -367,7 +418,7 @@ async function drenar() {
         await enviarCanal(canal);
       } catch (erro) {
         if (erro?.message === 'conflito') {
-          try { await enviarCanal(canal, { forcar: true }); } catch { pendente = false; }
+          try { await resolverConflito(canal); } catch { pendente = false; }
         }
       }
     }
@@ -408,20 +459,43 @@ export async function buscarNaAbertura() {
   const { canal, vinculo, resposta } = achados[0];
 
   try {
-    importData(await decifrar(vinculo.segredo, resposta));
+    fundirNoLocal(await decifrar(vinculo.segredo, resposta));
   } catch {
     return null;
   }
 
   gravarVinculo(canal, { ...vinculo, revision: resposta.revision, recebidoEm: new Date().toISOString() });
+  agendarEnvio(2000);
   return { canal, revision: resposta.revision };
+}
+
+const INTERVALO_MINIMO_DE_BUSCA = 20000;
+let ultimaBusca = 0;
+
+async function buscarSeVale() {
+  const agora = Date.now();
+  if (agora - ultimaBusca < INTERVALO_MINIMO_DE_BUSCA) return null;
+  ultimaBusca = agora;
+  return buscarNaAbertura();
 }
 
 export function iniciarEnvioAutomatico() {
   if (automaticoLigado || !syncDisponivel) return;
   automaticoLigado = true;
+  ultimaBusca = Date.now();
   buscarNaAbertura();
   subscribe(() => agendarEnvio());
+
+  // Voltar para a aba ou desbloquear o celular é justamente quando o outro
+  // aparelho costuma ter avançado; é o que faz a mesma conta parecer viva nos dois.
+  globalThis.document?.addEventListener('visibilitychange', () => {
+    if (globalThis.document.visibilityState === 'visible') buscarSeVale();
+  });
+  addEventListener('online', () => {
+    buscarSeVale();
+    agendarEnvio(500);
+  });
+
   addEventListener('pagehide', () => {
     if (temporizador) { clearTimeout(temporizador); drenar(); }
   });
