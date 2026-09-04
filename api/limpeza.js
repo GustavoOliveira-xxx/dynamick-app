@@ -1,20 +1,32 @@
 import { neon } from '@neondatabase/serverless';
 
-const databaseUrl =
-  process.env.DATABASE_URL
-  ?? process.env.DATABASE_URL_UNPOOLED
-  ?? process.env.POSTGRES_URL
-  ?? process.env.POSTGRES_PRISMA_URL
-  ?? process.env.NEON_DATABASE_URL
-  ?? null;
+const VARIAVEIS = [
+  'DATABASE_URL',
+  'DATABASE_URL_UNPOOLED',
+  'POSTGRES_URL',
+  'POSTGRES_PRISMA_URL',
+  'NEON_DATABASE_URL',
+];
 
-const sql = databaseUrl ? neon(databaseUrl) : null;
+let cache = null;
+
+/** Mesma resolução preguiçosa de /api/sync. */
+function conectar() {
+  const variavel = VARIAVEIS.find((nome) => String(process.env[nome] ?? '').trim().length > 0);
+  if (!variavel) return null;
+
+  const url = process.env[variavel].trim();
+  if (cache?.url !== url) cache = { url, sql: neon(url) };
+  return cache.sql;
+}
 
 const MESES_ATE_EXPIRAR = 12;
 
 export default async function handler(req, res) {
+  const sql = conectar();
+
   if (!sql) {
-    res.status(503).json({ erro: 'Banco de sincronização não configurado.' });
+    res.status(503).json({ erro: 'Banco de sincronização não configurado: falta DATABASE_URL.' });
     return;
   }
 

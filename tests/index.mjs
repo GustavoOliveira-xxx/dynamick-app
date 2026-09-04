@@ -12,6 +12,7 @@ const files = [
   './answer-key.test.mjs',
   './pwa-archive.test.mjs',
   './sync.test.mjs',
+  './merge.test.mjs',
 ];
 
 const failures = await run(files.map((file) => new URL(file, import.meta.url).href));
