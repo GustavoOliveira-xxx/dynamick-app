@@ -4,6 +4,19 @@ import {
   SESSION_TEMPLATES, SIMULATIONS, catalogHealth, contentTree, getTopic,
 } from '../js/data/content.js';
 
+const ORIGEM_LEVA_8 = 'AUTORAL_LEVA_8_2026_09';
+const ORIGEM_APROFUNDAMENTO = 'AUTORAL_APROFUNDAMENTO_2026_09';
+
+/** Assuntos abertos na oitava leva do catálogo — entram com o pacote padrão. */
+const NOVOS_ASSUNTOS = TOPICS.filter((topic) =>
+  topic.questions.some((q) => q.origin === ORIGEM_LEVA_8),
+);
+
+/** Assuntos que já passaram por todas as levas de questões (da 2ª à 7ª). */
+const ASSUNTOS_CONSOLIDADOS = TOPICS.filter(
+  (topic) => !topic.questions.some((q) => q.origin === ORIGEM_LEVA_8),
+);
+
 describe('quantidades mínimas do pacote inicial', () => {
   const health = catalogHealth();
 
@@ -58,60 +71,95 @@ describe('quantidades mínimas do pacote inicial', () => {
   it('pelo menos 24 questões de recuperação', () =>
     expect(health.totals.recoveryQuestions).toBeGreaterThanOrEqual(24));
 
-  it('cada um dos 39 tópicos recebeu exatamente 5 novas questões de reforço', () => {
-    const fora = TOPICS.filter(
+  it('cada um dos 39 assuntos consolidados recebeu exatamente 5 novas questões de reforço', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_REFORCO_2026_08').length !== 5,
     );
-    expect(TOPICS).toHaveLength(39);
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('cada um dos 39 tópicos recebeu exatamente 5 questões da terceira leva', () => {
-    const fora = TOPICS.filter(
+  it('cada um dos 39 assuntos consolidados recebeu exatamente 5 questões da terceira leva', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_3_2026_08').length !== 5,
     );
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('cada um dos 39 tópicos recebeu exatamente 5 questões da quarta leva', () => {
-    const fora = TOPICS.filter(
+  it('cada um dos 39 assuntos consolidados recebeu exatamente 5 questões da quarta leva', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_4_2026_08').length !== 5,
     );
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('cada um dos 39 tópicos recebeu exatamente 5 questões da quinta leva', () => {
-    const fora = TOPICS.filter(
+  it('cada um dos 39 assuntos consolidados recebeu exatamente 5 questões da quinta leva', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_5_2026_08').length !== 5,
     );
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('o padrão da sexta leva adiciona exatamente 5 questões a cada um dos 39 tópicos', () => {
-    const fora = TOPICS.filter(
+  it('o padrão da sexta leva adiciona exatamente 5 questões a cada assunto consolidado', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_6_2026_08').length !== 5,
     );
-    expect(TOPICS).toHaveLength(39);
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('o padrão da sétima leva adiciona exatamente 5 questões a cada um dos 39 tópicos', () => {
-    const fora = TOPICS.filter(
+  it('o padrão da sétima leva adiciona exatamente 5 questões a cada assunto consolidado', () => {
+    const fora = ASSUNTOS_CONSOLIDADOS.filter(
       (topic) => topic.questions.filter((q) => q.origin === 'AUTORAL_LEVA_7_2026_08').length !== 5,
     );
-    expect(TOPICS).toHaveLength(39);
+    expect(ASSUNTOS_CONSOLIDADOS).toHaveLength(39);
     expect(fora.map((topic) => topic.slug)).toEqual([]);
   });
 
-  it('nenhum assunto é menos servido que outro', () => {
-    const principais = TOPICS.map((topic) => topic.questions.filter((q) => !q.isRecovery).length);
+  it('nenhum assunto consolidado é menos servido que outro', () => {
+    const principais = ASSUNTOS_CONSOLIDADOS.map(
+      (topic) => topic.questions.filter((q) => !q.isRecovery).length,
+    );
     expect(Math.min(...principais)).toBeGreaterThanOrEqual(25);
   });
 
-  it('o acervo totaliza 1425 questões principais e 51 de recuperação', () => {
-    expect(health.totals.questions).toBe(1476);
-    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(1425);
-    expect(health.totals.recoveryQuestions).toBe(51);
+  it('a oitava leva abre 14 assuntos novos com o pacote padrão de 5 questões e 1 de recuperação', () => {
+    expect(NOVOS_ASSUNTOS).toHaveLength(14);
+    const fora = NOVOS_ASSUNTOS.filter((topic) => {
+      const daLeva = topic.questions.filter((q) => q.origin === ORIGEM_LEVA_8);
+      const principais = daLeva.filter((q) => !q.isRecovery).length;
+      const recuperacao = daLeva.filter((q) => q.isRecovery).length;
+      return principais !== 5 || recuperacao !== 1;
+    });
+    expect(fora.map((topic) => topic.slug)).toEqual([]);
+  });
+
+  it('todo assunto novo tem ao menos uma matéria que já existia no catálogo', () => {
+    const orfas = NOVOS_ASSUNTOS.filter(
+      (topic) => !SUBJECTS.some((subject) => subject.slug === topic.subjectSlug),
+    );
+    expect(orfas.map((topic) => topic.slug)).toEqual([]);
+  });
+
+  it('os dois assuntos aprofundados chegam ao tamanho dos assuntos consolidados', () => {
+    const aprofundados = ['funcoes-organicas', 'ondas-sonoras'];
+    for (const slug of aprofundados) {
+      const topico = getTopic(slug);
+      expect(topico).toBeTruthy();
+      expect(topico.questions).toHaveLength(36);
+      expect(
+        topico.questions.filter((q) => q.origin === ORIGEM_APROFUNDAMENTO),
+      ).toHaveLength(30);
+    }
+  });
+
+  it('o acervo totaliza 1555 questões principais e 65 de recuperação', () => {
+    expect(health.totals.questions).toBe(1620);
+    expect(health.totals.questions - health.totals.recoveryQuestions).toBe(1555);
+    expect(health.totals.recoveryQuestions).toBe(65);
   });
   it('pelo menos 12 sessões prontas', () => expect(SESSION_TEMPLATES.length).toBeGreaterThanOrEqual(12));
   it('4 simulados por área + 1 diagnóstico', () => expect(SIMULATIONS.length).toBeGreaterThanOrEqual(5));

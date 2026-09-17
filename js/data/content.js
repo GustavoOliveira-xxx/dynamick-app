@@ -9,6 +9,11 @@ import { MATEMATICA_TOPICS_LEVA_2 } from './topics-matematica-leva2.js';
 import { HUMANAS_TOPICS_LEVA_2 } from './topics-humanas-leva2.js';
 import { NATUREZA_TOPICS_LEVA_2 } from './topics-natureza-leva2.js';
 import { REDACAO_TOPICS_LEVA_2 } from './topics-redacao-leva2.js';
+import { LINGUAGENS_TOPICS_LEVA_3 } from './topics-linguagens-leva3.js';
+import { MATEMATICA_TOPICS_LEVA_3 } from './topics-matematica-leva3.js';
+import { HUMANAS_TOPICS_LEVA_3 } from './topics-humanas-leva3.js';
+import { NATUREZA_TOPICS_LEVA_3 } from './topics-natureza-leva3.js';
+import { REDACAO_TOPICS_LEVA_3 } from './topics-redacao-leva3.js';
 import { STUDY_METHODS } from './study-methods.js';
 import { SESSION_TEMPLATES, SIMULATIONS as SIMULADOS_FIXOS } from './sessions.js';
 import { simuladosDeAssunto, simuladosDeMateria } from './simulados-gerados.js';
@@ -20,6 +25,7 @@ import { QUESTOES_LEVA_4 } from './questions-leva4.js';
 import { QUESTOES_LEVA_5 } from './questions-leva5.js';
 import { QUESTOES_LEVA_6 } from './questions-leva6.js';
 import { QUESTOES_LEVA_7 } from './questions-leva7.js';
+import { QUESTOES_APROFUNDAMENTO } from './questions-aprofundamento.js';
 import { SEED_LICENSE, SEED_ORIGIN } from '../engine/domain.js';
 
 export { AREAS, SUBJECTS, STUDY_METHODS, SESSION_TEMPLATES, ESSAY_PROMPTS };
@@ -35,6 +41,11 @@ const BASE_TOPICS = [
   ...NATUREZA_TOPICS_LEVA_2,
   ...REDACAO_TOPICS,
   ...REDACAO_TOPICS_LEVA_2,
+  ...LINGUAGENS_TOPICS_LEVA_3,
+  ...MATEMATICA_TOPICS_LEVA_3,
+  ...HUMANAS_TOPICS_LEVA_3,
+  ...NATUREZA_TOPICS_LEVA_3,
+  ...REDACAO_TOPICS_LEVA_3,
 ];
 
 const expansionByTopic = QUESTION_EXPANSION.reduce((index, question) => {
@@ -79,6 +90,12 @@ const leva7ByTopic = QUESTOES_LEVA_7.reduce((index, question) => {
   return index;
 }, new Map());
 
+const aprofundamentoByTopic = QUESTOES_APROFUNDAMENTO.reduce((index, question) => {
+  if (!index.has(question.topicSlug)) index.set(question.topicSlug, []);
+  index.get(question.topicSlug).push(question);
+  return index;
+}, new Map());
+
 export const TOPICS = BASE_TOPICS.map((topic) => ({
   ...topic,
   questions: [
@@ -93,6 +110,7 @@ export const TOPICS = BASE_TOPICS.map((topic) => ({
     ...(leva5ByTopic.get(topic.slug) ?? []),
     ...(leva6ByTopic.get(topic.slug) ?? []),
     ...(leva7ByTopic.get(topic.slug) ?? []),
+    ...(aprofundamentoByTopic.get(topic.slug) ?? []),
   ],
 }));
 

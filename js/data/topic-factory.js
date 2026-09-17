@@ -7,6 +7,7 @@ export function question(definition) {
   const {
     slug, stem, difficulty, format, reasoning, seconds = 120, recovery = false,
     errors = [], correct, options, explanation, detail, strategy,
+    origin = ORIGIN, license = LICENSE,
   } = definition;
 
   if (options.length !== 5) throw new Error(`Questão ${slug}: são necessárias 5 alternativas.`);
@@ -24,8 +25,8 @@ export function question(definition) {
     estimatedSeconds: seconds,
     ...(recovery ? { isRecovery: true } : {}),
     likelyErrors: errors,
-    origin: ORIGIN,
-    license: LICENSE,
+    origin,
+    license,
     status: 'reviewed',
     options: options.map(([text, rationale, errorHint], index) => ({
       label: LABELS[index],
