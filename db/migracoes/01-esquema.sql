@@ -1,8 +1,18 @@
+-- 01 · Esquema original (agosto de 2026).
+--
+-- É o esquema que foi aplicado no Neon em 22/08/2026, só que agora seguro para
+-- rodar de novo: tudo usa IF NOT EXISTS, então num banco que já tem estas
+-- tabelas nada muda. Não edite este arquivo: mudança de esquema entra num
+-- arquivo novo, com o próximo número. Quem aplica é db/migrar.mjs.
+--
+-- As visões catalog_health e answer_key_balance saíram daqui e são criadas em
+-- 03-acervo-atual.sql, que é onde elas ganharam a forma atual.
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE EXTENSION IF NOT EXISTS "citext";
 
-CREATE TABLE areas (
+CREATE TABLE IF NOT EXISTS areas (
   slug          text PRIMARY KEY,
   name          text NOT NULL,
   short_name    text NOT NULL,
@@ -11,15 +21,15 @@ CREATE TABLE areas (
   display_order int  NOT NULL DEFAULT 0
 );
 
-CREATE TABLE subjects (
+CREATE TABLE IF NOT EXISTS subjects (
   slug          text PRIMARY KEY,
   area_slug     text NOT NULL REFERENCES areas(slug) ON DELETE CASCADE,
   name          text NOT NULL,
   display_order int  NOT NULL DEFAULT 0
 );
-CREATE INDEX subjects_area_idx ON subjects(area_slug);
+CREATE INDEX IF NOT EXISTS subjects_area_idx ON subjects(area_slug);
 
-CREATE TABLE topics (
+CREATE TABLE IF NOT EXISTS topics (
   slug              text PRIMARY KEY,
   subject_slug      text NOT NULL REFERENCES subjects(slug) ON DELETE CASCADE,
   area_slug         text NOT NULL REFERENCES areas(slug)    ON DELETE CASCADE,
@@ -32,32 +42,32 @@ CREATE TABLE topics (
   display_order     int  NOT NULL DEFAULT 0,
   published         boolean NOT NULL DEFAULT true
 );
-CREATE INDEX topics_subject_idx ON topics(subject_slug);
-CREATE INDEX topics_area_idx    ON topics(area_slug);
+CREATE INDEX IF NOT EXISTS topics_subject_idx ON topics(subject_slug);
+CREATE INDEX IF NOT EXISTS topics_area_idx    ON topics(area_slug);
 
-CREATE TABLE topic_prerequisites (
+CREATE TABLE IF NOT EXISTS topic_prerequisites (
   topic_slug        text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   prerequisite_slug text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   PRIMARY KEY (topic_slug, prerequisite_slug),
   CHECK (topic_slug <> prerequisite_slug)
 );
 
-CREATE TABLE topic_related (
+CREATE TABLE IF NOT EXISTS topic_related (
   topic_slug   text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   related_slug text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   PRIMARY KEY (topic_slug, related_slug),
   CHECK (topic_slug <> related_slug)
 );
 
-CREATE TABLE skills (
+CREATE TABLE IF NOT EXISTS skills (
   slug        text PRIMARY KEY,
   topic_slug  text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   name        text NOT NULL,
   description text
 );
-CREATE INDEX skills_topic_idx ON skills(topic_slug);
+CREATE INDEX IF NOT EXISTS skills_topic_idx ON skills(topic_slug);
 
-CREATE TABLE content_items (
+CREATE TABLE IF NOT EXISTS content_items (
   slug          text PRIMARY KEY,
   topic_slug    text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   kind          text NOT NULL CHECK (kind IN (
@@ -68,9 +78,9 @@ CREATE TABLE content_items (
   body          text NOT NULL,
   display_order int  NOT NULL DEFAULT 0
 );
-CREATE INDEX content_items_topic_idx ON content_items(topic_slug);
+CREATE INDEX IF NOT EXISTS content_items_topic_idx ON content_items(topic_slug);
 
-CREATE TABLE questions (
+CREATE TABLE IF NOT EXISTS questions (
   slug                      text PRIMARY KEY,
   topic_slug                text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   skill_slug                text REFERENCES skills(slug) ON DELETE SET NULL,
@@ -91,11 +101,11 @@ CREATE TABLE questions (
   created_at                timestamptz NOT NULL DEFAULT now(),
   updated_at                timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX questions_topic_idx     ON questions(topic_slug);
-CREATE INDEX questions_skill_idx     ON questions(skill_slug);
-CREATE INDEX questions_recovery_idx  ON questions(topic_slug, is_recovery);
+CREATE INDEX IF NOT EXISTS questions_topic_idx     ON questions(topic_slug);
+CREATE INDEX IF NOT EXISTS questions_skill_idx     ON questions(skill_slug);
+CREATE INDEX IF NOT EXISTS questions_recovery_idx  ON questions(topic_slug, is_recovery);
 
-CREATE TABLE question_options (
+CREATE TABLE IF NOT EXISTS question_options (
   question_slug text NOT NULL REFERENCES questions(slug) ON DELETE CASCADE,
   label         text NOT NULL CHECK (label IN ('A', 'B', 'C', 'D', 'E')),
   body          text NOT NULL,
@@ -106,10 +116,10 @@ CREATE TABLE question_options (
   PRIMARY KEY (question_slug, label)
 );
 
-CREATE UNIQUE INDEX question_options_one_correct
+CREATE UNIQUE INDEX IF NOT EXISTS question_options_one_correct
   ON question_options(question_slug) WHERE is_correct;
 
-CREATE TABLE study_methods (
+CREATE TABLE IF NOT EXISTS study_methods (
   slug             text PRIMARY KEY,
   title            text NOT NULL,
   summary          text NOT NULL,
@@ -124,7 +134,7 @@ CREATE TABLE study_methods (
   display_order    int  NOT NULL DEFAULT 0
 );
 
-CREATE TABLE session_templates (
+CREATE TABLE IF NOT EXISTS session_templates (
   slug                text PRIMARY KEY,
   title               text NOT NULL,
   goal                text NOT NULL,
@@ -139,7 +149,7 @@ CREATE TABLE session_templates (
   display_order       int  NOT NULL DEFAULT 0
 );
 
-CREATE TABLE simulations (
+CREATE TABLE IF NOT EXISTS simulations (
   slug           text PRIMARY KEY,
   title          text NOT NULL,
   description    text NOT NULL,
@@ -151,7 +161,7 @@ CREATE TABLE simulations (
   blueprint      jsonb NOT NULL
 );
 
-CREATE TABLE essay_prompts (
+CREATE TABLE IF NOT EXISTS essay_prompts (
   slug                text PRIMARY KEY,
   title               text NOT NULL,
   theme               text NOT NULL,
@@ -164,7 +174,7 @@ CREATE TABLE essay_prompts (
   review_checklist    jsonb NOT NULL DEFAULT '[]'::jsonb
 );
 
-CREATE TABLE students (
+CREATE TABLE IF NOT EXISTS students (
   id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email                 citext,
   name                  text NOT NULL DEFAULT '',
@@ -193,9 +203,9 @@ CREATE TABLE students (
   created_at            timestamptz NOT NULL DEFAULT now(),
   updated_at            timestamptz NOT NULL DEFAULT now()
 );
-CREATE UNIQUE INDEX students_email_key ON students(email) WHERE email IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS students_email_key ON students(email) WHERE email IS NOT NULL;
 
-CREATE TABLE student_preferences (
+CREATE TABLE IF NOT EXISTS student_preferences (
   student_id        uuid PRIMARY KEY REFERENCES students(id) ON DELETE CASCADE,
   theme             text    NOT NULL DEFAULT 'dark'  CHECK (theme IN ('dark', 'light', 'contrast')),
   text_scale        text    NOT NULL DEFAULT '100'   CHECK (text_scale IN ('100', '112', '125')),
@@ -210,7 +220,7 @@ CREATE TABLE student_preferences (
   reminder_time     text
 );
 
-CREATE TABLE profile_history (
+CREATE TABLE IF NOT EXISTS profile_history (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id       uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   previous_profile text,
@@ -219,9 +229,9 @@ CREATE TABLE profile_history (
   reason           text NOT NULL,
   created_at       timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX profile_history_student_idx ON profile_history(student_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS profile_history_student_idx ON profile_history(student_id, created_at DESC);
 
-CREATE TABLE profile_confirmations (
+CREATE TABLE IF NOT EXISTS profile_confirmations (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id         uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   suggested_profile  text NOT NULL,
@@ -230,9 +240,9 @@ CREATE TABLE profile_confirmations (
   note               text,
   decided_at         timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX profile_confirmations_student_idx ON profile_confirmations(student_id);
+CREATE INDEX IF NOT EXISTS profile_confirmations_student_idx ON profile_confirmations(student_id);
 
-CREATE TABLE study_sessions (
+CREATE TABLE IF NOT EXISTS study_sessions (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id         uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   title              text NOT NULL,
@@ -253,11 +263,11 @@ CREATE TABLE study_sessions (
   last_active_at     timestamptz NOT NULL DEFAULT now(),
   completed_at       timestamptz
 );
-CREATE UNIQUE INDEX study_sessions_idempotency
+CREATE UNIQUE INDEX IF NOT EXISTS study_sessions_idempotency
   ON study_sessions(student_id, idempotency_key) WHERE status <> 'completed';
-CREATE INDEX study_sessions_student_idx ON study_sessions(student_id, started_at DESC);
+CREATE INDEX IF NOT EXISTS study_sessions_student_idx ON study_sessions(student_id, started_at DESC);
 
-CREATE TABLE session_items (
+CREATE TABLE IF NOT EXISTS session_items (
   session_id    uuid NOT NULL REFERENCES study_sessions(id) ON DELETE CASCADE,
   question_slug text NOT NULL REFERENCES questions(slug) ON DELETE RESTRICT,
   item_order    int  NOT NULL,
@@ -266,9 +276,9 @@ CREATE TABLE session_items (
   status        text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'answered', 'skipped')),
   PRIMARY KEY (session_id, question_slug)
 );
-CREATE INDEX session_items_order_idx ON session_items(session_id, item_order);
+CREATE INDEX IF NOT EXISTS session_items_order_idx ON session_items(session_id, item_order);
 
-CREATE TABLE attempts (
+CREATE TABLE IF NOT EXISTS attempts (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id     uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   session_id     uuid REFERENCES study_sessions(id) ON DELETE SET NULL,
@@ -287,11 +297,11 @@ CREATE TABLE attempts (
   time_spent_ms  int  NOT NULL DEFAULT 0,
   answered_at    timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX attempts_student_idx  ON attempts(student_id, answered_at DESC);
-CREATE INDEX attempts_question_idx ON attempts(student_id, question_slug);
-CREATE INDEX attempts_session_idx  ON attempts(session_id);
+CREATE INDEX IF NOT EXISTS attempts_student_idx  ON attempts(student_id, answered_at DESC);
+CREATE INDEX IF NOT EXISTS attempts_question_idx ON attempts(student_id, question_slug);
+CREATE INDEX IF NOT EXISTS attempts_session_idx  ON attempts(session_id);
 
-CREATE TABLE topic_mastery (
+CREATE TABLE IF NOT EXISTS topic_mastery (
   student_id        uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   topic_slug        text NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
   state             text NOT NULL DEFAULT 'not_started' CHECK (state IN (
@@ -307,9 +317,9 @@ CREATE TABLE topic_mastery (
   updated_at        timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (student_id, topic_slug)
 );
-CREATE INDEX topic_mastery_state_idx ON topic_mastery(student_id, state);
+CREATE INDEX IF NOT EXISTS topic_mastery_state_idx ON topic_mastery(student_id, state);
 
-CREATE TABLE review_queue (
+CREATE TABLE IF NOT EXISTS review_queue (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id       uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   question_slug    text NOT NULL REFERENCES questions(slug) ON DELETE CASCADE,
@@ -326,9 +336,9 @@ CREATE TABLE review_queue (
   created_at       timestamptz NOT NULL DEFAULT now(),
   UNIQUE (student_id, question_slug)
 );
-CREATE INDEX review_queue_due_idx ON review_queue(student_id, status, due_at);
+CREATE INDEX IF NOT EXISTS review_queue_due_idx ON review_queue(student_id, status, due_at);
 
-CREATE TABLE error_notes (
+CREATE TABLE IF NOT EXISTS error_notes (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id    uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   question_slug text NOT NULL REFERENCES questions(slug) ON DELETE CASCADE,
@@ -343,9 +353,9 @@ CREATE TABLE error_notes (
   created_at    timestamptz NOT NULL DEFAULT now(),
   resolved_at   timestamptz
 );
-CREATE INDEX error_notes_student_idx ON error_notes(student_id, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS error_notes_student_idx ON error_notes(student_id, status, created_at DESC);
 
-CREATE TABLE weekly_plans (
+CREATE TABLE IF NOT EXISTS weekly_plans (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   week_start date NOT NULL,
@@ -353,7 +363,7 @@ CREATE TABLE weekly_plans (
   UNIQUE (student_id, week_start)
 );
 
-CREATE TABLE plan_blocks (
+CREATE TABLE IF NOT EXISTS plan_blocks (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   plan_id    uuid NOT NULL REFERENCES weekly_plans(id) ON DELETE CASCADE,
   weekday    int  NOT NULL CHECK (weekday BETWEEN 0 AND 6),
@@ -364,9 +374,9 @@ CREATE TABLE plan_blocks (
   status     text NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'done', 'moved')),
   block_order int NOT NULL DEFAULT 0
 );
-CREATE INDEX plan_blocks_plan_idx ON plan_blocks(plan_id, block_order);
+CREATE INDEX IF NOT EXISTS plan_blocks_plan_idx ON plan_blocks(plan_id, block_order);
 
-CREATE TABLE simulation_runs (
+CREATE TABLE IF NOT EXISTS simulation_runs (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id      uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   simulation_slug text NOT NULL REFERENCES simulations(slug) ON DELETE RESTRICT,
@@ -382,9 +392,9 @@ CREATE TABLE simulation_runs (
   shortfall       int NOT NULL DEFAULT 0,
   created_at      timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX simulation_runs_student_idx ON simulation_runs(student_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS simulation_runs_student_idx ON simulation_runs(student_id, created_at DESC);
 
-CREATE TABLE essays (
+CREATE TABLE IF NOT EXISTS essays (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id  uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   prompt_slug text NOT NULL REFERENCES essay_prompts(slug) ON DELETE RESTRICT,
@@ -397,7 +407,7 @@ CREATE TABLE essays (
   UNIQUE (student_id, prompt_slug)
 );
 
-CREATE TABLE content_reports (
+CREATE TABLE IF NOT EXISTS content_reports (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id    uuid REFERENCES students(id) ON DELETE SET NULL,
   question_slug text NOT NULL REFERENCES questions(slug) ON DELETE CASCADE,
@@ -409,9 +419,9 @@ CREATE TABLE content_reports (
   created_at    timestamptz NOT NULL DEFAULT now(),
   resolved_at   timestamptz
 );
-CREATE INDEX content_reports_status_idx ON content_reports(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS content_reports_status_idx ON content_reports(status, created_at DESC);
 
-CREATE TABLE sync_snapshots (
+CREATE TABLE IF NOT EXISTS sync_snapshots (
   code_hash    text PRIMARY KEY CHECK (code_hash ~ '^[0-9a-f]{64}$'),
   ciphertext   text NOT NULL,
   iv           text NOT NULL,
@@ -422,32 +432,4 @@ CREATE TABLE sync_snapshots (
   updated_at   timestamptz NOT NULL DEFAULT now(),
   last_seen_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE INDEX sync_snapshots_last_seen_idx ON sync_snapshots(last_seen_at);
-
-CREATE VIEW catalog_health AS
-SELECT
-  (SELECT count(*) FROM areas)                                  AS areas,
-  (SELECT count(*) FROM subjects)                               AS subjects,
-  (SELECT count(*) FROM topics)                                 AS topics,
-  (SELECT count(*) FROM questions)                              AS questions,
-  (SELECT count(*) FROM questions WHERE is_recovery)            AS recovery_questions,
-  (SELECT count(*) FROM content_items)                          AS content_items,
-  (SELECT count(*) FROM study_methods)                          AS methods,
-  (SELECT count(*) FROM session_templates)                      AS session_templates,
-  (SELECT count(*) FROM simulations)                            AS simulations,
-  (SELECT count(*) FROM essay_prompts)                          AS essay_prompts,
-  (SELECT count(*) FROM topics t
-     WHERE NOT EXISTS (SELECT 1 FROM content_items c WHERE c.topic_slug = t.slug))
-                                                                AS topics_without_content,
-  (SELECT count(*) FROM question_options o
-     WHERE o.rationale IS NULL OR btrim(o.rationale) = '')       AS options_without_rationale;
-
-CREATE VIEW answer_key_balance AS
-SELECT
-  label,
-  count(*)                                                        AS total,
-  round(100.0 * count(*) / NULLIF(sum(count(*)) OVER (), 0), 1)    AS percent
-FROM question_options
-WHERE is_correct
-GROUP BY label
-ORDER BY label;
+CREATE INDEX IF NOT EXISTS sync_snapshots_last_seen_idx ON sync_snapshots(last_seen_at);

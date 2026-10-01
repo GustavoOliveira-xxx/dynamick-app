@@ -53,6 +53,7 @@ async function diagnosticar() {
       estado: 'sem-variavel',
       banco: { configurado: false, variavel: null, conectado: false },
       tabela: { existe: false, pacotes: null },
+      acervo: null,
       titulo: 'A sincronização está parada',
       resumo:
         'Esta publicação subiu sem a conexão com o banco, então entrar com a mesma conta em outro aparelho não funciona.',
@@ -74,6 +75,7 @@ async function diagnosticar() {
       estado: 'ok',
       banco: { configurado: true, variavel, conectado: true },
       tabela: { existe: true, pacotes: linha.pacotes },
+      acervo: await lerAcervo(sql),
       titulo: 'A sincronização está no ar',
       resumo:
         linha.pacotes === 0
@@ -93,12 +95,13 @@ async function diagnosticar() {
         estado: 'sem-tabela',
         banco: { configurado: true, variavel, conectado: true },
         tabela: { existe: false, pacotes: null },
+        acervo: null,
         titulo: 'O banco respondeu, mas falta a tabela',
         resumo:
           'A conexão está certa. Só falta criar a tabela sync_snapshots, que é onde os pacotes cifrados ficam guardados.',
         passos: [
-          'Rode npm run db:migrar com a DATABASE_URL apontando para este banco.',
-          'Ou aplique db/02-sync.sql à mão — pode rodar quantas vezes quiser, não apaga nada.',
+          'Faça Redeploy da produção: o build roda db/migrar.mjs e cria o que falta.',
+          'Ou rode npm run db:migrar com a DATABASE_URL apontando para este banco — pode rodar quantas vezes quiser, não apaga nada.',
         ],
       };
     }
@@ -108,6 +111,7 @@ async function diagnosticar() {
       estado: 'sem-resposta',
       banco: { configurado: true, variavel, conectado: false },
       tabela: { existe: false, pacotes: null },
+      acervo: null,
       titulo: 'O banco não respondeu',
       resumo:
         `A variável ${variavel} está preenchida, mas a conexão falhou. Normalmente é string trocada, senha rodada ou projeto do Neon apagado.`,
@@ -117,6 +121,27 @@ async function diagnosticar() {
         'Faça Redeploy depois de trocar.',
       ],
     };
+  }
+}
+
+/**
+ * O acervo no banco é uma cópia de js/data/ que o build de produção atualiza.
+ * Só informa: o site funciona mesmo sem ela, então não muda o "pronto".
+ */
+async function lerAcervo(sql) {
+  try {
+    const [linha] = await sql`SELECT totals, synced_at, source_commit FROM catalog_sync WHERE id = 1`;
+    if (!linha) return { carregado: false };
+    return {
+      carregado: true,
+      assuntos: Number(linha.totals?.topics ?? 0),
+      questoes: Number(linha.totals?.questions ?? 0),
+      atualizadoEm: linha.synced_at,
+      commit: linha.source_commit ? String(linha.source_commit).slice(0, 7) : null,
+    };
+  } catch {
+    // Banco anterior a db/migracoes/03-acervo-atual.sql.
+    return { carregado: false };
   }
 }
 
@@ -131,6 +156,13 @@ function escapar(texto) {
   return String(texto).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
+function descreverAcervo(acervo) {
+  if (!acervo) return '—';
+  if (!acervo.carregado) return 'ainda não carregado';
+  const data = new Date(acervo.atualizadoEm).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  return `${acervo.questoes} questões em ${acervo.assuntos} assuntos, de ${data}`;
+}
+
 function pagina(d) {
   const cor = CORES[d.estado] ?? '#ffc861';
   const passos = d.passos.length
@@ -142,6 +174,7 @@ function pagina(d) {
     ['Banco respondendo', d.banco.conectado ? 'sim' : 'não'],
     ['Tabela sync_snapshots', d.tabela.existe ? 'existe' : 'não encontrada'],
     ['Contas guardadas', d.tabela.pacotes === null ? '—' : String(d.tabela.pacotes)],
+    ['Acervo no banco', descreverAcervo(d.acervo)],
   ];
 
   return `<!doctype html>

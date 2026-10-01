@@ -1,12 +1,12 @@
--- Sincronização entre aparelhos (computador, celular, tablet).
+-- 02 · Sincronização entre aparelhos (computador, celular, tablet).
 --
--- Fica separado de 01-esquema.sql de propósito: aquele arquivo cria o acervo
--- inteiro e só roda uma vez, num banco vazio. Este pode ser aplicado quantas
--- vezes for preciso, sem risco de apagar nada, e é o único necessário para a
--- mesma conta funcionar em mais de um aparelho.
+-- É a única tabela que o site lê e grava em produção: /api/sync guarda aqui o
+-- pacote cifrado de cada conta, /api/limpeza apaga os abandonados e /api/saude
+-- conta quantos existem. Pode ser aplicado quantas vezes for preciso, sem
+-- risco de apagar nada.
 --
---   psql "$DATABASE_URL" -f db/02-sync.sql
 --   npm run db:migrar
+--   psql "$DATABASE_URL" -f db/migracoes/02-sync.sql
 
 CREATE TABLE IF NOT EXISTS sync_snapshots (
   code_hash    text PRIMARY KEY CHECK (code_hash ~ '^[0-9a-f]{64}$'),

@@ -1,61 +1,92 @@
 /**
- * Aplica db/02-sync.sql no banco apontado por DATABASE_URL.
+ * Deixa o banco do Neon igual ao que o site atual espera: aplica as migrações
+ * de db/migracoes/ que faltam e recarrega o acervo quando js/data/ mudou.
  *
- *   DATABASE_URL="postgresql://..." npm run db:migrar
+ *   npm run db:migrar                     migrações pendentes + acervo, se mudou
+ *   npm run db:migrar -- --forcar         recarrega o acervo mesmo sem mudança
+ *   npm run db:migrar -- --so-esquema     só as migrações
+ *   npm run db:migrar -- --conferir       só monta e valida o acervo, sem banco
  *
- * É seguro rodar quantas vezes quiser: o arquivo só cria o que ainda não
- * existe e nunca apaga dados.
+ * O build da Vercel chama `node db/migrar.mjs --build` a cada publicação. Em
+ * produção ele grava no banco; em preview só confere o acervo, porque um
+ * preview pode estar ligado ao mesmo banco da produção. Se a migração falhar,
+ * a publicação para, e o site no ar continua o anterior. Para publicar sem
+ * tocar no banco, defina DYNAMICK_MIGRAR=0 na Vercel.
+ *
+ * Tudo aqui pode rodar quantas vezes quiser: nada apaga dado de estudante, e o
+ * acervo só é regravado quando muda.
  */
-import { readFile } from 'node:fs/promises';
-import { neon } from '@neondatabase/serverless';
+import { montarAcervo } from './acervo.mjs';
+import {
+  VARIAVEIS, aplicarMigracoes, conectarNeon, lerMigracoes, sincronizarAcervo, variavelDoBanco,
+} from './banco.mjs';
 
-const VARIAVEIS = [
-  'DATABASE_URL',
-  'DATABASE_URL_UNPOOLED',
-  'POSTGRES_URL',
-  'POSTGRES_PRISMA_URL',
-  'NEON_DATABASE_URL',
-];
+const opcoes = new Set(process.argv.slice(2));
+const noBuild = opcoes.has('--build');
+const log = (linha) => console.log(linha);
 
-const variavel = VARIAVEIS.find((nome) => String(process.env[nome] ?? '').trim().length > 0);
+function conferirAcervo() {
+  const { totais, hash } = montarAcervo();
+  log(`Acervo conferido (${hash.slice(0, 12)}):`);
+  for (const [tabela, total] of Object.entries(totais)) log(`  ${tabela.padEnd(20)} ${total}`);
+}
+
+if (opcoes.has('--conferir')) {
+  conferirAcervo();
+  process.exit(0);
+}
+
+if (noBuild && /^(0|false|nao|não)$/i.test(String(process.env.DYNAMICK_MIGRAR ?? '').trim())) {
+  log('DYNAMICK_MIGRAR=0: esta publicação não tocou no banco.');
+  process.exit(0);
+}
+
+if (noBuild && process.env.VERCEL_ENV !== 'production') {
+  conferirAcervo();
+  log(`Preview (${process.env.VERCEL_GIT_COMMIT_REF ?? 'sem branch'}): o banco não é alterado fora da produção.`);
+  process.exit(0);
+}
+
+const variavel = variavelDoBanco();
 
 if (!variavel) {
+  if (noBuild) {
+    log('Esta publicação não tem DATABASE_URL: o banco ficou como estava. /api/saude mostra o que falta.');
+    process.exit(0);
+  }
   console.error(
-    `Nenhuma string de conexão encontrada.\n` +
-      `Defina uma destas variáveis: ${VARIAVEIS.join(', ')}\n` +
-      `A do Neon está em console.neon.tech › seu projeto › Connect.`,
+    'Nenhuma string de conexão encontrada.\n'
+    + `Defina uma destas variáveis: ${VARIAVEIS.join(', ')}\n`
+    + 'A do Neon está em console.neon.tech › seu projeto › Connect.',
   );
   process.exit(1);
 }
 
-const sql = neon(process.env[variavel].trim());
-const caminho = new URL('./02-sync.sql', import.meta.url);
-const arquivo = await readFile(caminho, 'utf8');
+log(`Banco: ${variavel}${noBuild ? ' (produção)' : ''}`);
+const db = conectarNeon(process.env[variavel].trim());
 
-// Divide em comandos, ignorando comentários e linhas vazias.
-const comandos = arquivo
-  .split('\n')
-  .filter((linha) => !linha.trimStart().startsWith('--'))
-  .join('\n')
-  .split(';')
-  .map((comando) => comando.trim())
-  .filter(Boolean);
+try {
+  log('Migrações');
+  await aplicarMigracoes(db, await lerMigracoes(), log);
 
-console.log(`Aplicando db/02-sync.sql (${comandos.length} comandos) usando ${variavel}…`);
-
-for (const comando of comandos) {
-  const resumo = comando.replace(/\s+/g, ' ').slice(0, 68);
-  try {
-    // O driver HTTP do Neon é uma tagged template. Passar o comando como um
-    // array de um elemento manda o SQL literal, sem parâmetros — que é
-    // exatamente o que uma migração precisa.
-    await sql([comando]);
-    console.log(`  ok    ${resumo}…`);
-  } catch (erro) {
-    console.error(`  FALHA ${resumo}…\n        ${erro.message}`);
-    process.exit(1);
+  if (!opcoes.has('--so-esquema')) {
+    log('Acervo');
+    await sincronizarAcervo(db, {
+      forcar: opcoes.has('--forcar'),
+      commit: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
+      log,
+    });
   }
-}
 
-const [linha] = await sql`SELECT count(*)::int AS pacotes FROM sync_snapshots`;
-console.log(`\nPronto. A tabela sync_snapshots existe e guarda ${linha.pacotes} pacote(s).`);
+  const [{ pacotes }] = await db.consulta('SELECT count(*)::int AS pacotes FROM sync_snapshots');
+  log(`Pronto. sync_snapshots guarda ${pacotes} conta(s).`);
+} catch (erro) {
+  console.error(`\nFALHA ao migrar o banco: ${erro.message}`);
+  if (noBuild) {
+    console.error(
+      'A publicação parou aqui para o site não subir diferente do banco; o site no ar continua o anterior.\n'
+      + 'Para publicar mesmo assim, defina DYNAMICK_MIGRAR=0 em Settings › Environment Variables e faça Redeploy.',
+    );
+  }
+  process.exit(1);
+}

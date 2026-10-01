@@ -4,6 +4,3 @@ node_modules/
 .vscode/
 .idea/
 .env
-db/acervo.json
-
-db/02-seed-acervo.sql

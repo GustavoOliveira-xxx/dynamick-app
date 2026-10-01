@@ -7,9 +7,9 @@
   "scripts": {
     "test": "node tests/index.mjs",
     "check": "node tests/check-imports.mjs",
-    "seed": "node db/gerar-seed.mjs",
     "dev": "python3 -m http.server 8000",
-    "db:migrar": "node db/migrar.mjs"
+    "db:migrar": "node db/migrar.mjs",
+    "db:conferir": "node db/migrar.mjs --conferir"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4"

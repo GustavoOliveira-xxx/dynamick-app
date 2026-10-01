@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     console.error('falha em /api/sync', erro);
     if (/relation .*sync_snapshots.* does not exist/i.test(String(erro?.message ?? ''))) {
       return json(res, 503, {
-        erro: 'O banco ainda não tem a tabela sync_snapshots. Rode db/01-esquema.sql antes de sincronizar.',
+        erro: 'O banco ainda não tem a tabela sync_snapshots. Rode npm run db:migrar ou publique de novo em produção.',
       });
     }
     return json(res, 500, { erro: 'Falha interna ao sincronizar.' });

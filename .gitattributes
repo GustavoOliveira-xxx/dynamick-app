@@ -1,3 +1,2 @@
 *.sql linguist-language=SQL
-db/02-seed-acervo.sql linguist-generated=true
 package-lock.json linguist-generated=true
