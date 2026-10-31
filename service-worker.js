@@ -1,4 +1,4 @@
-const CACHE = 'dynamick-shell-v9';
+const CACHE = 'dynamick-shell-v10';
 const SHELL = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const SHELL = [
   './perfil.html',
   './offline.html',
   './manifest.json',
+  './ck-vinheta.js',
   './css/tokens.css',
   './css/loader.css',
   './css/base.css',
